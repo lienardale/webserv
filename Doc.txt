@@ -12,3 +12,6 @@ Le Common Gateway Interface:
 - Liens intéressant: 
     - https://fr.wikipedia.org/wiki/Common_Gateway_Interface
     - https://tecfa.unige.ch/guides/tie/html/cgi-intro/cgi-intro-3.html
+
+Le pipelining HTTP (feature dispo depuis le HTTP 1.1)
+- Lien intéressant: https://fr.wikipedia.org/wiki/Pipelining_HTTP
