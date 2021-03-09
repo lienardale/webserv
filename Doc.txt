@@ -5,3 +5,10 @@ Les différentes methodes HTTP:
 - Definition courte: HTTP définit un ensemble de méthodes de requête qui indiquent l'action que l'on souhaite réaliser sur la ressource indiquée
 - Lien intéressant: https://developer.mozilla.org/fr/docs/Web/HTTP/Methods
 
+Les headers HTTP:
+- Lien intéressant: https://developer.mozilla.org/fr/docs/Web/HTTP/Headers
+
+Le Common Gateway Interface:
+- Liens intéressant: 
+    - https://fr.wikipedia.org/wiki/Common_Gateway_Interface
+    - https://tecfa.unige.ch/guides/tie/html/cgi-intro/cgi-intro-3.html
