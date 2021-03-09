@@ -6,7 +6,7 @@
 #    By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/03/09 12:30:41 by dboyer           ###   ########.fr        #
+#    Updated: 2021/03/09 18:26:20 by dboyer           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ HEADERS				=	./includes/webserv.hpp
 OBJS_MAIN			= 	$(MAIN:.cpp=.o)
 OBJS				= 	$(SRCS:.cpp=.o)
 
-CXXFLAGS  			= 	-Werror -Wall -Wextra -O3 ${INCLUDES}
+CXXFLAGS  			= 	-Werror -Wall -Wextra -std=c++98 -O3 ${INCLUDES}
 CXX     			= 	clang++
 RM      			= 	rm -f
 
