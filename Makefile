@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+         #
+#    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/03/09 18:26:20 by dboyer           ###   ########.fr        #
+#    Updated: 2021/03/10 10:04:31 by alienard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,16 +18,18 @@ NAME    			=	webserv
 
 MAIN				= 	./srcs/main.cpp
 
-SRCS    			= 	./srcs/test.cpp
+SRCS    			= 	test \
 
 INCLUDES			=	-I ./includes
 
 HEADERS				=	./includes/webserv.hpp
 
 OBJS_MAIN			= 	$(MAIN:.cpp=.o)
-OBJS				= 	$(SRCS:.cpp=.o)
+OBJS				= 	$(FIL:.cpp=.o)
 
-CXXFLAGS  			= 	-Werror -Wall -Wextra -std=c++98 -O3 ${INCLUDES}
+FIL = $(addsuffix .cpp, $(addprefix srcs/, $(SRCS)))
+
+CXXFLAGS  			= 	-Werror -Wall -Wextra -std=c++98 -O3 -g ${INCLUDES}
 CXX     			= 	clang++
 RM      			= 	rm -f
 
