@@ -102,3 +102,48 @@ the server (listens includes). /!\
 	through a select will give you a mark equal to 0 and the end of the
 	evaluation.
 /!\
+
+Config-file (cf nginx.conf):
+- port and host of each 'server'
+- server_names (if necessary)
+- The first server for a host:port will be the default for this host:port (meaning
+it will answer to all request that doesn’t belong to an other server)
+- default error pages
+- limit client body size
+- setup routes that can accept one or multiple of the following rules/configuration (routes
+	wont be using regexp):
+	∗ define a list of accepted HTTP Methods for the route
+	∗ define a directory or a file from where the file should be search (for example
+		if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto/pouet is
+		/tmp/www/pouic/toto/pouet)
+	∗ turn on or off directory listing
+	∗ default file to answer if the request is a directory
+	∗ execute CGI based on certain file extension (for example .php)
+		· You wonder what a CGI is go? https://en.wikipedia.org/wiki/Common_Gateway_Interface
+		· Because you wont call the cgi directly use the full path as PATH_INFO
+		· Just remember that for chunked request, your server need to unchunked it and the CGI will expect EOF as end of the body.
+			· Same things for the output of the CGI. if no content_length is returned
+				from the CGI, EOF will mean the end of the returned data.
+		· Your program should set the following Meta-Variables
+			AUTH_TYPE
+			CONTENT_LENGTH
+			CONTENT_TYPE
+			GATEWAY_INTERFACE
+			PATH_INFO
+			PATH_TRANSLATED
+			QUERY_STRING
+			REMOTE_ADDR
+			REMOTE_IDENT
+			REMOTE_USER
+			REQUEST_METHOD
+			REQUEST_URI
+			SCRIPT_NAME
+			SERVER_NAME
+			SERVER_PORT
+			SERVER_PROTOCOL
+			SERVER_SOFTWARE
+		· Your program should call the cgi with the file requested as first argument
+		· the cgi should be run in the correct directory for relativ path file access
+		· your server should work with php-cgi
+	∗ make the route able to accept uploaded files and configure where it should
+		be saved

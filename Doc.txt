@@ -23,3 +23,7 @@ RFC 7230 (important):
     - http://www.rfc.fr/ -> Qu'est ce que le rfc ?
     - https://tools.ietf.org/html/rfc7230 -> contenu du RFC 7230
 
+Nginx (architecture) :
+- https://www.nginx.com/blog/inside-nginx-how-we-designed-for-performance-scale/
+
+
