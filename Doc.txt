@@ -26,4 +26,7 @@ RFC 7230 (important):
 Nginx (architecture) :
 - https://www.nginx.com/blog/inside-nginx-how-we-designed-for-performance-scale/
 
-
+Links in subject (or regarding elements mentionned in the subject) :
+https://fr.wikipedia.org/wiki/Request_for_comments
+https://en.wikipedia.org/wiki/Common_Gateway_Interface
+https://fr.wikipedia.org/wiki/Telnet
