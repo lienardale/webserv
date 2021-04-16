@@ -6,22 +6,33 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/16 11:25:18 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/16 17:25:20 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
 #include "socket.hpp"
-#include <arpa/inet.h>
-#include <iostream>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
-#define PORT 8080
 typedef int SOCKET;
 
-void hello_world(void);
+#include <errno.h>
+#include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
+
+#include "Socket.hpp"
 
 #endif
