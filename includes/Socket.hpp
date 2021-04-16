@@ -6,7 +6,7 @@
 /*   By: pcariou <pcariou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 13:29:08 by pcariou           #+#    #+#             */
-/*   Updated: 2021/04/15 13:58:25 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/04/16 14:38:03 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <string>
 # include <iostream>
+# include <vector>
 
 class Socket {
 	public:
@@ -26,9 +27,10 @@ class Socket {
 		int	getFd(void) const;
 
 //	private:
-		int			fd;
+		int			fd;//fd creation
 		sockaddr_in	sockaddr;
-		int			connect;
+		int			connect;//fd connection
+		std::vector<std::string>	infos;//http request infos
 };
 
 #endif
