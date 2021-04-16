@@ -6,29 +6,32 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/16 13:38:04 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/04/16 17:25:20 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#define WEBSERV_HPP
+#include "socket.hpp"
 
-#include <iostream>
-#include <sys/types.h>
-#include <sys/socket.h>
+typedef int SOCKET;
+
 #include <errno.h>
-#include <stdlib.h>
+#include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <iterator>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <stdio.h>
 #include <sstream>
-#include <iterator>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <vector>
-#include <fstream>
 
 #include "Socket.hpp"
 

@@ -1,18 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.cpp                                           :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/09 12:21:38 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/15 17:56:17 by dess             ###   ########.fr       */
+/*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
+/*   Updated: 2021/04/16 10:32:49 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
+#ifndef SERVER_HPP
+#define SERVER_HPP
+#include <inttypes.h>
 
-void hello_world(void)
+class Server
 {
-	std::cout << "Hello world" << std::endl;
-}
+
+  public:
+	Server(void);
+	Server(uint32_t port, uint32_t timeout);
+};
+
+#endif
