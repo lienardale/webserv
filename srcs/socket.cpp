@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/04/16 13:40:47 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/16 15:01:48 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,8 +151,6 @@ Socket Socket::acceptConn(void) throw(Socket::SocketException)
 	int clientSocket = accept(_fd, (struct sockaddr *)&_address, &_socklen);
 	Socket::SocketException except;
 	if (clientSocket < 0 && _blocking)
-		throw(except);
-	if (clientSocket < 0 && !_blocking && errno != EWOULDBLOCK)
 		throw(except);
 	return Socket(clientSocket, _blocking);
 }

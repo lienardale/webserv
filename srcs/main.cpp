@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/16 13:22:41 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/16 15:21:10 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ int main(void)
 	bool run(true);
 	int opt(1);
 	socklen_t address_len(sizeof(address));
+
 	tv.tv_sec = 10;
 	tv.tv_usec = 500000;
 
@@ -83,7 +84,6 @@ int main(void)
 		std::cerr << "Error: socket failed: " << strerror(errno) << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	Socket test(8000, true, true);
 	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
 	{
 		std::cerr << "Error: setsockopt " << strerror(errno) << std::endl;
@@ -104,7 +104,6 @@ int main(void)
 		std::cerr << "Error: listen failed: " << strerror(errno) << std::endl;
 		quit(serverSocket, EXIT_FAILURE);
 	}
-
 
 	fd_set current_sockets, ready_sockets;
 	int selectResult;
