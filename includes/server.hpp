@@ -1,27 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/16 11:25:18 by dess             ###   ########.fr       */
+/*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
+/*   Updated: 2021/04/16 10:32:49 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-#define WEBSERV_HPP
-#include "socket.hpp"
-#include <arpa/inet.h>
-#include <iostream>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/types.h>
+#ifndef SERVER_HPP
+#define SERVER_HPP
+#include <inttypes.h>
 
-#define PORT 8080
-typedef int SOCKET;
+class Server
+{
 
-void hello_world(void);
+  public:
+	Server(void);
+	Server(uint32_t port, uint32_t timeout);
+};
 
 #endif

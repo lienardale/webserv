@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/15 19:09:50 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/16 13:22:41 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,40 @@ void quit(SOCKET serverSocket, int exitCode)
 
 int main(void)
 {
+	bool run = true;
+	Socket serverSocket(8000, true, true);
+
+	while (run)
+	{
+
+		std::cout << "loop" << std::endl;
+		try
+		{
+			Socket client = serverSocket.acceptConn();
+			try
+			{
+				std::string content = client.readContent();
+				std::cout << content << std::endl;
+			}
+			catch (Socket::SocketException &e)
+			{
+				std::cerr << e.what() << std::endl;
+			}
+		}
+		catch (Socket::SocketException &e)
+		{
+			std::cerr << e.what() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+	return 0;
+}
+
+/*int main(void)
+{
+	SOCKET serverSocket, clientSocket, maxSd;
 	struct sockaddr_in address;
-	SOCKET sock, new_sock;
-	char buffer[600];
+	char buffer[2000];
 	struct timeval tv;
 
 	bool run(true);
@@ -47,55 +78,49 @@ int main(void)
 	address.sin_port = htons(PORT);
 	address.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	/**************************************************************************
-	 *					Sockets init
-	 *************************************************************************/
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+	if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 	{
 		std::cerr << "Error: socket failed: " << strerror(errno) << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
+	Socket test(8000, true, true);
+	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
 	{
 		std::cerr << "Error: setsockopt " << strerror(errno) << std::endl;
-		quit(sock, EXIT_FAILURE);
+		quit(serverSocket, EXIT_FAILURE);
 	}
 
 	// socket become a non-blocking sockets
-	fcntl(sock, F_SETFL, O_NONBLOCK);
+	fcntl(serverSocket, F_SETFL, O_NONBLOCK);
 
-	if (bind(sock, (struct sockaddr *)&address, sizeof(address)) < 0)
+	if (bind(serverSocket, (struct sockaddr *)&address, sizeof(address)) < 0)
 	{
 		std::cerr << "Error: binding failed: " << strerror(errno) << std::endl;
-		quit(sock, EXIT_FAILURE);
+		quit(serverSocket, EXIT_FAILURE);
 	}
 
-	if (listen(sock, 3) < 0)
+	if (listen(serverSocket, 3) < 0)
 	{
 		std::cerr << "Error: listen failed: " << strerror(errno) << std::endl;
-		quit(sock, EXIT_FAILURE);
+		quit(serverSocket, EXIT_FAILURE);
 	}
 
-	/**************************************************************************
-	 *				Sockets set init
-	 *************************************************************************/
 
 	fd_set current_sockets, ready_sockets;
 	int selectResult;
 	FD_ZERO(&current_sockets);
-	FD_SET(sock, &current_sockets);
-	/**************************************************************************
-	 *				Main loop
-	 *************************************************************************/
+	FD_SET(serverSocket, &current_sockets);
+
 	while (run)
 	{
 		// Make a copy because select is destructive !!
 		ready_sockets = current_sockets;
+		maxSd = serverSocket;
 
-		if ((selectResult = select(FD_SETSIZE, &ready_sockets, NULL, NULL, &tv)) < 0)
+		if ((selectResult = select(FD_SETSIZE + 1, &ready_sockets, NULL, NULL, &tv)) < 0)
 		{
 			std::cerr << "Error: select " << strerror(errno) << std::endl;
-			quit(sock, EXIT_FAILURE);
+			quit(serverSocket, EXIT_FAILURE);
 		}
 		else if (selectResult == 0)
 		{
@@ -107,9 +132,9 @@ int main(void)
 		{
 			if (FD_ISSET(i, &ready_sockets))
 			{
-				if (i == sock)
+				if (i == serverSocket)
 				{
-					if ((new_sock = accept(sock, (struct sockaddr *)&address, &address_len)) < 0)
+					if ((clientSocket = accept(serverSocket, (struct sockaddr *)&address, &address_len)) < 0)
 					{
 						if (errno != EWOULDBLOCK)
 						{
@@ -118,17 +143,17 @@ int main(void)
 							break;
 						}
 					}
-					FD_SET(new_sock, &current_sockets);
+					FD_SET(clientSocket, &current_sockets);
 				}
 				else
 				{
 					recv(i, buffer, sizeof(buffer), 0);
-					std::cout << buffer << std::endl << SO_RCVBUF << std::endl;
+					std::cout << buffer << std::endl;
 					FD_CLR(i, &current_sockets);
 				}
 			}
 		}
 	}
-	close(sock);
+	close(serverSocket);
 	return 0;
-}
+}*/
