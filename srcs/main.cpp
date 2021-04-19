@@ -6,23 +6,11 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/18 20:56:47 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/19 14:18:27 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
-#include <asm-generic/socket.h>
-#include <bits/types/struct_timeval.h>
-#include <cerrno>
-#include <cstddef>
-#include <cstdlib>
-#include <fcntl.h>
-#include <iostream>
-#include <string.h>
-#include <strings.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
 void quit(SOCKET serverSocket, int exitCode)
 {
@@ -32,16 +20,15 @@ void quit(SOCKET serverSocket, int exitCode)
 
 int main(void)
 {
-	bool run = true;
-	Socket serverSocket(8000, true, true);
+	Socket serverSocket;
+	serverSocket.listen(8000);
 
-	while (run)
+	while (1)
 	{
-
 		std::cout << "loop" << std::endl;
 		try
 		{
-			Socket client = serverSocket.acceptConn();
+			Socket client = serverSocket.accept();
 			try
 			{
 				std::string content = client.readContent();

@@ -6,17 +6,11 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/04/16 15:01:48 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/19 14:24:31 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/socket.hpp"
-#include <cstring>
-#include <errno.h>
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
 /******************************************************************************
  *			Static functions
@@ -46,49 +40,33 @@ static void _initBind(int fd, struct sockaddr_in *address, socklen_t socklen) th
 		throw(Socket::SocketException());
 }
 
-static void _initListen(int fd) throw(Socket::SocketException)
-{
-	if (listen(fd, MAX_CONN) < 0)
-		throw(Socket::SocketException());
-}
-
 /******************************************************************************
  *			Constructors
  *****************************************************************************/
-Socket::Socket(int fd, bool blocking) throw(Socket::SocketException)
-	: _fd(fd), _opt(1), _blocking(blocking), _socklen(sizeof(_address))
+Socket::Socket(int fd, bool blocking) throw(Socket::SocketException) : _fd(fd), _opt(1), _socklen(sizeof(_address))
 {
 	if (getsockname(_fd, (struct sockaddr *)&_address, &_socklen) < 0)
 		throw(Socket::SocketException());
+	if (!blocking)
+		_initBlocking(_fd);
 }
 
-Socket::Socket(uint32_t port, bool blocking, bool listen) throw(Socket::SocketException)
-	: _fd(socket(AF_INET, SOCK_STREAM, 0)), _opt(1), _blocking(blocking), _socklen(sizeof(_address))
+Socket::Socket(void) throw(Socket::SocketException)
+	: _fd(socket(AF_INET, SOCK_STREAM, 0)), _opt(1), _socklen(sizeof(_address))
 {
 	if (_fd < 0)
 		throw(Socket::SocketException());
-	_initAddress(port, &_address);
-	_initOptions(_fd, &_opt);
-	_initBind(_fd, &_address, _socklen);
-	if (!_blocking)
-		_initBlocking(_fd);
-	if (listen)
-		_initListen(_fd);
 }
 
 Socket::Socket(const Socket &other) throw(Socket::SocketException)
-	: _fd(dup(other._fd)), _opt(other._opt), _blocking(other._blocking), _address(other._address),
-	  _socklen(other._socklen)
+	: _fd(dup(other._fd)), _opt(other._opt), _address(other._address), _socklen(other._socklen)
 {
-	if (_fd < 0)
-		throw(Socket::SocketException());
 }
 
 Socket &Socket::operator=(const Socket &other) throw(Socket::SocketException)
 {
 	_fd = dup(other._fd);
-	_opt = other._fd;
-	_blocking = other._blocking;
+	_opt = other._opt;
 	_address = other._address;
 	_socklen = other._socklen;
 
@@ -113,12 +91,12 @@ const char *Socket::SocketException::what() const throw()
 /******************************************************************************
  *			Getters
  *****************************************************************************/
-int Socket::getFd() const
+int Socket::Fd() const
 {
 	return _fd;
 }
 
-int Socket::getOpt() const
+int Socket::Opt() const
 {
 	return _opt;
 }
@@ -133,31 +111,44 @@ struct sockaddr_in Socket::infos() const
 	return _address;
 }
 
-bool Socket::isBlocking() const
-{
-	return _blocking;
-}
-
 /******************************************************************************
  *			Member functions
  *****************************************************************************/
-void Socket::listen(void) throw(Socket::SocketException)
+void Socket::listen(const int port) throw(Socket::SocketException)
 {
-	_initListen(_fd);
+	_initAddress(port, &_address);
+	_initOptions(_fd, &_opt);
+	_initBind(_fd, &_address, _socklen);
+	_initBlocking(_fd);
+
+	if (::listen(_fd, MAX_CONN) < 0)
+		throw(Socket::SocketException());
 }
 
-Socket Socket::acceptConn(void) throw(Socket::SocketException)
+Socket Socket::accept(void) throw(Socket::SocketException)
 {
-	int clientSocket = accept(_fd, (struct sockaddr *)&_address, &_socklen);
-	Socket::SocketException except;
-	if (clientSocket < 0 && _blocking)
-		throw(except);
-	return Socket(clientSocket, _blocking);
+	int clientSocket = ::accept(_fd, (struct sockaddr *)&_address, &_socklen);
+	if (clientSocket < 0)
+		throw(Socket::SocketException());
+	return Socket(clientSocket, false);
 }
 
 std::string Socket::readContent(void) throw(Socket::SocketException)
 {
-	if ((read(_fd, _buffer, sizeof(_buffer)) < 0))
+	std::string result;
+	int ret = 0;
+
+	while ((ret = recv(_fd, _buffer, sizeof(_buffer), 0) > 0))
+		result += result;
+	if (ret < 0)
 		throw(Socket::SocketException());
-	return std::string(_buffer);
+	return result;
+}
+
+/******************************************************************************
+ *			Operator overloading
+ *****************************************************************************/
+bool Socket::operator==(const int fd) const
+{
+	return fd == _fd;
 }
