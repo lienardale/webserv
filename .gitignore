@@ -1,1 +1,8 @@
-.*
+# Dev files
+.clang-format
+*.json
+
+
+# Binaries
+*.o
+webserv
