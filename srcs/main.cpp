@@ -6,11 +6,11 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/16 15:34:34 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/18 20:56:47 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/webserv.hpp"
+#include "webserv.hpp"
 #include <asm-generic/socket.h>
 #include <bits/types/struct_timeval.h>
 #include <cerrno>
@@ -147,6 +147,7 @@ int main(void)
 	Socket test(8000, true, true);
 				else
 				{
+>>>>>>> main
 					recv(i, buffer, sizeof(buffer), 0);
 					std::cout << buffer << std::endl;
 					FD_CLR(i, &current_sockets);
