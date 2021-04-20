@@ -52,6 +52,26 @@
       "./includes",
       "-c",
       "-o",
+      "srcs/server.o",
+      "srcs/server.cpp"
+    ],
+    "directory": "/home/dess/code/webserv",
+    "file": "/home/dess/code/webserv/srcs/server.cpp",
+    "output": "/home/dess/code/webserv/srcs/server.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-11",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-std=c++98",
+      "-O3",
+      "-g",
+      "-I",
+      "./includes",
+      "-c",
+      "-o",
       "srcs/main.o",
       "srcs/main.cpp"
     ],

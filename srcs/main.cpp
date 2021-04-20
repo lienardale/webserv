@@ -6,21 +6,23 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/19 14:18:27 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/19 15:21:30 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "server.hpp"
 #include "webserv.hpp"
-
-void quit(SOCKET serverSocket, int exitCode)
-{
-	close(serverSocket);
-	exit(exitCode);
-}
 
 int main(void)
 {
-	Socket serverSocket;
+	struct timeval tv;
+	tv.tv_sec = 10;
+	tv.tv_usec = 0;
+
+	http::Server server(8000, tv);
+	server.listen();
+
+	/*Socket serverSocket;
 	serverSocket.listen(8000);
 
 	while (1)
@@ -44,7 +46,7 @@ int main(void)
 			std::cerr << e.what() << std::endl;
 			exit(EXIT_FAILURE);
 		}
-	}
+	}*/
 	return 0;
 }
 
