@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/04/19 19:25:15 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/22 19:41:38 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class Server
 {
 
   public:
-	Server(uint32_t port, struct timeval timeout);
+	Server(uint32_t port, uint32_t timeout);
 	~Server(void);
 
 	void listen(void);
@@ -35,8 +35,9 @@ class Server
 	fd_set _readSet, _writeSet, _exceptSet;
 
 	Server(void);
-	void _handleRead(const int fd);
+	void _handleRead(const int fd) throw(Socket::SocketException);
 	void _handleWrite(const int fd);
+	void _watchFds(void) throw(Socket::SocketException);
 };
 
 } // namespace http
