@@ -6,118 +6,35 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/22 19:28:57 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/23 10:50:14 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "socket.hpp"
 #include "webserv.hpp"
+#include <csignal>
+
+http::Server SERVER(8000, 10);
+
+void handleSignal(int sig)
+{
+	(void)sig;
+	SERVER.stop();
+}
 
 int main(void)
 {
-	http::Server server(8000, 10);
-	server.listen();
+	// Signal handling
+	std::signal(SIGINT, handleSignal);
+	std::signal(SIGTERM, handleSignal);
+	std::signal(SIGQUIT, handleSignal);
+
+	SERVER.listen();
+
 	return 0;
 }
 
-/*int main(void)
-  {
-  SOCKET serverSocket, clientSocket, maxSd;
-  struct sockaddr_in address;
-  char buffer[2000];
-  struct timeval tv;
-
-  bool run(true);
-  int opt(1);
-  socklen_t address_len(sizeof(address));
-
-  tv.tv_sec = 10;
-  tv.tv_usec = 500000;
-
-  address.sin_family = AF_INET;
-  address.sin_port = htons(PORT);
-  address.sin_addr.s_addr = htonl(INADDR_ANY);
-
-  if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-  {
-  std::cerr << "Error: socket failed: " << strerror(errno) << std::endl;
-  exit(EXIT_FAILURE);
-  }
-  if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
-  {
-  std::cerr << "Error: setsockopt " << strerror(errno) << std::endl;
-  quit(serverSocket, EXIT_FAILURE);
-  }
-
-// socket become a non-blocking sockets
-fcntl(serverSocket, F_SETFL, O_NONBLOCK);
-
-if (bind(serverSocket, (struct sockaddr *)&address, sizeof(address)) < 0)
-{
-std::cerr << "Error: binding failed: " << strerror(errno) << std::endl;
-quit(serverSocket, EXIT_FAILURE);
-}
-
-if (listen(serverSocket, 3) < 0)
-{
-std::cerr << "Error: listen failed: " << strerror(errno) << std::endl;
-quit(serverSocket, EXIT_FAILURE);
-}
-
-fd_set current_sockets, ready_sockets;
-int selectResult;
-FD_ZERO(&current_sockets);
-FD_SET(serverSocket, &current_sockets);
-
-while (run)
-{
-// Make a copy because select is destructive !!
-ready_sockets = current_sockets;
-maxSd = serverSocket;
-
-if ((selectResult = select(FD_SETSIZE + 1, &ready_sockets, NULL, NULL, &tv)) < 0)
-{
-std::cerr << "Error: select " << strerror(errno) << std::endl;
-quit(serverSocket, EXIT_FAILURE);
-}
-else if (selectResult == 0)
-{
-std::cerr << "Error: timeout" << std::endl;
-break;
-}
-
-for (int i = 0; i < FD_SETSIZE; i++)
-{
-if (FD_ISSET(i, &ready_sockets))
-{
-if (i == serverSocket)
-{
-	if ((clientSocket = accept(serverSocket, (struct sockaddr *)&address, &address_len)) < 0)
-	{
-		if (errno != EWOULDBLOCK)
-		{
-			std::cerr << "Error: accept failed " << strerror(errno) << std::endl;
-			run = false;
-			break;
-		}
-	}
-	FD_SET(clientSocket, &current_sockets);
-}
-Socket test(8000, true, true);
-else
-{
-	>>>>>>> main
-		recv(i, buffer, sizeof(buffer), 0);
-	std::cout << buffer << std::endl;
-	FD_CLR(i, &current_sockets);
-}
-}
-}
-}
-close(serverSocket);
-return 0;
-}*/
 /*void error_syscall(std::string message) {
   std::cout << message << " .errno: " << errno << std::endl;
   exit(EXIT_FAILURE);

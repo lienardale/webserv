@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/04/19 19:18:06 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/23 10:26:00 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  * Une fonction qui initialise les informations d'une socket
  *
  * @Parametres: Le nombre de ports et un pointeur sur une structure sockaddr_in
- * @Infos: La structure sockaddr_in est dans le package <sys/socket.h>
+ * @Infos: La structure sockaddr_in est dans le package <netinet/in.h>
  */
 static void _initAddress(uint32_t port, struct sockaddr_in *infosPtr)
 {
