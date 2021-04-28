@@ -1,1 +1,11 @@
-.*
+# Dev files
+.clang-format
+*.json
+
+# Dev folders
+.cache/
+
+
+# Binaries
+*.o
+webserv

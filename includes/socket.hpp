@@ -6,43 +6,49 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:35:08 by dess              #+#    #+#             */
-/*   Updated: 2021/04/16 13:16:09 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/19 19:17:25 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 #include <cstddef>
+#include <cstring>
+#include <errno.h>
 #include <exception>
 #include <fcntl.h>
 #include <inttypes.h>
 #include <iostream>
 #include <netinet/in.h>
-#include <sys/socket.h>
+#include <sys/socket.h>	
 #include <sys/types.h>
+#include <unistd.h>
+
 #define MAX_CONN 3
 
 class Socket
 {
   public:
 	// Constructors
+	Socket(void) throw(Socket::SocketException);
 	Socket(int fd, bool blocking) throw(Socket::SocketException);
-	Socket(uint32_t port, bool blocking, bool listen) throw(Socket::SocketException);
 	Socket(const Socket &other) throw(Socket::SocketException);
-	Socket &operator=(const Socket &other) throw(Socket::SocketException);
+	Socket &operator=(const Socket &other);
 	~Socket(void);
 
 	// Getters
-	int getFd(void) const;
-	int getOpt(void) const;
-	bool isBlocking(void) const;
+	int Fd(void) const;
 	struct sockaddr_in infos(void) const;
-	socklen_t size(void) const;
 
 	// Member functions
-	void listen(void) throw(Socket::SocketException);
-	Socket acceptConn(void) throw(Socket::SocketException);
+	void listen(const int port) throw(Socket::SocketException);
+	void close(void);
+	Socket accept(void) throw(Socket::SocketException);
 	std::string readContent(void) throw(Socket::SocketException);
+
+	// Operator overloading
+	bool operator==(const int fd) const;
+	bool operator==(const Socket &other) const;
 
 	// Member exceptions
 	class SocketException : public std::exception
@@ -54,12 +60,9 @@ class Socket
   private:
 	int _fd;
 	int _opt;
-	bool _blocking;
 	struct sockaddr_in _address;
 	socklen_t _socklen;
-	char _buffer[500];
-
-	Socket(void);
+	char _buffer[30];
 };
 
 #endif

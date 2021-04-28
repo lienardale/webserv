@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/16 17:25:20 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/19 15:19:50 by dess             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #define WEBSERV_HPP
 #include "socket.hpp"
 
-typedef int SOCKET;
-
+#include "Socket.hpp"
+#include "server.hpp"
 #include <errno.h>
 #include <fcntl.h>
 #include <fstream>
@@ -32,7 +32,5 @@ typedef int SOCKET;
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-
-#include "Socket.hpp"
 
 #endif
