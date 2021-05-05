@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/04/23 10:26:00 by dess             ###   ########.fr       */
+/*   Updated: 2021/05/05 12:12:20 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static void _initBind(int fd, struct sockaddr_in *address, socklen_t socklen) th
 }
 
 /******************************************************************************
- *				Constructeurs et Desctructeurs
+ *				Constructeurs et Destructeurs
  *****************************************************************************/
 
 /*
@@ -169,6 +169,7 @@ Socket Socket::accept(void) throw(Socket::SocketException)
 	int clientSocket = ::accept(_fd, (struct sockaddr *)&_address, &_socklen);
 	if (clientSocket < 0)
 		throw(Socket::SocketException());
+	//store buf in words table (infos)
 	return Socket(clientSocket, false);
 }
 
@@ -184,7 +185,41 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
 		result.append(_buffer);
 	if (ret < 0)
 		throw(Socket::SocketException());
+	
+	//transform result in words table (_infos)
+	std::istringstream iss(result);
+	_infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)),
+	std::istream_iterator<std::string>());
 	return result;
+}
+
+/*
+ * 
+*/
+
+void    Socket::sendPage(void)
+{
+	std::string content = "<h1>404 Not Found</h1>";
+	std::fstream f;
+
+	if (_infos.size() >= 3 && _infos[0] == "GET") {
+		if (_infos[1] == "/")
+			f.open("www/index.html");
+		else
+			f.open(("www" + _infos[1]).c_str(), std::ios::in);
+		if (f) {
+			std::string page((std::istreambuf_iterator<char>(f)),
+					std::istreambuf_iterator<char>());
+			content = page;
+		}
+		f.close();
+	}
+	std::ostringstream oss;
+	oss << "HTTP/1.1 200 OK\r\n\r\n";
+	oss << content;
+
+	send(_fd, oss.str().c_str(), oss.str().size(), 0);
+	std::cout <<  oss.str().c_str() << std::endl;
 }
 
 /*

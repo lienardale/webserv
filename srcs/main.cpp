@@ -6,14 +6,11 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/04/23 10:50:14 by dess             ###   ########.fr       */
+/*   Updated: 2021/04/28 15:25:01 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
-#include "socket.hpp"
 #include "webserv.hpp"
-#include <csignal>
 
 http::Server SERVER(8000, 10);
 

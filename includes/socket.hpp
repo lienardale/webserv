@@ -6,12 +6,13 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:35:08 by dess              #+#    #+#             */
-/*   Updated: 2021/04/19 19:17:25 by dess             ###   ########.fr       */
+/*   Updated: 2021/05/03 19:12:51 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
+
 #include <cstddef>
 #include <cstring>
 #include <errno.h>
@@ -23,6 +24,10 @@
 #include <sys/socket.h>	
 #include <sys/types.h>
 #include <unistd.h>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <iterator>
 
 #define MAX_CONN 3
 
@@ -45,6 +50,7 @@ class Socket
 	void close(void);
 	Socket accept(void) throw(Socket::SocketException);
 	std::string readContent(void) throw(Socket::SocketException);
+	void		sendPage(void);
 
 	// Operator overloading
 	bool operator==(const int fd) const;
@@ -58,11 +64,12 @@ class Socket
 	};
 
   private:
-	int _fd;
-	int _opt;
-	struct sockaddr_in _address;
-	socklen_t _socklen;
-	char _buffer[30];
+	int								_fd;
+	int								_opt;
+	struct sockaddr_in				_address;
+	socklen_t						_socklen;
+	char							_buffer[30];
+	std::vector<std::string>		_infos;
 };
 
 #endif
