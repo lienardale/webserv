@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/05/07 22:33:29 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/05/11 08:40:48 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 		// Make a copy because select is destructive !!
 		readyReadSet = _readSet;
 		readyWriteSet = _writeSet;
-		if (select(FD_SETSIZE, &readyReadSet, &readyWriteSet, NULL, NULL) < 0)
+		if (select(FD_SETSIZE, &readyReadSet, &readyWriteSet, NULL, &_timeout) < 0)
 		{
 			if (_run)
 			{
