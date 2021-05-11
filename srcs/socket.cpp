@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/05/05 12:12:20 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/05/07 23:17:16 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,6 +185,7 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
 		result.append(_buffer);
 	if (ret < 0)
 		throw(Socket::SocketException());
+	std::cout << "		-- CLIENT REQUEST --\n\n" << result << "\n" << std::endl;
 	
 	//transform result in words table (_infos)
 	std::istringstream iss(result);
@@ -194,7 +195,8 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
 }
 
 /*
- * 
+ *	Send the requested page to the client 
+ *
 */
 
 void    Socket::sendPage(void)
@@ -215,11 +217,14 @@ void    Socket::sendPage(void)
 		f.close();
 	}
 	std::ostringstream oss;
-	oss << "HTTP/1.1 200 OK\r\n\r\n";
+	oss << "HTTP/1.1 200 OK\r\n";
+	oss << "Server: WEBSERV\r\n";
+	oss << "Content-Length: " << content.size() << "\r\n";
+	oss << "\r\n";
 	oss << content;
 
 	send(_fd, oss.str().c_str(), oss.str().size(), 0);
-	std::cout <<  oss.str().c_str() << std::endl;
+	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
 /*

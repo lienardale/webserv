@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/05/05 12:17:48 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/05/07 22:33:29 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,6 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 		// Make a copy because select is destructive !!
 		readyReadSet = _readSet;
 		readyWriteSet = _writeSet;
-		std::cout << "SELECT" << std::endl;
 		if (select(FD_SETSIZE, &readyReadSet, &readyWriteSet, NULL, NULL) < 0)
 		{
 			if (_run)
@@ -144,7 +143,6 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 			}
 			exit(EXIT_FAILURE);
 		}
-		std::cout << "TEST" << std::endl;
 		for (int i = 0; i < FD_SETSIZE; i++)
 		{
 			if (FD_ISSET(i, &readyReadSet))
@@ -152,7 +150,6 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 			if (FD_ISSET(i, &readyWriteSet))
 				_handleWrite(i);
 		}
-		std::cout << "TEST1" << std::endl;
 	}
 }
 
@@ -161,8 +158,7 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
  */
 void http::Server::stop(void)
 {
-	std::cout << "Stopping gracefully the server..." << std::endl;
-
+	std::cout << "Gracefully stopping the server..." << std::endl;
 	if (_run)
 	{
 		_run = false;
