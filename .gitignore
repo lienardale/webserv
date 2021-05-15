@@ -9,3 +9,7 @@
 # Binaries
 *.o
 webserv
+
+#vim
+*.swo
+*.swp

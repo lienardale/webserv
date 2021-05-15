@@ -6,15 +6,12 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/04/23 10:43:10 by dess             ###   ########.fr       */
+/*   Updated: 2021/05/11 08:40:48 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "socket.hpp"
-#include <cstdlib>
-#include <sys/select.h>
-#include <unistd.h>
 
 /******************************************************************************
  *			Constructeurs/Destructeurs
@@ -89,20 +86,21 @@ void http::Server::listen(void)
  *	@Parametres: Le fd sur lequel la lecture doit se faire
  *	@Infos La fonction lève une SocketException si erreur
  */
+
 void http::Server::_handleRead(const int fd) throw(Socket::SocketException)
 {
 	if (_serverSocket == fd)
 	{
+		// this is a new connection
 		Socket clientSocket = _serverSocket.accept();
 		FD_SET(clientSocket.Fd(), &_readSet);
 	}
 	else
 	{
-		std::string result = Socket(fd, true).readContent(); // Les données reçue sont dans result
-		/*
-		 * 	Les parsing des headers doit se faire ici
-		 */
-		std::cout << result;
+		// read from the client
+		_currentSock = Socket(fd, true);
+		_currentSock.readContent();
+
 		FD_CLR(fd, &_readSet);
 		FD_SET(fd, &_writeSet);
 	}
@@ -115,8 +113,10 @@ void http::Server::_handleRead(const int fd) throw(Socket::SocketException)
  */
 void http::Server::_handleWrite(const int fd)
 {
-	std::cout << "write fd: " << fd << std::endl;
+	// write to the client
+	_currentSock.sendPage();
 	FD_CLR(fd, &_writeSet);
+	close(fd);
 }
 
 /*
@@ -134,7 +134,7 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 		// Make a copy because select is destructive !!
 		readyReadSet = _readSet;
 		readyWriteSet = _writeSet;
-		if (select(FD_SETSIZE + 1, &readyReadSet, &readyWriteSet, NULL, &_timeout) < 0)
+		if (select(FD_SETSIZE, &readyReadSet, &readyWriteSet, NULL, &_timeout) < 0)
 		{
 			if (_run)
 			{
@@ -158,8 +158,7 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
  */
 void http::Server::stop(void)
 {
-	std::cout << "Stopping gracefully the server..." << std::endl;
-
+	std::cout << "Gracefully stopping the server..." << std::endl;
 	if (_run)
 	{
 		_run = false;
