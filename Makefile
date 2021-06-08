@@ -6,7 +6,7 @@
 #    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/04/28 15:28:25 by pcariou          ###   ########.fr        #
+#    Updated: 2021/06/08 15:52:50 by alienard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,8 @@ NAME    			=	webserv
 MAIN				= 	./srcs/main.cpp
 
 SRCS    			=	socket\
-						server
+						server \
+						config
 
 INCLUDES			=	-I ./includes
 

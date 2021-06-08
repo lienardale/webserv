@@ -1,8 +1,7 @@
 #ifndef CONFIG_HPP
 # define CONFIG_HPP
 
-# include <string>
-# include <iostream>
+#include "webserv.hpp"
 
 class config {
 	public:
@@ -13,6 +12,7 @@ class config {
 		config	&operator=(const config &rhs);
 		std::string	getServer(void) const;
 		int	getPort(void) const;
+		int ft_print_config(void);
 
 	private:
 		std::string	server;
