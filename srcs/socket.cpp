@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/09 14:45:52 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/08 19:37:28 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,13 +213,13 @@ void	Socket::badRequest(void)
 
 void	Socket::Delete(void)
 {
-	
+
 }
 
 
 void	Socket::Post(void)
 {
-	
+
 }
 
 void	Socket::Get(void)
