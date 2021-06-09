@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/08 14:44:39 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/08 19:37:28 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,9 +199,33 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
  *
 */
 
-void    Socket::sendPage(void)
+void	Socket::badRequest(void)
+{
+	std::string content = "<h1>400 Bad Request</h1>";
+	std::ostringstream oss;
+
+	oss << "HTTP/1.1 400 Bad Request\r\n";
+	oss << content;
+
+	send(_fd, oss.str().c_str(), oss.str().size(), 0);
+	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+}
+
+void	Socket::Delete(void)
+{
+
+}
+
+
+void	Socket::Post(void)
+{
+
+}
+
+void	Socket::Get(void)
 {
 	std::string content = "<h1>404 Not Found</h1>";
+	std::string code = "200 OK";
 	std::fstream f;
 
 	if (_infos.size() >= 3 && _infos[0] == "GET") {
@@ -214,10 +238,14 @@ void    Socket::sendPage(void)
 					std::istreambuf_iterator<char>());
 			content = page;
 		}
+		else
+			code = "404 Not Found";
 		f.close();
 	}
 	std::ostringstream oss;
-	oss << "HTTP/1.1 200 OK\r\n";
+	oss << "HTTP/1.1 ";
+	oss << code;
+	oss << "\r\n";
 	oss << "Server: WEBSERV\r\n";
 	oss << "Content-Length: " << content.size() << "\r\n";
 	oss << "\r\n";
@@ -225,6 +253,18 @@ void    Socket::sendPage(void)
 
 	send(_fd, oss.str().c_str(), oss.str().size(), 0);
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+}
+
+void    Socket::serverResponse(void)
+{
+	if (_infos.size() >= 3 && _infos[0] == "GET")
+		Get();
+	else if (_infos.size() >= 3 && _infos[0] == "POST")
+		Post();
+	else if (_infos.size() >= 3 && _infos[0] == "DELETE")
+		Delete();
+	else
+		badRequest();
 }
 
 /*
