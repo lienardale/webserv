@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/08 19:37:28 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/09 14:45:52 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,13 +213,13 @@ void	Socket::badRequest(void)
 
 void	Socket::Delete(void)
 {
-
+	
 }
 
 
 void	Socket::Post(void)
 {
-
+	
 }
 
 void	Socket::Get(void)
@@ -257,12 +257,15 @@ void	Socket::Get(void)
 
 void    Socket::serverResponse(void)
 {
-	if (_infos.size() >= 3 && _infos[0] == "GET")
-		Get();
-	else if (_infos.size() >= 3 && _infos[0] == "POST")
-		Post();
-	else if (_infos.size() >= 3 && _infos[0] == "DELETE")
-		Delete();
+	if (_infos.size() >= 3 && _infos[2] == "HTTP/1.1")
+	{
+		if (_infos[0] == "GET")
+			Get();
+		else if (_infos[0] == "POST")
+			Post();
+		else if (_infos[0] == "DELETE")
+			Delete();
+	}
 	else
 		badRequest();
 }
