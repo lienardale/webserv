@@ -257,12 +257,15 @@ void	Socket::Get(void)
 
 void    Socket::serverResponse(void)
 {
-	if (_infos.size() >= 3 && _infos[0] == "GET")
-		Get();
-	else if (_infos.size() >= 3 && _infos[0] == "POST")
-		Post();
-	else if (_infos.size() >= 3 && _infos[0] == "DELETE")
-		Delete();
+	if (_infos.size() >= 3 && _infos[2] == "HTTP/1.1")
+	{
+		if (_infos[0] == "GET")
+			Get();
+		else if (_infos[0] == "POST")
+			Post();
+		else if (_infos[0] == "DELETE")
+			Delete();
+	}
 	else
 		badRequest();
 }
