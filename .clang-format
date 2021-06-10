@@ -128,11 +128,11 @@ SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles:  true
-SpacesInConditionalStatement: false
+SpacesInConditionalStatement: true
 SpacesInContainerLiterals: true
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
+SpacesInCStyleCastParentheses: true
+SpacesInParentheses: true
+SpacesInSquareBrackets: true
 SpaceBeforeSquareBrackets: false
 Standard:        Latest
 StatementMacros:

@@ -22,11 +22,11 @@
  * @Parametres: Le nombre de ports et un pointeur sur une structure sockaddr_in
  * @Infos: La structure sockaddr_in est dans le package <netinet/in.h>
  */
-static void _initAddress(uint32_t port, struct sockaddr_in *infosPtr)
+static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr )
 {
 	infosPtr->sin_family = AF_INET;
-	infosPtr->sin_port = htons(port);
-	infosPtr->sin_addr.s_addr = htonl(INADDR_ANY);
+	infosPtr->sin_port = htons( port );
+	infosPtr->sin_addr.s_addr = htonl( INADDR_ANY );
 }
 
 /*
@@ -35,10 +35,10 @@ static void _initAddress(uint32_t port, struct sockaddr_in *infosPtr)
  *	@Infos: La fonction lève une SocketException si setsockopt échoue
  *	@Lien: https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
  */
-static void _initOptions(int fd, int *opt) throw(Socket::SocketException)
+static void _initOptions( int fd, int *opt ) throw( Socket::SocketException )
 {
-	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof(*opt)) < 0)
-		throw(Socket::SocketException());
+	if ( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
+		throw( Socket::SocketException() );
 }
 
 /*
@@ -47,10 +47,10 @@ static void _initOptions(int fd, int *opt) throw(Socket::SocketException)
  *	@Infos: La fonction lève une SocketException si fcntl échoue
  *	@Lien: http://manpagesfr.free.fr/man/man2/fcntl.2.html
  */
-static void _initBlocking(int fd) throw(Socket::SocketException)
+static void _initBlocking( int fd ) throw( Socket::SocketException )
 {
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
-		throw(Socket::SocketException());
+	if ( fcntl( fd, F_SETFL, O_NONBLOCK ) < 0 )
+		throw( Socket::SocketException() );
 }
 
 /*
@@ -59,10 +59,10 @@ static void _initBlocking(int fd) throw(Socket::SocketException)
  *	@Infos: La fonction lève une SocketException si bind échoue
  *	@Lien: http://manpagesfr.free.fr/man/man2/bind.2.html
  */
-static void _initBind(int fd, struct sockaddr_in *address, socklen_t socklen) throw(Socket::SocketException)
+static void _initBind( int fd, struct sockaddr_in *address, socklen_t socklen ) throw( Socket::SocketException )
 {
-	if (bind(fd, (struct sockaddr *)address, socklen) < 0)
-		throw(Socket::SocketException());
+	if ( bind( fd, ( struct sockaddr * )address, socklen ) < 0 )
+		throw( Socket::SocketException() );
 }
 
 /******************************************************************************
@@ -75,23 +75,24 @@ static void _initBind(int fd, struct sockaddr_in *address, socklen_t socklen) th
  *	@Info: le contructeur utisie getsockname et lève une SocketException si celui-ci échoue
  *	@Lien: http://manpagesfr.free.fr/man/man2/getsockname.2.html
  */
-Socket::Socket(int fd, bool blocking) throw(Socket::SocketException) : _fd(fd), _opt(1), _socklen(sizeof(_address))
+Socket::Socket( int fd, bool blocking ) throw( Socket::SocketException )
+	: _fd( fd ), _opt( 1 ), _socklen( sizeof( _address ) )
 {
-	if (getsockname(_fd, (struct sockaddr *)&_address, &_socklen) < 0)
-		throw(Socket::SocketException());
-	if (!blocking)
-		_initBlocking(_fd);
+	if ( getsockname( _fd, ( struct sockaddr * )&_address, &_socklen ) < 0 )
+		throw( Socket::SocketException() );
+	if ( !blocking )
+		_initBlocking( _fd );
 }
 
 /*
  *	Constructeur par défaut de Socket. Seule une socket non initialisée est crée.
  *	@Lien: http://manpagesfr.free.fr/man/man2/socket.2.html
  */
-Socket::Socket(void) throw(Socket::SocketException)
-	: _fd(socket(AF_INET, SOCK_STREAM, 0)), _opt(1), _socklen(sizeof(_address))
+Socket::Socket( void ) throw( Socket::SocketException )
+	: _fd( socket( AF_INET, SOCK_STREAM, 0 ) ), _opt( 1 ), _socklen( sizeof( _address ) )
 {
-	if (_fd < 0)
-		throw(Socket::SocketException());
+	if ( _fd < 0 )
+		throw( Socket::SocketException() );
 }
 
 /*
@@ -99,12 +100,12 @@ Socket::Socket(void) throw(Socket::SocketException)
  *	@Info: Le fd est dupliqué via la fonction dup
  *	@Lien: http://manpagesfr.free.fr/man/man2/dup.2.html
  */
-Socket::Socket(const Socket &other) throw(Socket::SocketException)
-	: _fd(dup(other._fd)), _opt(other._opt), _address(other._address), _socklen(other._socklen)
+Socket::Socket( const Socket &other ) throw( Socket::SocketException )
+	: _fd( dup( other._fd ) ), _opt( other._opt ), _address( other._address ), _socklen( other._socklen )
 {
 }
 
-Socket::~Socket(void)
+Socket::~Socket( void )
 {
 }
 
@@ -116,7 +117,7 @@ Socket::~Socket(void)
  */
 const char *Socket::SocketException::what() const throw()
 {
-	return strerror(errno);
+	return strerror( errno );
 }
 
 /******************************************************************************
@@ -148,15 +149,15 @@ struct sockaddr_in Socket::infos() const
  *	@Parametres: Le port
  *	@Infos: Lève une SocketException si erreur
  */
-void Socket::listen(const int port) throw(Socket::SocketException)
+void Socket::listen( const int port ) throw( Socket::SocketException )
 {
-	_initAddress(port, &_address);
-	_initOptions(_fd, &_opt);
-	_initBind(_fd, &_address, _socklen);
-	_initBlocking(_fd);
+	_initAddress( port, &_address );
+	_initOptions( _fd, &_opt );
+	_initBind( _fd, &_address, _socklen );
+	_initBlocking( _fd );
 
-	if (::listen(_fd, MAX_CONN) < 0)
-		throw(Socket::SocketException());
+	if ( ::listen( _fd, MAX_CONN ) < 0 )
+		throw( Socket::SocketException() );
 }
 
 /*
@@ -164,54 +165,55 @@ void Socket::listen(const int port) throw(Socket::SocketException)
  *	@Infos: Le fd de la socket client retournée est non-bloquant.
  *	La fonction lève une SocketException si erreur
  */
-Socket Socket::accept(void) throw(Socket::SocketException)
+Socket Socket::accept( void ) throw( Socket::SocketException )
 {
-	int clientSocket = ::accept(_fd, (struct sockaddr *)&_address, &_socklen);
-	if (clientSocket < 0)
-		throw(Socket::SocketException());
-	//store buf in words table (infos)
-	return Socket(clientSocket, false);
+	int clientSocket = ::accept( _fd, ( struct sockaddr * )&_address, &_socklen );
+	if ( clientSocket < 0 )
+		throw( Socket::SocketException() );
+	// store buf in words table (infos)
+	return Socket( clientSocket, false );
 }
 
 /*
  *	Lis la totalité du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-std::string Socket::readContent(void) throw(Socket::SocketException)
+std::string Socket::readContent( void ) throw( Socket::SocketException )
 {
 	std::string result;
 	int ret = 0;
-	while ((ret = recv(_fd, _buffer, sizeof(_buffer), MSG_DONTWAIT) > 0))
-		result.append(_buffer);
-	if (ret < 0)
-		throw(Socket::SocketException());
+	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) )
+		result.append( _buffer );
+	if ( ret < 0 )
+		throw( Socket::SocketException() );
 	std::cout << "		-- CLIENT REQUEST --\n\n" << result << "\n" << std::endl;
-	
-	//transform result in words table (_infos)
-	std::istringstream iss(result);
-	_infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)),
-	std::istream_iterator<std::string>());
+
+	// transform result in words table (_infos)
+	std::istringstream iss( result );
+	_infos = std::vector< std::string >( ( std::istream_iterator< std::string >( iss ) ),
+										 std::istream_iterator< std::string >() );
 	return result;
 }
 
 /*
- *	Send the requested page to the client 
+ *	Send the requested page to the client
  *
-*/
+ */
 
-void    Socket::sendPage(void)
+void Socket::sendPage( void )
 {
 	std::string content = "<h1>404 Not Found</h1>";
 	std::fstream f;
 
-	if (_infos.size() >= 3 && _infos[0] == "GET") {
-		if (_infos[1] == "/")
-			f.open("www/index.html");
+	if ( _infos.size() >= 3 && _infos[ 0 ] == "GET" )
+	{
+		if ( _infos[ 1 ] == "/" )
+			f.open( "www/index.html" );
 		else
-			f.open(("www" + _infos[1]).c_str(), std::ios::in);
-		if (f) {
-			std::string page((std::istreambuf_iterator<char>(f)),
-					std::istreambuf_iterator<char>());
+			f.open( ( "www" + _infos[ 1 ] ).c_str(), std::ios::in );
+		if ( f )
+		{
+			std::string page( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
 			content = page;
 		}
 		f.close();
@@ -223,7 +225,7 @@ void    Socket::sendPage(void)
 	oss << "\r\n";
 	oss << content;
 
-	send(_fd, oss.str().c_str(), oss.str().size(), 0);
+	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
@@ -231,16 +233,16 @@ void    Socket::sendPage(void)
  *	Ferme le fd à l'aide la de fonction close
  *	@Infos: Doit être appelée avant la fermeture du programme
  */
-void Socket::close(void)
+void Socket::close( void )
 {
-	::close(_fd);
+	::close( _fd );
 }
 
 /******************************************************************************
  *			Operator overloading
  *****************************************************************************/
 
-Socket &Socket::operator=(const Socket &other)
+Socket &Socket::operator=( const Socket &other )
 {
 	_fd = other._fd;
 	_opt = other._opt;
@@ -249,17 +251,17 @@ Socket &Socket::operator=(const Socket &other)
 	return *this;
 }
 
-bool Socket::operator==(const int fd) const
+bool Socket::operator==( const int fd ) const
 {
 	return fd == _fd;
 }
 
-bool Socket::operator==(const Socket &other) const
+bool Socket::operator==( const Socket &other ) const
 {
 	return _fd == other._fd;
 }
 
-bool operator==(const int fd, const Socket &s)
+bool operator==( const int fd, const Socket &s )
 {
 	return fd == s.Fd();
 }

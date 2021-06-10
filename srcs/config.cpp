@@ -6,12 +6,13 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/08 16:19:34 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/09 10:35:06 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
-
+#include "parser.hpp"
+#include <string.h>
 /******************************************************************************
  *			Constructeurs/Destructeurs
  *****************************************************************************/
@@ -21,21 +22,21 @@ config::config()
 	std::fstream fs;
 	// std::map<std::string, std::string>	config;
 	// fs.open("config/nginx.conf",std::fstream::in);
-	fs.open("webserv.conf",std::fstream::in);
-	if (!fs.is_open()){
-		std::cerr << "Error : " << strerror(errno) << std::endl;
+	fs.open( "config.json", std::fstream::in );
+	if ( !fs.is_open() )
+	{
+		std::cerr << "Error : " << strerror( errno ) << std::endl;
 		throw ConfigFileException();
 	}
-	for (std::string line; std::getline(fs, line); ) {
-		std::cout << "line:" << line << std::endl;
-	}
+	Parser parser( fs );
+
 	fs.close();
 }
 
 /*
  *	Constructeur par copie
  */
-config::config(const config &other)
+config::config( const config &other )
 {
 	*this = other;
 }
@@ -43,22 +44,24 @@ config::config(const config &other)
 /*
  *	Construction par assignation
  */
-config	&config::operator=(const config &other)
+config &config::operator=( const config &other )
 {
 	this->server = other.getServer();
 	this->port = other.getPort();
-	return (*this);
+	return ( *this );
 }
 
-config::~config(void)
+config::~config( void )
 {
 }
 
-std::string	config::getServer(void) const{
+std::string config::getServer( void ) const
+{
 	return this->server;
 }
 
-int	config::getPort(void) const{
+int config::getPort( void ) const
+{
 	return this->port;
 }
 
