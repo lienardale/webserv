@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:35:08 by dess              #+#    #+#             */
-/*   Updated: 2021/05/03 19:12:51 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,11 @@ class Socket
 	void close( void );
 	Socket accept( void ) throw( Socket::SocketException );
 	std::string readContent( void ) throw( Socket::SocketException );
-	void sendPage( void );
+	void serverResponse( void );
+	void Get( void );
+	void Post( void );
+	void Delete( void );
+	void badRequest( void );
 
 	// Operator overloading
 	bool operator==( const int fd ) const;

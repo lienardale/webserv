@@ -20,7 +20,7 @@ class config
 		ConfigFileException &operator=( const ConfigFileException &rhs ) throw();
 		virtual const char *what() const throw()
 		{
-			return ( "Error: Invalid config file" );
+			return ( "Error: Invalid config file (webserv.conf)" );
 		}
 	};
 	config( void );

@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/06/08 14:30:17 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/08 16:53:35 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void http::Server::_handleRead(const int fd) throw(Socket::SocketException)
 void http::Server::_handleWrite(const int fd)
 {
 	// write to the client
-	_currentSock.sendPage();
+	_currentSock.serverResponse();
 	FD_CLR(fd, &_writeSet);
 	close(fd);
 }
