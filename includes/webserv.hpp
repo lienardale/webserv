@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/09 10:21:44 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/11 16:42:27 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define WEBSERV_HPP
 
 #include "config.hpp"
-#include "parser.hpp"
+#include "parsing/parser.hpp"
 #include "server.hpp"
 #include "socket.hpp"
 

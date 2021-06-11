@@ -6,7 +6,7 @@
 #    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/06/09 15:18:24 by dboyer           ###   ########.fr        #
+#    Updated: 2021/06/11 17:04:35 by dboyer           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,9 @@ MAIN				= 	./srcs/main.cpp
 SRCS    			=	socket\
 					server \
 					config\
-					parser
+					parsing/parser\
+					parsing/utils\
+					parsing/serverKeys
 
 INCLUDES			=	-I ./includes
 
