@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:35:08 by dess              #+#    #+#             */
-/*   Updated: 2021/06/09 16:11:34 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/14 17:45:46 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 #include <sstream>
 #include <fstream>
 #include <iterator>
+#include <cstdlib>
+#include <wait.h>
 
 #define MAX_CONN 3
 
@@ -55,6 +57,8 @@ class Socket
 	void		Post(void);
 	void		Delete(void);
 	void		badRequest(void);
+	std::string	Cgi(void);
+	bool		php_file(void);
 
 	// Operator overloading
 	bool operator==(const int fd) const;
