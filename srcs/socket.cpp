@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/08 19:37:28 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/09 18:02:41 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,21 +177,19 @@ Socket Socket::accept(void) throw(Socket::SocketException)
  *	Lis la totalité du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-std::string Socket::readContent(void) throw(Socket::SocketException)
+void	Socket::readContent(void) throw(Socket::SocketException)
 {
-	std::string result;
 	int ret = 0;
 	while ((ret = recv(_fd, _buffer, sizeof(_buffer), MSG_DONTWAIT) > 0))
-		result.append(_buffer);
+		_request.append(_buffer);
 	if (ret < 0)
 		throw(Socket::SocketException());
-	std::cout << "		-- CLIENT REQUEST --\n\n" << result << "\n" << std::endl;
+	std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
 	
 	//transform result in words table (_infos)
-	std::istringstream iss(result);
+	std::istringstream iss(_request);
 	_infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)),
 	std::istream_iterator<std::string>());
-	return result;
 }
 
 /*
@@ -213,13 +211,34 @@ void	Socket::badRequest(void)
 
 void	Socket::Delete(void)
 {
+	std::string 		content = "<h1>404 Not Found</h1>";
+	std::ostringstream	oss;
+	std::string			code = "404 Not Found";
 
+	if (!remove(("www" + _infos[1]).c_str()))
+	{
+		code = "200 OK";
+		content = "<h1>" + _infos[1] + " deleted</h1>";
+	}
+	else if (errno != 2)
+	{
+		code = "403 Forbidden";
+		content = "<h1>403 Forbidden</h1>";
+	}
+	oss << "HTTP/1.1 ";
+	oss << code;
+	oss << "\r\n";
+	oss << content;
+
+	send(_fd, oss.str().c_str(), oss.str().size(), 0);
+	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
-
 
 void	Socket::Post(void)
 {
-
+	std::cout << "REQUEST" << _request << std::endl;
+//	send(_fd, oss.str().c_str(), oss.str().size(), 0);
+//	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
 void	Socket::Get(void)
@@ -268,6 +287,7 @@ void    Socket::serverResponse(void)
 	}
 	else
 		badRequest();
+	_request.clear();
 }
 
 /*

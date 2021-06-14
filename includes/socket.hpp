@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:35:08 by dess              #+#    #+#             */
-/*   Updated: 2021/06/08 19:26:35 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/09 16:11:34 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class Socket
 	void listen(const int port) throw(Socket::SocketException);
 	void close(void);
 	Socket accept(void) throw(Socket::SocketException);
-	std::string readContent(void) throw(Socket::SocketException);
+	void		readContent(void) throw(Socket::SocketException);
 	void		serverResponse(void);
 	void		Get(void);
 	void		Post(void);
@@ -74,6 +74,7 @@ class Socket
 	socklen_t						_socklen;
 	char							_buffer[30];
 	std::vector<std::string>		_infos;
+	std::string						_request;
 };
 
 #endif
