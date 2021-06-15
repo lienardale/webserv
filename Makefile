@@ -6,7 +6,7 @@
 #    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/06/11 17:04:35 by dboyer           ###   ########.fr        #
+#    Updated: 2021/06/15 17:35:51 by dboyer           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,8 +22,11 @@ SRCS    			=	socket\
 					server \
 					config\
 					parsing/parser\
-					parsing/utils\
-					parsing/serverKeys
+					parsing/locationKeys\
+					parsing/dataStructure\
+					parsing/serverKeys\
+					parsing/parsingExceptions\
+					parsing/utils
 
 INCLUDES			=	-I ./includes
 

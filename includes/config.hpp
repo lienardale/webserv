@@ -1,5 +1,6 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
+#include "parsing/parser.hpp"
 #include <iostream>
 
 class config
@@ -35,6 +36,7 @@ class config
   private:
 	std::string server;
 	int port;
+	std::list< t_serverData > _content;
 };
 
 #endif

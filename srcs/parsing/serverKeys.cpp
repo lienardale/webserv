@@ -6,112 +6,73 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/11 16:57:12 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/15 19:20:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "parsing/dataStructure.hpp"
+#include "parsing/parsingExceptions.hpp"
 #include "webserv.hpp"
 
-void handleListen( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleListen( t_serverData &server, const std::string value ) throw( ParsingException )
 {
 	server.listen = strToInt( value );
 }
 
-void handleServerName( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleServerName( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	std::string tmp;
-
-	for ( std::string::const_iterator it = value.begin(); it != value.end(); it++ )
-	{
-		if ( *it != ',' )
-			tmp.push_back( *it );
-		else
-		{
-			server.server_name.push_back( tmp );
-			tmp.clear();
-		}
-	}
+	parseStringList< std::list< std::string > & >( server.server_name, value );
 }
 
-void handleAutoindex( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleAutoindex( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	std::string error_msg = "Value error: autoindex value should be 'on' or 'off' not " + value;
+	std::string error_msg = "Autoindex value should be 'on' or 'off' not " + value;
 
-	std::string::const_iterator begin = value.begin();
-	std::string::const_iterator end = value.end();
-	std::string clean_value = extract( "\"\"", begin, end );
-
-	if ( clean_value != "on" && clean_value != "off" )
-		throw Parser::ParserException( error_msg );
+	if ( value != "on" && value != "off" )
+		throw ValueError( error_msg );
 	server.autoindex = value == "on";
 }
 
-void handleRoot( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleRoot( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	std::string::const_iterator begin = value.begin();
-	std::string::const_iterator end = value.end();
-	server.root = extract( "\"\"", begin, end );
+	server.root = value;
 }
 
-void handleClientMaxBody( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleClientMaxBody( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	// std::string error_msg = "Value error: client_max_body_size must a number. Your actual value -> " + value;
 	server.client_max_body_size = strToInt( value );
 }
 
-void handleIndex( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleIndex( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	std::string tmp;
-
-	for ( std::string::const_iterator it = value.begin(); it != value.end(); it++ )
-	{
-		if ( *it != ',' )
-			tmp.push_back( *it );
-		else
-		{
-			server.index.push_back( tmp );
-			tmp.clear();
-		}
-	}
+	parseStringList< std::list< std::string > & >( server.index, value );
 }
 
-void handleErrorPage( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleErrorPage( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	std::string page_value, page;
 	std::string::const_iterator begin = value.begin();
 	std::string::const_iterator end = value.end();
+	std::string key, _value;
 
-	if ( *begin == '[' )
-		handleErrorPage( server, extract( "[]", begin, end ) );
-	else if ( *begin == '{' )
+	if ( begin != end )
 	{
-		page = extract( "{}", begin, end );
-		std::string::iterator page_begin = page.begin();
-		std::string::iterator page_end = page.end();
-		int key = strToInt( extract( "\"\"", page_begin, page_end ) );
-		if ( *page_begin == ':' )
+		key = extract< std::string::const_iterator & >( "\"\"", begin, end );
+		if ( *begin == ':' )
 		{
-			++page_begin;
-			page_value = extract( "\"\"", page_begin, page_end );
-			server.error_page[ key ] = page_value;
+			_value = extract< std::string::const_iterator & >( "\"\"", ++begin, end );
+			server.error_page[ strToInt( key ) ] = _value;
 			if ( *begin == ',' )
-				handleErrorPage( server, std::string( begin.base() ) );
+				handleErrorPage( server, ( ++begin ).base() );
 		}
-		else
-			throw Parser::ParserException( "Wrong error page format" );
 	}
 }
 
-/*void handleLocation( t_serverData &server, const std::string value ) throw( std::exception )
+static void handleLocation( t_serverData &server, const std::string value ) throw( std::exception )
 {
-	std::string page_value, page;
-	std::string::const_iterator begin = value.begin();
-	std::string::const_iterator end = value.end();
-}*/
+	server.locations = parseStructList< t_locationData, castLocation >( castLocationMap(), value );
+}
 
-/*typedef void ( *castFunction )( t_serverData &, const std::string );
-
-std::pair< std::string, castFunction > KEY_FUNCTIONS[] = {
+static std::pair< std::string, castServer > KEY_FUNCTIONS[] = {
 	std::make_pair( "listen", handleListen ),
 	std::make_pair( "server_name", handleServerName ),
 	std::make_pair( "error_page", handleErrorPage ),
@@ -120,4 +81,10 @@ std::pair< std::string, castFunction > KEY_FUNCTIONS[] = {
 	std::make_pair( "autoindex", handleAutoindex ),
 	std::make_pair( "index", handleIndex ),
 	std::make_pair( "location", handleLocation ),
-};*/
+};
+
+std::map< std::string, castServer > castServerMap( void )
+{
+	return std::map< std::string, castServer >( KEY_FUNCTIONS,
+												KEY_FUNCTIONS + sizeof( KEY_FUNCTIONS ) / sizeof( *KEY_FUNCTIONS ) );
+}

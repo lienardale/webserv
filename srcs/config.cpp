@@ -6,11 +6,15 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/11 17:05:45 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/15 19:22:27 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "parsing/parsingExceptions.hpp"
 #include "webserv.hpp"
+#include <cstdlib>
+#include <exception>
+
 /******************************************************************************
  *			Constructeurs/Destructeurs
  *****************************************************************************/
@@ -18,16 +22,26 @@
 config::config()
 {
 	std::fstream fs;
-	// std::map<std::string, std::string>	config;
-	// fs.open("config/nginx.conf",std::fstream::in);
 	fs.open( "config.json", std::fstream::in );
+
 	if ( !fs.is_open() )
 	{
 		std::cerr << "Error : " << strerror( errno ) << std::endl;
 		throw ConfigFileException();
 	}
-	Parser parser( fs );
-
+	try
+	{
+		_content = Parser( fs ).parse();
+		std::cout << _content << std::endl;
+		std::cout << GREEN << "Parsing [OK]" << std::endl;
+		std::cout << WHITE << std::endl;
+	}
+	catch ( std::exception &e )
+	{
+		std::cerr << RED << e.what() << std::endl;
+		std::cerr << "Parsing [KO]" << std::endl;
+		exit( EXIT_FAILURE );
+	}
 	fs.close();
 }
 
