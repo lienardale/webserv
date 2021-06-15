@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/16 10:35:08 by dess              #+#    #+#             */
 /*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/15 20:43:08 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define SOCKET_HPP
 
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <errno.h>
 #include <exception>
@@ -28,6 +29,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
+#include <wait.h>
 
 #define MAX_CONN 3
 
@@ -49,12 +51,14 @@ class Socket
 	void listen( const int port ) throw( Socket::SocketException );
 	void close( void );
 	Socket accept( void ) throw( Socket::SocketException );
-	std::string readContent( void ) throw( Socket::SocketException );
+	void readContent( void ) throw( Socket::SocketException );
 	void serverResponse( void );
 	void Get( void );
 	void Post( void );
 	void Delete( void );
 	void badRequest( void );
+	std::string Cgi( void );
+	bool php_file( void );
 
 	// Operator overloading
 	bool operator==( const int fd ) const;
@@ -74,6 +78,7 @@ class Socket
 	socklen_t _socklen;
 	char _buffer[ 30 ];
 	std::vector< std::string > _infos;
+	std::string _request;
 };
 
 #endif
