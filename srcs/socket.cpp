@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/09 18:02:41 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/14 20:02:24 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,19 +185,53 @@ void	Socket::readContent(void) throw(Socket::SocketException)
 	if (ret < 0)
 		throw(Socket::SocketException());
 	std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
-	
+
 	//transform result in words table (_infos)
 	std::istringstream iss(_request);
 	_infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)),
-	std::istream_iterator<std::string>());
+			std::istream_iterator<std::string>());
 }
 
 /*
  *	Send the requested page to the client 
  *
-*/
+ */
 
-void	Socket::badRequest(void)
+//check extension of a file (.php)
+bool		Socket::php_file()
+{
+	std::string	ext;
+
+	for (std::string::reverse_iterator it = _infos[1].rbegin() ; it != _infos[1].rend(); ++it) {
+		if (*it == '.')
+			break ;
+		ext += *it;
+	}
+	if (ext == "php")
+		return true;
+	return false;
+}
+
+std::string	Socket::Cgi()
+{
+	int		fd[2];
+	char 	content[100000];
+
+	pipe(fd);
+	if (fork() == 0)
+	{
+		dup2(fd[1], STDOUT_FILENO);
+		::close(fd[0]);
+		::close(fd[1]);
+		execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
+	}
+	::close(fd[1]);
+	read(fd[0], content, sizeof(content));
+	wait(NULL);
+	return (std::string(content));
+}
+
+void		Socket::badRequest(void)
 {
 	std::string content = "<h1>400 Bad Request</h1>";
 	std::ostringstream oss;
@@ -209,7 +243,7 @@ void	Socket::badRequest(void)
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void	Socket::Delete(void)
+void		Socket::Delete(void)
 {
 	std::string 		content = "<h1>404 Not Found</h1>";
 	std::ostringstream	oss;
@@ -234,14 +268,14 @@ void	Socket::Delete(void)
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void	Socket::Post(void)
+void		Socket::Post(void)
 {
 	std::cout << "REQUEST" << _request << std::endl;
-//	send(_fd, oss.str().c_str(), oss.str().size(), 0);
-//	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+	//	send(_fd, oss.str().c_str(), oss.str().size(), 0);
+	//	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void	Socket::Get(void)
+void		Socket::Get(void)
 {
 	std::string content = "<h1>404 Not Found</h1>";
 	std::string code = "200 OK";
@@ -252,7 +286,9 @@ void	Socket::Get(void)
 			f.open("www/index.html");
 		else
 			f.open(("www" + _infos[1]).c_str(), std::ios::in);
-		if (f) {
+		if (f && php_file())
+			content = Cgi();
+		else if (f) {
 			std::string page((std::istreambuf_iterator<char>(f)),
 					std::istreambuf_iterator<char>());
 			content = page;
@@ -267,14 +303,14 @@ void	Socket::Get(void)
 	oss << "\r\n";
 	oss << "Server: WEBSERV\r\n";
 	oss << "Content-Length: " << content.size() << "\r\n";
-	oss << "\r\n";
+	if (!php_file())
+		oss << "\r\n";
 	oss << content;
-
 	send(_fd, oss.str().c_str(), oss.str().size(), 0);
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void    Socket::serverResponse(void)
+void   		Socket::serverResponse(void)
 {
 	if (_infos.size() >= 3 && _infos[2] == "HTTP/1.1")
 	{

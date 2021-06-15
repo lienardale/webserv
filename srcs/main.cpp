@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/08 16:25:11 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/14 19:56:57 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void handleSignal(int sig)
 
 int main(void)
 {
+
 	// Signal handling
 	std::signal(SIGINT, handleSignal);
 	std::signal(SIGTERM, handleSignal);
