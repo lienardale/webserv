@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:48:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/16 11:56:29 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/16 15:13:49 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,13 @@ void extractStructList( std::list< std::string > &store, iterator begin, iterato
 		if ( ret.size() )
 		{
 			store.push_back( ret );
-			if ( begin != end && *begin == ',' )
+			if ( *begin == ',' && *( begin + 1 ) != '{' )
+			{
+				std::string error_msg = "expected value: { -- Actual value ";
+				error_msg.push_back( *( begin + 1 ) );
+				throw SyntaxError( error_msg );
+			}
+			else if ( *begin == ',' )
 				extractStructList< iterator >( store, ++begin, end );
 		}
 	}
@@ -97,7 +103,13 @@ void parseStringList( dataStore &store, const std::string value ) throw( Parsing
 	if ( begin != end )
 	{
 		store.push_back( extract< std::string::const_iterator & >( "\"\"", begin, end ) );
-		if ( *begin == ',' )
+		if ( *begin == ',' && *( begin + 1 ) != '"' )
+		{
+			std::string error_msg = "expected value: \" -- Actual value ";
+			error_msg.push_back( *( begin + 1 ) );
+			throw SyntaxError( error_msg );
+		}
+		else if ( *begin == ',' )
 			parseStringList< dataStore >( store, ( ++begin ).base() );
 	}
 }
@@ -111,7 +123,13 @@ void parseStructFields( dataStore &store, const std::map< std::string, conversio
 
 	if ( begin != end )
 	{
-		if ( *begin == ',' )
+		if ( *begin == ',' && *( begin + 1 ) != '"' && *( begin + 1 ) != '{' )
+		{
+			std::string error_msg = "expected value: \" or { -- Actual value ";
+			error_msg.push_back( *( begin + 1 ) );
+			throw SyntaxError( error_msg );
+		}
+		else if ( *begin == ',' )
 			parseStructFields< dataStore, conversion >( store, keyMap, ++begin, end );
 		else
 		{
@@ -125,8 +143,6 @@ void parseStructFields( dataStore &store, const std::map< std::string, conversio
 				value = extract< std::string::iterator & >( "[]", ++begin, end );
 			else if ( *( begin + 1 ) == '"' )
 				value = extract< std::string::iterator & >( "\"\"", ++begin, end );
-			else if ( *( begin + 1 ) == '\'' )
-				value = extract< std::string::iterator & >( "''", ++begin, end );
 			else if ( *begin == ':' )
 				value = extract< std::string::iterator & >( ":,", begin, end );
 			else

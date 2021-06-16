@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/15 19:02:14 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/16 15:25:38 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,13 @@ static void handleFastCGI( t_locationData &location, const std::string value ) t
 		{
 			_value = extract< std::string::const_iterator & >( "\"\"", ++begin, end );
 			location.fastcgi_param[ key ] = _value;
-			if ( *begin == ',' )
+			if ( *begin == ',' && *( begin + 1 ) != '"' )
+			{
+				std::string error_msg = "Expected value \" -- Actual value ";
+				error_msg.push_back( *( begin + 1 ) );
+				throw SyntaxError( error_msg );
+			}
+			else if ( *begin == ',' )
 				handleFastCGI( location, ( ++begin ).base() );
 		}
 	}

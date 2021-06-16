@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/15 19:20:26 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/16 15:24:34 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,13 @@ static void handleErrorPage( t_serverData &server, const std::string value ) thr
 		{
 			_value = extract< std::string::const_iterator & >( "\"\"", ++begin, end );
 			server.error_page[ strToInt( key ) ] = _value;
-			if ( *begin == ',' )
+			if ( *begin == ',' && *( begin + 1 ) != '"' )
+			{
+				std::string error_msg = "Expected value \" -- Actual value ";
+				error_msg.push_back( *( begin + 1 ) );
+				throw SyntaxError( error_msg );
+			}
+			else if ( *begin == ',' )
 				handleErrorPage( server, ( ++begin ).base() );
 		}
 	}
