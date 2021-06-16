@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:48:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/15 19:23:30 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/16 11:56:29 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,13 @@ std::string extract( const std::string envel, iterator begin, iterator end ) thr
 template < typename iterator >
 void extractStructList( std::list< std::string > &store, iterator begin, iterator end ) throw( ParsingException )
 {
-	if ( begin != end && *begin == '{' )
+	if ( begin != end )
 	{
 		std::string ret = extract< iterator >( "{}", begin, end );
 		if ( ret.size() )
 		{
 			store.push_back( ret );
-			if ( begin != end )
+			if ( begin != end && *begin == ',' )
 				extractStructList< iterator >( store, ++begin, end );
 		}
 	}
@@ -155,8 +155,10 @@ std::list< dataStore > parseStructList( std::map< std::string, conversion > conv
 {
 	std::list< dataStore > ret;
 	std::list< std::string > tmp;
+	std::string::const_iterator begin = value.begin();
+	std::string::const_iterator end = value.end();
 
-	extractStructList< std::string::const_iterator >( tmp, value.begin(), value.end() );
+	extractStructList< std::string::const_iterator & >( tmp, begin, end );
 
 	if ( tmp.size() == 0 )
 		throw ValueError( "Empty list of struct" );
