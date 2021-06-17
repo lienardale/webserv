@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/17 11:49:24 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/17 14:14:51 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,7 @@ std::string Socket::Cgi()
 	}
 	::close( fd[ 1 ] );
 	read( fd[ 0 ], content, sizeof( content ) );
+	::close( fd[ 1 ] );
 	wait( NULL );
 	return ( std::string( content ) );
 }
