@@ -1,27 +1,7 @@
 [
   {
     "arguments": [
-      "/usr/bin/clang-11",
-      "-Werror",
-      "-Wall",
-      "-Wextra",
-      "-std=c++98",
-      "-O3",
-      "-g",
-      "-I",
-      "./includes",
-      "-c",
-      "-o",
-      "srcs/test.o",
-      "srcs/test.cpp"
-    ],
-    "directory": "/home/dess/code/webserv",
-    "file": "/home/dess/code/webserv/srcs/test.cpp",
-    "output": "/home/dess/code/webserv/srcs/test.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang-11",
+      "/usr/bin/clang-12",
       "-Werror",
       "-Wall",
       "-Wextra",
@@ -35,13 +15,13 @@
       "srcs/socket.o",
       "srcs/socket.cpp"
     ],
-    "directory": "/home/dess/code/webserv",
-    "file": "/home/dess/code/webserv/srcs/socket.cpp",
-    "output": "/home/dess/code/webserv/srcs/socket.o"
+    "directory": "/home/dboyer/code/webserv",
+    "file": "/home/dboyer/code/webserv/srcs/socket.cpp",
+    "output": "/home/dboyer/code/webserv/srcs/socket.o"
   },
   {
     "arguments": [
-      "/usr/bin/clang-11",
+      "/usr/bin/clang-12",
       "-Werror",
       "-Wall",
       "-Wextra",
@@ -55,13 +35,13 @@
       "srcs/server.o",
       "srcs/server.cpp"
     ],
-    "directory": "/home/dess/code/webserv",
-    "file": "/home/dess/code/webserv/srcs/server.cpp",
-    "output": "/home/dess/code/webserv/srcs/server.o"
+    "directory": "/home/dboyer/code/webserv",
+    "file": "/home/dboyer/code/webserv/srcs/server.cpp",
+    "output": "/home/dboyer/code/webserv/srcs/server.o"
   },
   {
     "arguments": [
-      "/usr/bin/clang-11",
+      "/usr/bin/clang-12",
       "-Werror",
       "-Wall",
       "-Wextra",
@@ -72,11 +52,91 @@
       "./includes",
       "-c",
       "-o",
-      "srcs/main.o",
-      "srcs/main.cpp"
+      "srcs/config.o",
+      "srcs/config.cpp"
     ],
-    "directory": "/home/dess/code/webserv",
-    "file": "/home/dess/code/webserv/srcs/main.cpp",
-    "output": "/home/dess/code/webserv/srcs/main.o"
+    "directory": "/home/dboyer/code/webserv",
+    "file": "/home/dboyer/code/webserv/srcs/config.cpp",
+    "output": "/home/dboyer/code/webserv/srcs/config.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-12",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-std=c++98",
+      "-O3",
+      "-g",
+      "-I",
+      "./includes",
+      "-c",
+      "-o",
+      "srcs/parsing/parser.o",
+      "srcs/parsing/parser.cpp"
+    ],
+    "directory": "/home/dboyer/code/webserv",
+    "file": "/home/dboyer/code/webserv/srcs/parsing/parser.cpp",
+    "output": "/home/dboyer/code/webserv/srcs/parsing/parser.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-12",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-std=c++98",
+      "-O3",
+      "-g",
+      "-I",
+      "./includes",
+      "-c",
+      "-o",
+      "srcs/parsing/utils.o",
+      "srcs/parsing/utils.cpp"
+    ],
+    "directory": "/home/dboyer/code/webserv",
+    "file": "/home/dboyer/code/webserv/srcs/parsing/utils.cpp",
+    "output": "/home/dboyer/code/webserv/srcs/parsing/utils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-12",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-std=c++98",
+      "-O3",
+      "-g",
+      "-I",
+      "./includes",
+      "-c",
+      "-o",
+      "srcs/parsing/locationKeys.o",
+      "srcs/parsing/locationKeys.cpp"
+    ],
+    "directory": "/home/dboyer/code/webserv",
+    "file": "/home/dboyer/code/webserv/srcs/parsing/locationKeys.cpp",
+    "output": "/home/dboyer/code/webserv/srcs/parsing/locationKeys.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang-12",
+      "-Werror",
+      "-Wall",
+      "-Wextra",
+      "-std=c++98",
+      "-O3",
+      "-g",
+      "-I",
+      "./includes",
+      "-c",
+      "-o",
+      "srcs/parsing/dataStructure.o",
+      "srcs/parsing/dataStructure.cpp"
+    ],
+    "directory": "/home/dboyer/code/webserv",
+    "file": "/home/dboyer/code/webserv/srcs/parsing/dataStructure.cpp",
+    "output": "/home/dboyer/code/webserv/srcs/parsing/dataStructure.o"
   }
 ]
