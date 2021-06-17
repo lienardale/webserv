@@ -1,6 +1,6 @@
 # Dev files
-.clang-format
-*.json
+*.clang-format
+compile_commands.json
 
 # Dev folders
 .cache/
