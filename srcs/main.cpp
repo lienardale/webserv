@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/17 16:06:12 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/17 16:15:26 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,9 @@ int main(int ac, char **av)
 		std::cerr << "Too many arguments, max 1 (config file)." << std::endl;
 	}
 	try {
-		if (ac == 2)
-			config	conf(av[1]);
-		else if (ac == 1)
-			config	conf;
+		if (ac == 1)
+			av[1] = NULL;
+		config	conf(av[1]);
 
 		// Signal handling
 		std::signal(SIGINT, handleSignal);

@@ -53,7 +53,10 @@ config::config()
 config::config(char *path)
 {
 	std::fstream fs;
-	fs.open( path, std::fstream::in );
+	if (path)
+		fs.open( path, std::fstream::in );
+	else
+		fs.open( "config.json", std::fstream::in );
 
 	if ( !fs.is_open() )
 	{
@@ -178,6 +181,7 @@ void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingE
 	for (std::list< t_serverData >::iterator it = _content->begin() ; it != _content->end() ; it++){
 		config::serverData_check(*it);
 	}
+}
 
 std::list< t_serverData >	config::getContent() const
 {
