@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/11 16:42:27 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/17 17:38:59 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,14 @@
 #include <string.h>
 //#include <sys/socket.h>
 //#include <sys/stat.h>
-//#include <sys/types.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include <csignal>
 #include <map>
 #include <unistd.h>
 #include <vector>
+
+#define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 #endif

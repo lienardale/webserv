@@ -157,12 +157,22 @@ void	config::sD_index_check(std::string &index){
 }
 
 void	config::serverData_check(t_serverData &sD){
-
-	// sD.listen 
+	Socket sock;
+	try{
+		sock.listen(sD.listen);
+	}
+	catch (Socket::SocketException const &e){
+		throw ValueError::ParsingException("incorrect listen value : " +  SSTR(sD.listen) + " must be available port");
+	}
+	// if (::listen(sD.listen, MAX_CONN) == -1 && std::cerr << sD.listen << std::endl)
+	// 	throw ValueError::ParsingException("incorrect listen value");
 	// sD.root 
+	if (!opendir(sD.root.c_str()))
+		throw ValueError::ParsingException("incorrect root value : " + sD.root + ", must be existing dir");
 	if (sD.autoindex != true && sD.autoindex != false)
-		throw ValueError::ParsingException("incorrect autoindex");
-	// sD.client_max_body_size 
+		throw ValueError::ParsingException("incorrect autoindex : " + SSTR(sD.autoindex) + " must be on/off");
+	if (sD.client_max_body_size <= 0)
+		throw ValueError::ParsingException("incorrect client_max_body_size : " + SSTR(sD.client_max_body_size) + " must be > 0");
 	for ( std::list< std::string >::iterator it = sD.index.begin() ; it != sD.index.end() ; it++ ){
 		config::sD_index_check(*it);
 	}
