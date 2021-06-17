@@ -6,36 +6,44 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/14 19:56:57 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/17 15:54:07 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-http::Server SERVER(8000, 10);
+std::list< http::Server >	SERVERS;
 
 void handleSignal(int sig)
 {
 	(void)sig;
-	SERVER.stop();
+
+	for (std::list< http::Server >::iterator it=SERVERS.begin(); it != SERVERS.end(); ++it)
+		it->stop();
 }
 
 int main(void)
-{
-
-	// Signal handling
-	std::signal(SIGINT, handleSignal);
-	std::signal(SIGTERM, handleSignal);
-	std::signal(SIGQUIT, handleSignal);
-	
+{	
 	try {
 		config	conf;
-		//conf.ft_print_config();
-		SERVER.listen();
+
+		// Signal handling
+		std::signal(SIGINT, handleSignal);
+		std::signal(SIGTERM, handleSignal);
+		std::signal(SIGQUIT, handleSignal);
+		
+		// list dataserv
+		std::list< t_serverData >	data = conf.getContent();
+
+		//create servers and push them in list (SERVERS)
+		for (std::list< t_serverData >::iterator it=data.begin(); it != data.end(); ++it)	
+			SERVERS.push_back(http::Server(it->listen, it->client_max_body_size));
+		//iter through SERVERS and listen each of them
+		for (std::list< http::Server >::iterator it=SERVERS.begin(); it != SERVERS.end(); ++it)
+			it->listen();
 	}
 	catch (config::ConfigFileException const &e) {
 		std::cerr << e.what() << std::endl;
 	}
-
 	return 0;
 }

@@ -31,6 +31,7 @@ class config
 	config &operator=( const config &rhs );
 	std::string getServer( void ) const;
 	int getPort( void ) const;
+	std::list< t_serverData >	getContent() const;
 	// int ft_print_config(void);
 
   private:
