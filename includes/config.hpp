@@ -41,6 +41,7 @@ class config
 	void	lD_index_check(std::string &index);
 	void	fastcgi_param_check( std::pair< const std::string, std::string > &fcgi);
 	void	methods_check(std::string &method);
+	std::list< t_serverData >	getContent() const;
 	// int ft_print_config(void);
 
   private:

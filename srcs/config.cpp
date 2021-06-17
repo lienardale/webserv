@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/15 19:22:27 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/17 14:58:26 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,10 @@ void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingE
 	for (std::list< t_serverData >::iterator it = _content->begin() ; it != _content->end() ; it++){
 		config::serverData_check(*it);
 	}
+
+std::list< t_serverData >	config::getContent() const
+{
+	return this->_content;
 }
 
 /*

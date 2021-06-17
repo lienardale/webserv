@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
-/*   Updated: 2021/06/15 20:43:08 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/17 14:07:58 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,50 +35,50 @@
 
 class Socket
 {
-  public:
-	// Constructors
-	Socket( void ) throw( Socket::SocketException );
-	Socket( int fd, bool blocking ) throw( Socket::SocketException );
-	Socket( const Socket &other ) throw( Socket::SocketException );
-	Socket &operator=( const Socket &other );
-	~Socket( void );
+	public:
+		// Constructors
+		Socket( void ) throw( Socket::SocketException );
+		Socket( int fd, bool blocking ) throw( Socket::SocketException );
+		Socket( const Socket &other ) throw( Socket::SocketException );
+		Socket &operator=( const Socket &other );
+		~Socket( void );
 
-	// Getters
-	int Fd( void ) const;
-	struct sockaddr_in infos( void ) const;
+		// Getters
+		int Fd( void ) const;
+		struct sockaddr_in infos( void ) const;
 
-	// Member functions
-	void listen( const int port ) throw( Socket::SocketException );
-	void close( void );
-	Socket accept( void ) throw( Socket::SocketException );
-	void readContent( void ) throw( Socket::SocketException );
-	void serverResponse( void );
-	void Get( void );
-	void Post( void );
-	void Delete( void );
-	void badRequest( void );
-	std::string Cgi( void );
-	bool php_file( void );
+		// Member functions
+		void listen( const int port ) throw( Socket::SocketException );
+		void close( void );
+		Socket accept( void ) throw( Socket::SocketException );
+		void readContent( void ) throw( Socket::SocketException );
+		void serverResponse( void );
+		void Get( void );
+		void Post( void );
+		void Delete( void );
+		void badRequest( void );
+		std::string Cgi( void );
+		bool php_file( void );
 
-	// Operator overloading
-	bool operator==( const int fd ) const;
-	bool operator==( const Socket &other ) const;
+		// Operator overloading
+		bool operator==( const int fd ) const;
+		bool operator==( const Socket &other ) const;
 
-	// Member exceptions
-	class SocketException : public std::exception
+		// Member exceptions
+		class SocketException : public std::exception
 	{
-	  public:
-		const char *what( void ) const throw();
+		public:
+			const char *what( void ) const throw();
 	};
 
-  private:
-	int _fd;
-	int _opt;
-	struct sockaddr_in _address;
-	socklen_t _socklen;
-	char _buffer[ 30 ];
-	std::vector< std::string > _infos;
-	std::string _request;
+	private:
+		int _fd;
+		int _opt;
+		struct sockaddr_in _address;
+		socklen_t _socklen;
+		char _buffer[ 30 ];
+		std::vector< std::string > _infos;
+		std::string _request;
 };
 
 #endif
