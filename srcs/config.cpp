@@ -128,14 +128,22 @@ void	config::lD_index_check(std::string &index){
 
 void	config::locationData_check(t_locationData &lD){
 	// lD.path 
+
+	// checking index
 	for ( std::list< std::string >::iterator it = lD.index.begin() ; it != lD.index.end() ; it++ ){
 		config::lD_index_check(*it);
 	}
+
+	// checking fast_cgi_param
 	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin() ; it != lD.fastcgi_param.end() ; it++ ){
 		config::fastcgi_param_check(*it);
 	}
+
+	// checking autoindex
 	if (lD.autoindex != true && lD.autoindex != false)
 		throw ValueError::ParsingException("incorrect autoindex");
+
+	// checking methods
 	for ( std::list< std::string >::iterator it = lD.methods.begin() ; it != lD.methods.end() ; it++ ){
 		config::methods_check(*it);
 	}
