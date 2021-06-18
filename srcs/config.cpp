@@ -179,7 +179,7 @@ void	config::serverData_check(t_serverData &sD){
 	for ( std::list< std::string >::iterator it = sD.server_name.begin() ; it != sD.server_name.end() ; it++ ){
 		config::server_name_check(*it);
 	}
-	for ( std::map< const int, std::string >::iterator it = sD.error_page.begin() ; it != sD.error_page.end() ; it++ ){
+	for ( std::map< int, std::string >::iterator it = sD.error_page.begin() ; it != sD.error_page.end() ; it++ ){
 		config::error_page_check(*it);
 	}
 	for ( std::list< t_locationData >::iterator it = sD.locations.begin() ; it != sD.locations.end() ; it++ ){

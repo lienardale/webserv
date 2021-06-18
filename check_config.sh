@@ -10,3 +10,5 @@ do
 	./../webserv $i.json 2>> ../config_errors.log
 	((i++))
 done
+
+cat ../config_errors.log
