@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/18 12:00:04 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/18 12:15:17 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int main( void )
 
 		// list dataserv
 		SERVER.init( conf.getContent(), 1 );
+		SERVER.listen();
 	}
 	catch ( config::ConfigFileException const &e )
 	{

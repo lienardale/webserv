@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/06/18 11:57:57 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/18 12:18:08 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,8 @@ void http::Server::_handleRead( const int fd ) throw( Socket::SocketException )
 	if ( found != _serverSet.end() )
 	{
 		// this is a new connection
-		found->second.first.accept();
-		FD_SET( found->second.first.Fd(), &_readSet );
+		Socket s = found->second.first.accept();
+		FD_SET( s.Fd(), &_readSet );
 	}
 	else
 	{
