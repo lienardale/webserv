@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/06/18 12:18:08 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/18 18:13:08 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,11 +110,12 @@ void http::Server::_handleRead( const int fd ) throw( Socket::SocketException )
 		// this is a new connection
 		Socket s = found->second.first.accept();
 		FD_SET( s.Fd(), &_readSet );
+		_currentData = found->second.second;
 	}
 	else
 	{
 		// read from the client
-		_currentSock = Socket( fd, true );
+		_currentSock = Socket( fd, true);
 		_currentSock.readContent();
 
 		FD_CLR( fd, &_readSet );
@@ -129,7 +130,7 @@ void http::Server::_handleRead( const int fd ) throw( Socket::SocketException )
 void http::Server::_handleWrite( const int fd )
 {
 	// write to the client
-	_currentSock.serverResponse();
+	_currentSock.serverResponse(_currentData);
 	FD_CLR( fd, &_writeSet );
 	close( fd );
 }

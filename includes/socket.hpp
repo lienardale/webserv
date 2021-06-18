@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
-/*   Updated: 2021/06/17 14:07:58 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/18 18:14:39 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <vector>
 #include <wait.h>
+#include "parsing/dataStructure.hpp"
 
 #define MAX_CONN 3
 
@@ -52,7 +53,7 @@ class Socket
 		void close( void );
 		Socket accept( void ) throw( Socket::SocketException );
 		void readContent( void ) throw( Socket::SocketException );
-		void serverResponse( void );
+		void serverResponse( t_serverData data);
 		void Get( void );
 		void Post( void );
 		void Delete( void );

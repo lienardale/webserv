@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/06/18 11:55:40 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/18 17:32:24 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Server
 	std::list< t_serverData > _configs;
 	std::map< int, std::pair< Socket, t_serverData > > _serverSet;
 	Socket _currentSock;
+	t_serverData _currentData;
 	fd_set _readSet, _writeSet, _exceptSet;
 	bool _run;
 
