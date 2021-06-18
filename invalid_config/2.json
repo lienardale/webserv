@@ -10,7 +10,7 @@
             "404": "/chemin/random.html"
         },
         "client_max_body_size": 0,
-        "root": "../www",
+        "root": "www",
         "autoindex": "on",
         "index": [
             "index.php",

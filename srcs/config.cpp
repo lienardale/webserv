@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/17 14:58:26 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/18 11:48:24 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ config::config()
 	{
 		_content = Parser( fs ).parse();
 		config_check(&_content);
-		std::cout << _content << std::endl;
+		// std::cout << _content << std::endl;
 		std::cout << GREEN << "Parsing [OK]" << std::endl;
 		std::cout << WHITE << std::endl;
 	}
@@ -67,7 +67,7 @@ config::config(char *path)
 	{
 		_content = Parser( fs ).parse();
 		config_check(&_content);
-		std::cout << _content << std::endl;
+		// std::cout << _content << std::endl;
 		std::cout << GREEN << "Parsing [OK]" << std::endl;
 		std::cout << WHITE << std::endl;
 	}
@@ -145,6 +145,12 @@ void	config::locationData_check(t_locationData &lD){
 void	config::error_page_check(std::pair< const int, std::string > &error_page){
 	// error_page.first 
 	// error_page.second 
+	std::fstream fs;
+	fs.open ( error_page.second, std::fstream::in );
+	if (!fs.is_open())
+		throw ValueError::ParsingException("incorrect error_page path : " + error_page.second + ", must be existing file");
+	else
+		fs.close();
 	(void)error_page;
 }
 
@@ -152,8 +158,20 @@ void	config::server_name_check(std::string &server_name){
 	(void) server_name;
 }
 
-void	config::sD_index_check(std::string &index){
-	(void) index;
+int		config::sD_index_check(const char *dir, std::string &index){
+	// std::cout << dir << index << std::endl;
+	// (void) index;
+	DIR *dirp;
+	struct dirent *tmp;
+	dirp = opendir(dir);
+	while ((tmp = readdir(dirp)) != NULL) {
+		if (tmp->d_namlen == index.size() && strcmp(tmp->d_name, index.c_str()) == 0) {
+			(void)closedir(dirp);
+			return (1);
+		}
+	}
+	(void)closedir(dirp);
+	return 0;
 }
 
 void	config::serverData_check(t_serverData &sD){
@@ -167,15 +185,22 @@ void	config::serverData_check(t_serverData &sD){
 	// if (::listen(sD.listen, MAX_CONN) == -1 && std::cerr << sD.listen << std::endl)
 	// 	throw ValueError::ParsingException("incorrect listen value");
 	// sD.root 
-	if (!opendir(sD.root.c_str()))
+	DIR *dirp;
+	if ((dirp = opendir(sD.root.c_str())) == NULL /*chdir(sD.root.c_str()) == -1*/)
 		throw ValueError::ParsingException("incorrect root value : " + sD.root + ", must be existing dir");
+	else
+		closedir(dirp);
+	
 	if (sD.autoindex != true && sD.autoindex != false)
 		throw ValueError::ParsingException("incorrect autoindex : " + SSTR(sD.autoindex) + " must be on/off");
 	if (sD.client_max_body_size <= 0)
 		throw ValueError::ParsingException("incorrect client_max_body_size : " + SSTR(sD.client_max_body_size) + " must be > 0");
+	int	check = 0;
 	for ( std::list< std::string >::iterator it = sD.index.begin() ; it != sD.index.end() ; it++ ){
-		config::sD_index_check(*it);
+		check += config::sD_index_check(sD.root.c_str(), *it);
 	}
+	if (!check)
+		throw ValueError::ParsingException("incorrect index value : no corresponding file found");
 	for ( std::list< std::string >::iterator it = sD.server_name.begin() ; it != sD.server_name.end() ; it++ ){
 		config::server_name_check(*it);
 	}
@@ -188,7 +213,20 @@ void	config::serverData_check(t_serverData &sD){
 }
 
 void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingException ){
+	// std::list< t_serverData >::iterator it_listen;
 	for (std::list< t_serverData >::iterator it = _content->begin() ; it != _content->end() ; it++){
+		/*
+			Not an error, several servers can listen on the same port
+			http://nginx.org/en/docs/http/request_processing.html
+		*/
+		// it_listen = _content->begin();
+		// while (it_listen != _content->end()){
+		// 	// std::cout << SSTR(it_listen->listen) << std::endl;
+		// 	if (it != it_listen && it_listen->listen == it->listen){
+		// 		throw ValueError::ParsingException("two servers have the save listen value : " + SSTR(it->listen));
+		// 	}
+		// 	it_listen++;
+		// }
 		config::serverData_check(*it);
 	}
 }
