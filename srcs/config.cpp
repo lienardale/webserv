@@ -154,7 +154,7 @@ void	config::error_page_check(std::pair< const int, std::string > &error_page){
 	// error_page.first 
 	// error_page.second 
 	std::fstream fs;
-	fs.open ( error_page.second, std::fstream::in );
+	fs.open ( error_page.second.c_str(), std::fstream::in );
 	if (!fs.is_open())
 		throw ValueError::ParsingException("incorrect error_page path : " + error_page.second + ", must be existing file");
 	else
@@ -173,7 +173,7 @@ int		config::sD_index_check(const char *dir, std::string &index){
 	struct dirent *tmp;
 	dirp = opendir(dir);
 	while ((tmp = readdir(dirp)) != NULL) {
-		if (tmp->d_namlen == index.size() && strcmp(tmp->d_name, index.c_str()) == 0) {
+		if (strlen(tmp->d_name) /*d_namlen*/ == index.size() && strcmp(tmp->d_name, index.c_str()) == 0) {
 			(void)closedir(dirp);
 			return (1);
 		}
