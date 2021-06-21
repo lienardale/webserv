@@ -38,7 +38,7 @@ class config
 	void	server_name_check(std::string &server_name);
 	void	error_page_check(std::pair< const int, std::string > &error_page);
 	void	locationData_check(t_locationData &lD);
-	void	lD_index_check(std::string &index);
+	int		lD_index_check(const char *dir, std::string &index);
 	void	fastcgi_param_check( std::pair< const std::string, std::string > &fcgi);
 	void	methods_check(std::string &method);
 	std::list< t_serverData >	getContent() const;

@@ -8,3 +8,11 @@ Parsing [KO]
 Parsing [KO]
 [31mincorrect index value : no corresponding file found
 Parsing [KO]
+[31mincorrect root value : directory, must be existing dir
+Parsing [KO]
+[31mtwo servers have the save name value : localhost
+Parsing [KO]
+[31mincorrect index value : no corresponding file found
+Parsing [KO]
+[31mincorrect method value : GETE, must be GET, POST, and/or DELETE
+Parsing [KO]

@@ -68,7 +68,7 @@
                 },
                 "index": [
                     "index.php",
-                    "index.html"
+                    "index.js"
                 ],
                 "path": "/test",
                 "root": "./www/"

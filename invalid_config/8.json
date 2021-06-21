@@ -19,7 +19,7 @@
         "location": [
             {
                 "methods": [
-                    "GET",
+                    "GETE",
                     "POST",
                     "DELETE"
                 ],

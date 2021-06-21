@@ -113,6 +113,9 @@ int config::getPort( void ) const
 }
 
 void	config::methods_check(std::string &method){
+	// std::cout << method << std::endl;
+	if (method.compare(SSTR("GET")) && method.compare(SSTR("POST")) && method.compare(SSTR("DELETE")))
+		throw ValueError::ParsingException("incorrect method value : " + method + ", must be GET, POST, and/or DELETE");
 	(void) method;
 }
 
@@ -122,17 +125,37 @@ void	config::fastcgi_param_check( std::pair< const std::string, std::string > &f
 	(void) fcgi;
 }
 
-void	config::lD_index_check(std::string &index){
+int		config::lD_index_check(const char *dir, std::string &index){
+	DIR *dirp;
+	struct dirent *tmp;
+	dirp = opendir(dir);
+	while ((tmp = readdir(dirp)) != NULL) {
+		if (strlen(tmp->d_name) /*d_namlen*/ == index.size() && strcmp(tmp->d_name, index.c_str()) == 0) {
+			(void)closedir(dirp);
+			return (1);
+		}
+	}
+	return 0;
 	(void) index;
 }
 
 void	config::locationData_check(t_locationData &lD){
-	// lD.path 
+	// lD.path -> not checking validity
+
+	// lD.root
+	DIR *dirp;
+	if ((dirp = opendir(lD.root.c_str())) == NULL /*chdir(sD.root.c_str()) == -1*/)
+		throw ValueError::ParsingException("incorrect root value : " + lD.root + ", must be existing dir");
+	else
+		closedir(dirp);
 
 	// checking index
+	int	check = 0;
 	for ( std::list< std::string >::iterator it = lD.index.begin() ; it != lD.index.end() ; it++ ){
-		config::lD_index_check(*it);
+		check += config::lD_index_check(lD.root.c_str(), *it);
 	}
+	if (!check)
+		throw ValueError::ParsingException("incorrect index value : no corresponding file found");
 
 	// checking fast_cgi_param
 	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin() ; it != lD.fastcgi_param.end() ; it++ ){
@@ -148,7 +171,6 @@ void	config::locationData_check(t_locationData &lD){
 	for ( std::list< std::string >::iterator it = lD.methods.begin() ; it != lD.methods.end() ; it++ ){
 		config::methods_check(*it);
 	}
-	// lD.root
 }
 
 void	config::error_page_check(std::pair< const int, std::string > &error_page){
@@ -160,10 +182,6 @@ void	config::error_page_check(std::pair< const int, std::string > &error_page){
 		throw ValueError::ParsingException("incorrect error_page path : " + error_page.second + ", must be existing file");
 	else
 		fs.close();
-}
-
-void	config::server_name_check(std::string &server_name){
-	(void) server_name;
 }
 
 int		config::sD_index_check(const char *dir, std::string &index){
@@ -210,21 +228,7 @@ void	config::serverData_check(t_serverData &sD){
 	if (!check)
 		throw ValueError::ParsingException("incorrect index value : no corresponding file found");
 	
-	// std::list< std::string >::iterator it_name;
-	// for ( std::list< std::string >::iterator it = sD.server_name.begin() ; it != sD.server_name.end() ; it++ ){
-	// 	// check if two don't have the same ?
-	// 	std::cout << *it << std::endl;
-	// 	it_name = sD.server_name.begin();
-	// 	while (it_name != sD.server_name.end()){
-	// 		// std::cout << SSTR(it_name->listen) << std::endl;
-	// 		if (it != it_name && *it == *it_name){
-	// 			throw ValueError::ParsingException("two servers have the save name value : " + *it_name);
-	// 		}
-	// 		it_name++;
-	// 	}
-	// 	// config::server_name_check(*it);
-	// }
-	// std::cout << "out of for"<< std::endl;
+
 	for ( std::map< int, std::string >::iterator it = sD.error_page.begin() ; it != sD.error_page.end() ; it++ ){
 		config::error_page_check(*it);
 	}
@@ -251,6 +255,7 @@ void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingE
 		// 	it_listen++;
 		// }
 
+// server_name check
 		it_name = it->server_name.begin();
 		while (it_name != it->server_name.end()){
 			if (map_name.find(*it_name) != map_name.end()){
@@ -259,15 +264,8 @@ void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingE
 			else {
 				map_name[*it_name] = true;
 			}
-
-			// std::cout << SSTR(it_name->listen) << std::endl;
-			// if (it != it_name && it_name->server_name == it->server_name){
-			// 	throw ValueError::ParsingException("two servers have the save name value : " + it->server_name);
-			// }
 			it_name++;
 		}
-
-		// it->server_name
 
 		config::serverData_check(*it);
 	}
