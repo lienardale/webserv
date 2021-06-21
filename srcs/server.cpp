@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/06/18 12:18:08 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/21 18:15:17 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void http::Server::listen( void )
 		for ( std::list< t_serverData >::iterator it = _configs.begin(); it != _configs.end(); it++ )
 		{
 			Socket s;
-			s.listen( it->listen );
+			s.listen( it->listen, it->addr_ip );
 			_serverSet[ s.Fd() ] = std::make_pair( s, *it );
 			FD_SET( s.Fd(), &_readSet );
 		}

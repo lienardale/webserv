@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 16:14:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/15 18:28:57 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/21 18:27:59 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ std::ostream &operator<<( std::ostream &os, const t_locationData &l )
 std::ostream &operator<<( std::ostream &os, const t_serverData &l )
 {
 	os << "{ " << std::endl << "\t listen: " << l.listen << std::endl;
+	os << "\t addr_ip: " << l.addr_ip << std::endl;
 	os << "\t server_name: " << l.server_name << std::endl;
 	os << "\t root: " << l.root << std::endl;
 	os << "\t index: " << l.index << std::endl;

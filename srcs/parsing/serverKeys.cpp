@@ -6,17 +6,30 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/16 15:24:34 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/21 18:29:59 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing/dataStructure.hpp"
 #include "parsing/parsingExceptions.hpp"
+#include "parsing/utils.hpp"
 #include "webserv.hpp"
+#include <cstddef>
+#include <netinet/in.h>
 
 static void handleListen( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	server.listen = strToInt( value );
+	std::size_t found = value.find( ":" );
+	if ( found != std::string::npos )
+	{
+		server.addr_ip = value.substr( 0, found );
+		server.listen = strToInt( value.substr( found + 1, value.size() - found ) );
+	}
+	else
+	{
+		server.listen = strToInt( value );
+		server.addr_ip = "0.0.0.0";
+	}
 }
 
 static void handleServerName( t_serverData &server, const std::string value ) throw( ParsingException )

@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/18 11:32:01 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/21 18:05:30 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@
  * @Parametres: Le nombre de ports et un pointeur sur une structure sockaddr_in
  * @Infos: La structure sockaddr_in est dans le package <netinet/in.h>
  */
-static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr )
+static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr, const char *addr_ip )
 {
 	infosPtr->sin_family = AF_INET;
 	infosPtr->sin_port = htons( port );
-	infosPtr->sin_addr.s_addr = htonl( INADDR_ANY );
+	infosPtr->sin_addr.s_addr = htonl( inet_addr( addr_ip ) );
 }
 
 /*
@@ -149,9 +149,9 @@ struct sockaddr_in Socket::infos() const
  *	@Parametres: Le port
  *	@Infos: Lève une SocketException si erreur
  */
-void Socket::listen( const int port ) throw( Socket::SocketException )
+void Socket::listen( const int port, const std::string addr ) throw( Socket::SocketException )
 {
-	_initAddress( port, &_address );
+	_initAddress( port, &_address, addr.c_str() );
 	_initOptions( _fd, &_opt );
 	_initBind( _fd, &_address, _socklen );
 	_initBlocking( _fd );
