@@ -209,10 +209,22 @@ void	config::serverData_check(t_serverData &sD){
 	}
 	if (!check)
 		throw ValueError::ParsingException("incorrect index value : no corresponding file found");
-	for ( std::list< std::string >::iterator it = sD.server_name.begin() ; it != sD.server_name.end() ; it++ ){
-		// check if two don't have the same ?
-		config::server_name_check(*it);
-	}
+	
+	// std::list< std::string >::iterator it_name;
+	// for ( std::list< std::string >::iterator it = sD.server_name.begin() ; it != sD.server_name.end() ; it++ ){
+	// 	// check if two don't have the same ?
+	// 	std::cout << *it << std::endl;
+	// 	it_name = sD.server_name.begin();
+	// 	while (it_name != sD.server_name.end()){
+	// 		// std::cout << SSTR(it_name->listen) << std::endl;
+	// 		if (it != it_name && *it == *it_name){
+	// 			throw ValueError::ParsingException("two servers have the save name value : " + *it_name);
+	// 		}
+	// 		it_name++;
+	// 	}
+	// 	// config::server_name_check(*it);
+	// }
+	// std::cout << "out of for"<< std::endl;
 	for ( std::map< int, std::string >::iterator it = sD.error_page.begin() ; it != sD.error_page.end() ; it++ ){
 		config::error_page_check(*it);
 	}
@@ -223,6 +235,8 @@ void	config::serverData_check(t_serverData &sD){
 
 void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingException ){
 	// std::list< t_serverData >::iterator it_listen;
+	std::list< std::string >::iterator it_name;
+	std::map< std::string, bool > map_name;
 	for (std::list< t_serverData >::iterator it = _content->begin() ; it != _content->end() ; it++){
 		/*
 			Not an error, several servers can listen on the same port
@@ -236,6 +250,25 @@ void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingE
 		// 	}
 		// 	it_listen++;
 		// }
+
+		it_name = it->server_name.begin();
+		while (it_name != it->server_name.end()){
+			if (map_name.find(*it_name) != map_name.end()){
+				throw ValueError::ParsingException("two servers have the save name value : " + *it_name);
+			}
+			else {
+				map_name[*it_name] = true;
+			}
+
+			// std::cout << SSTR(it_name->listen) << std::endl;
+			// if (it != it_name && it_name->server_name == it->server_name){
+			// 	throw ValueError::ParsingException("two servers have the save name value : " + it->server_name);
+			// }
+			it_name++;
+		}
+
+		// it->server_name
+
 		config::serverData_check(*it);
 	}
 }
