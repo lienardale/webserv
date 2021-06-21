@@ -113,15 +113,18 @@ int config::getPort( void ) const
 }
 
 void	config::methods_check(std::string &method){
-	// std::cout << method << std::endl;
 	if (method.compare(SSTR("GET")) && method.compare(SSTR("POST")) && method.compare(SSTR("DELETE")))
 		throw ValueError::ParsingException("incorrect method value : " + method + ", must be GET, POST, and/or DELETE");
-	(void) method;
 }
 
 void	config::fastcgi_param_check( std::pair< const std::string, std::string > &fcgi){
-	// fcgi.first
-	// fcgi.second
+	std::cout << "fcgi.first : " << fcgi.first << std::endl;
+	std::cout << "fcgi.second : " << fcgi.second << std::endl;
+
+	// first				| second										| check
+	// fastcgi_index		| index.php										| file exists
+	// fastcgi_param		| SCRIPT_FILENAME  /scripts$fastcgi_script_name	| ?
+	// fastcgi_pass			| 127.0.0.1:9000								| listen
 	(void) fcgi;
 }
 
@@ -144,7 +147,7 @@ void	config::locationData_check(t_locationData &lD){
 
 	// lD.root
 	DIR *dirp;
-	if ((dirp = opendir(lD.root.c_str())) == NULL /*chdir(sD.root.c_str()) == -1*/)
+	if ( (dirp = opendir(lD.root.c_str())) == NULL )
 		throw ValueError::ParsingException("incorrect root value : " + lD.root + ", must be existing dir");
 	else
 		closedir(dirp);
@@ -159,7 +162,6 @@ void	config::locationData_check(t_locationData &lD){
 
 	// checking fast_cgi_param
 	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin() ; it != lD.fastcgi_param.end() ; it++ ){
-		// check if binary present ?
 		config::fastcgi_param_check(*it);
 	}
 
@@ -174,19 +176,16 @@ void	config::locationData_check(t_locationData &lD){
 }
 
 void	config::error_page_check(std::pair< const int, std::string > &error_page){
-	// error_page.first 
-	// error_page.second 
 	std::fstream fs;
 	fs.open ( error_page.second.c_str(), std::fstream::in );
 	if (!fs.is_open())
 		throw ValueError::ParsingException("incorrect error_page path : " + error_page.second + ", must be existing file");
 	else
 		fs.close();
+	// add a check for error_page.first ?
 }
 
 int		config::sD_index_check(const char *dir, std::string &index){
-	// std::cout << dir << index << std::endl;
-	// (void) index;
 	DIR *dirp;
 	struct dirent *tmp;
 	dirp = opendir(dir);
@@ -208,52 +207,42 @@ void	config::serverData_check(t_serverData &sD){
 	catch (Socket::SocketException const &e){
 		throw ValueError::ParsingException("incorrect listen value : " +  SSTR(sD.listen) + " must be available port");
 	}
-	// if (::listen(sD.listen, MAX_CONN) == -1 && std::cerr << sD.listen << std::endl)
-	// 	throw ValueError::ParsingException("incorrect listen value");
-	// sD.root 
 	DIR *dirp;
-	if ((dirp = opendir(sD.root.c_str())) == NULL /*chdir(sD.root.c_str()) == -1*/)
+	if ((dirp = opendir(sD.root.c_str())) == NULL)
 		throw ValueError::ParsingException("incorrect root value : " + sD.root + ", must be existing dir");
 	else
 		closedir(dirp);
 	
 	if (sD.autoindex != true && sD.autoindex != false)
 		throw ValueError::ParsingException("incorrect autoindex : " + SSTR(sD.autoindex) + " must be on/off");
+
 	if (sD.client_max_body_size <= 0)
 		throw ValueError::ParsingException("incorrect client_max_body_size : " + SSTR(sD.client_max_body_size) + " must be > 0");
+
 	int	check = 0;
 	for ( std::list< std::string >::iterator it = sD.index.begin() ; it != sD.index.end() ; it++ ){
 		check += config::sD_index_check(sD.root.c_str(), *it);
 	}
 	if (!check)
 		throw ValueError::ParsingException("incorrect index value : no corresponding file found");
-	
 
 	for ( std::map< int, std::string >::iterator it = sD.error_page.begin() ; it != sD.error_page.end() ; it++ ){
 		config::error_page_check(*it);
 	}
+
 	for ( std::list< t_locationData >::iterator it = sD.locations.begin() ; it != sD.locations.end() ; it++ ){
 		config::locationData_check(*it);
 	}
 }
 
 void	config::config_check( std::list< t_serverData > *_content ) throw( ParsingException ){
-	// std::list< t_serverData >::iterator it_listen;
 	std::list< std::string >::iterator it_name;
 	std::map< std::string, bool > map_name;
 	for (std::list< t_serverData >::iterator it = _content->begin() ; it != _content->end() ; it++){
 		/*
-			Not an error, several servers can listen on the same port
+			Several servers can listen on the same port
 			http://nginx.org/en/docs/http/request_processing.html
 		*/
-		// it_listen = _content->begin();
-		// while (it_listen != _content->end()){
-		// 	// std::cout << SSTR(it_listen->listen) << std::endl;
-		// 	if (it != it_listen && it_listen->listen == it->listen){
-		// 		throw ValueError::ParsingException("two servers have the save listen value : " + SSTR(it->listen));
-		// 	}
-		// 	it_listen++;
-		// }
 
 // server_name check
 		it_name = it->server_name.begin();
