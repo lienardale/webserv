@@ -136,6 +136,7 @@ void	config::locationData_check(t_locationData &lD){
 
 	// checking fast_cgi_param
 	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin() ; it != lD.fastcgi_param.end() ; it++ ){
+		// check if binary present ?
 		config::fastcgi_param_check(*it);
 	}
 
@@ -159,7 +160,6 @@ void	config::error_page_check(std::pair< const int, std::string > &error_page){
 		throw ValueError::ParsingException("incorrect error_page path : " + error_page.second + ", must be existing file");
 	else
 		fs.close();
-	(void)error_page;
 }
 
 void	config::server_name_check(std::string &server_name){
@@ -210,6 +210,7 @@ void	config::serverData_check(t_serverData &sD){
 	if (!check)
 		throw ValueError::ParsingException("incorrect index value : no corresponding file found");
 	for ( std::list< std::string >::iterator it = sD.server_name.begin() ; it != sD.server_name.end() ; it++ ){
+		// check if two don't have the same ?
 		config::server_name_check(*it);
 	}
 	for ( std::map< int, std::string >::iterator it = sD.error_page.begin() ; it != sD.error_page.end() ; it++ ){
