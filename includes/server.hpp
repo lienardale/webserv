@@ -6,44 +6,49 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/05/05 12:16:22 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/18 17:32:24 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "parsing/dataStructure.hpp"
 #include "socket.hpp"
-#include <inttypes.h>
-#include <sys/time.h>
 #include <cstdlib>
+#include <inttypes.h>
 #include <sys/select.h>
+#include <sys/time.h>
 #include <unistd.h>
+#include <utility>
 
 namespace http
 {
-	class Server
-	{
-		public:
-			Server(uint32_t port, uint32_t timeout);
-			Server(const Server &other);
-			Server &operator=(const Server &other);
-			~Server(void);
-			void listen(void);
-			void stop(void);
+class Server
+{
+  public:
+	Server( void );
+	Server( const Server &other );
+	Server &operator=( const Server &other );
+	~Server( void );
 
-		private:
-			uint32_t _port;
-			struct timeval _timeout;
-			Socket _serverSocket;
-			Socket	_currentSock;
-			fd_set _readSet, _writeSet, _exceptSet;
-			bool _run;
+	//    Member functions
+	void listen( void );
+	void stop( void );
+	void init( const std::list< t_serverData > &configs, uint32_t timeout );
 
-			Server(void);
-			void _handleRead(const int fd) throw(Socket::SocketException);
-			void _handleWrite(const int fd);
-			void _watchFds(void) throw(Socket::SocketException);
-	};
+  private:
+	struct timeval _timeout;
+	std::list< t_serverData > _configs;
+	std::map< int, std::pair< Socket, t_serverData > > _serverSet;
+	Socket _currentSock;
+	t_serverData _currentData;
+	fd_set _readSet, _writeSet, _exceptSet;
+	bool _run;
+
+	void _handleRead( const int fd ) throw( Socket::SocketException );
+	void _handleWrite( const int fd );
+	void _watchFds( void ) throw( Socket::SocketException );
+};
 } // namespace http
 #endif

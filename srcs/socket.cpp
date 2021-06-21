@@ -6,7 +6,11 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/06/18 14:47:13 by alienard         ###   ########.fr       */
+=======
+/*   Updated: 2021/06/18 18:14:01 by pcariou          ###   ########.fr       */
+>>>>>>> 15c9b60081b423b225a35f231abf992203a4d4ab
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +80,7 @@ static void _initBind( int fd, struct sockaddr_in *address, socklen_t socklen ) 
  *	@Info: le contructeur utisie getsockname et lève une SocketException si celui-ci échoue
  *	@Lien: http://manpagesfr.free.fr/man/man2/getsockname.2.html
  */
+
 Socket::Socket( int fd, bool blocking ) throw( Socket::SocketException )
 	: _fd( fd ), _opt( 1 ), _socklen( sizeof( _address ) )
 {
@@ -315,8 +320,9 @@ void Socket::Get( void )
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::serverResponse( void )
+void Socket::serverResponse(t_serverData data)
 {
+	std::cout << "SERVER PORT: "<< data.listen << std::endl;
 	if ( _infos.size() >= 3 && _infos[ 2 ] == "HTTP/1.1" )
 	{
 		if ( _infos[ 0 ] == "GET" )
