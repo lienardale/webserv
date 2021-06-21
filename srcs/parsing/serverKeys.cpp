@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/21 18:29:59 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/21 20:49:52 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "parsing/utils.hpp"
 #include "webserv.hpp"
 #include <cstddef>
-#include <netinet/in.h>
 
 static void handleListen( t_serverData &server, const std::string value ) throw( ParsingException )
 {

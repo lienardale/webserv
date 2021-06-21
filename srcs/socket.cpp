@@ -6,11 +6,13 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/21 18:05:30 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/21 21:10:04 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/socket.hpp"
+#include <inttypes.h>
+#include <netinet/in.h>
 
 /******************************************************************************
  *			Fonctions statiques permettant l'initialisation d'une socket
@@ -26,7 +28,10 @@ static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr, const cha
 {
 	infosPtr->sin_family = AF_INET;
 	infosPtr->sin_port = htons( port );
-	infosPtr->sin_addr.s_addr = htonl( inet_addr( addr_ip ) );
+	infosPtr->sin_addr.s_addr = inet_addr( addr_ip );
+
+	if ( infosPtr->sin_addr.s_addr == ( uint32_t )-1 )
+		throw Socket::SocketException();
 }
 
 /*
