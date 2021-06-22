@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
 /*   Updated: 2021/06/22 09:36:46 by dboyer           ###   ########.fr       */
@@ -31,7 +31,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-#include <wait.h>
+#include <sys/wait.h>
+// #include <wait.h>
+#include "parsing/dataStructure.hpp"
 
 #define MAX_CONN 3
 
