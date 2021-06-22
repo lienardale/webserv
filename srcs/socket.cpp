@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/22 12:49:06 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/22 15:22:28 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr, const cha
 static void _initOptions( int fd, int *opt ) throw( Socket::SocketException )
 {
 	// to work on macOS -> suppr SO_REUSEADDR
-	if ( setsockopt( fd, SOL_SOCKET, /*SO_REUSEADDR |*/ SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
+	if ( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
 		throw( Socket::SocketException() );
 }
 

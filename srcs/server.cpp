@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/22 14:07:00 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/22 18:59:10 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void _add_server_to_poll( int epoll_fd, int socket_fd ) throw( Socket::So
 {
 	struct epoll_event event;
 
-	event.events = EPOLLIN | EPOLLET;
+	event.events = EPOLLIN;
 	event.data.fd = socket_fd;
 	if ( epoll_ctl( epoll_fd, EPOLL_CTL_ADD, socket_fd, &event ) )
 	{
@@ -37,6 +37,7 @@ static void _add_server_to_poll( int epoll_fd, int socket_fd ) throw( Socket::So
 		throw Socket::SocketException();
 	}
 }
+
 /******************************************************************************
  *			Constructeurs/Destructeurs
  *****************************************************************************/
@@ -113,13 +114,13 @@ void http::Server::listen( void )
  *	@Parametres: Le fd sur lequel la lecture doit se faire
  *	@Infos La fonction lève une SocketException si erreur
  */
-void http::Server::_handleReady( int epoll_fd, const int fd ) throw( Socket::SocketException )
+void http::Server::_handleReady( int epoll_fd, const int fd,
+								 struct epoll_event *event ) throw( Socket::SocketException )
 {
 	std::map< int, std::pair< Socket, t_serverData > >::iterator found = _serverSet.find( fd );
 
-	if ( found != _serverSet.end() )
+	if ( found != _serverSet.end() && ( event->events & EPOLLIN ) )
 	{
-		// this is a new connection
 		try
 		{
 			_add_server_to_poll( epoll_fd, found->second.first.accept().Fd() );
@@ -137,7 +138,6 @@ void http::Server::_handleReady( int epoll_fd, const int fd ) throw( Socket::Soc
 			_currentSock = Socket( fd, true );
 			_currentSock.readContent();
 			_currentSock.serverResponse( _currentData );
-			_currentSock.close();
 		}
 		catch ( Socket::SocketException &e )
 		{
@@ -146,27 +146,22 @@ void http::Server::_handleReady( int epoll_fd, const int fd ) throw( Socket::Soc
 	}
 }
 
-/*
- *	C'est la boucle principale du serveur.Avant chaque lecture/écriture il y a un select()
- *	@Infos: La fonction lève une SocketException si erreur
- *	@Lien: http://manpagesfr.free.fr/man/man2/select.2.html
- */
 void http::Server::_watchFds( void ) throw( Socket::SocketException )
 {
 	struct epoll_event events[ MAX_EVENTS ];
-	int epoll_fd = epoll_create( 1 );
 	int event_count = 0;
+	bzero( events, MAX_EVENTS );
 
 	_run = true;
 	for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
 		  it++ )
-		_add_server_to_poll( epoll_fd, it->first );
+		_add_server_to_poll( _epoll_fd, it->first );
 
 	while ( _run )
 	{
-		event_count = epoll_wait( epoll_fd, events, MAX_EVENTS, -1 );
+		event_count = epoll_wait( _epoll_fd, events, MAX_EVENTS, -1 );
 		for ( int i = 0; i < event_count; i++ )
-			_handleReady( epoll_fd, events[ i ].data.fd );
+			_handleReady( _epoll_fd, events[ i ].data.fd, &events[ i ] );
 	}
 }
 
@@ -179,7 +174,9 @@ void http::Server::stop( void )
 	if ( _run )
 	{
 		_run = false;
-		for ( size_t i = 0; i < _serverSet.size() + 1; i++ )
-			Socket( i, true ).close();
+		for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin();
+			  it != _serverSet.end(); it++ )
+			it->second.first.close();
+		close( _epoll_fd );
 	}
 }
