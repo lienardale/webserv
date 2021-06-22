@@ -1,6 +1,6 @@
 [
     {
-        "listen": 8000,
+        "listen": "127.0.0.1:8000",
         "server_name": [
             "localhost",
             "192.168.1.18"
@@ -24,7 +24,7 @@
                     "DELETE"
                 ],
                 "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
+                    "fastcgi_pass": "127.0.0.1:80",
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
@@ -68,7 +68,7 @@
                 },
                 "index": [
                     "index.php",
-                    "index.js"
+                    "index.html"
                 ],
                 "path": "/test",
                 "root": "./www/"
