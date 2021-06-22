@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/18 18:08:17 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/22 09:31:05 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct s_locationData
 typedef struct s_serverData
 {
 	int listen;
+	std::string addr_ip;
 	std::string root;
 	bool autoindex;
 	int client_max_body_size;

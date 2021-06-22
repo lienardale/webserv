@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "../includes/socket.hpp"
+#include <inttypes.h>
+#include <netinet/in.h>
 
 /******************************************************************************
  *			Fonctions statiques permettant l'initialisation d'une socket
@@ -22,11 +24,14 @@
  * @Parametres: Le nombre de ports et un pointeur sur une structure sockaddr_in
  * @Infos: La structure sockaddr_in est dans le package <netinet/in.h>
  */
-static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr )
+static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr, const char *addr_ip )
 {
 	infosPtr->sin_family = AF_INET;
 	infosPtr->sin_port = htons( port );
-	infosPtr->sin_addr.s_addr = htonl( INADDR_ANY );
+	infosPtr->sin_addr.s_addr = inet_addr( addr_ip );
+
+	if ( infosPtr->sin_addr.s_addr == ( uint32_t )-1 )
+		throw Socket::SocketException();
 }
 
 /*
@@ -151,9 +156,9 @@ struct sockaddr_in Socket::infos() const
  *	@Parametres: Le port
  *	@Infos: Lève une SocketException si erreur
  */
-void Socket::listen( const int port ) throw( Socket::SocketException )
+void Socket::listen( const int port, const std::string addr ) throw( Socket::SocketException )
 {
-	_initAddress( port, &_address );
+	_initAddress( port, &_address, addr.c_str() );
 	_initOptions( _fd, &_opt );
 	_initBind( _fd, &_address, _socklen );
 	_initBlocking( _fd );
@@ -316,9 +321,9 @@ void Socket::Get( void )
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::serverResponse(t_serverData data)
+void Socket::serverResponse( t_serverData data )
 {
-	std::cout << "SERVER PORT: "<< data.listen << std::endl;
+	std::cout << "SERVER PORT: " << data.listen << std::endl;
 	if ( _infos.size() >= 3 && _infos[ 2 ] == "HTTP/1.1" )
 	{
 		if ( _infos[ 0 ] == "GET" )

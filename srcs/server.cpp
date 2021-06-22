@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/06/18 18:13:08 by pcariou          ###   ########.fr       */
+/*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
+/*   Updated: 2021/06/22 09:31:25 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void http::Server::listen( void )
 		for ( std::list< t_serverData >::iterator it = _configs.begin(); it != _configs.end(); it++ )
 		{
 			Socket s;
-			s.listen( it->listen );
+			s.listen( it->listen, it->addr_ip );
 			_serverSet[ s.Fd() ] = std::make_pair( s, *it );
 			FD_SET( s.Fd(), &_readSet );
 		}
@@ -115,7 +115,7 @@ void http::Server::_handleRead( const int fd ) throw( Socket::SocketException )
 	else
 	{
 		// read from the client
-		_currentSock = Socket( fd, true);
+		_currentSock = Socket( fd, true );
 		_currentSock.readContent();
 
 		FD_CLR( fd, &_readSet );
@@ -130,7 +130,7 @@ void http::Server::_handleRead( const int fd ) throw( Socket::SocketException )
 void http::Server::_handleWrite( const int fd )
 {
 	// write to the client
-	_currentSock.serverResponse(_currentData);
+	_currentSock.serverResponse( _currentData );
 	FD_CLR( fd, &_writeSet );
 	close( fd );
 }
