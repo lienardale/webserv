@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/22 14:07:00 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/22 15:04:55 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,9 @@ void http::Server::stop( void )
 	if ( _run )
 	{
 		_run = false;
-		for ( size_t i = 0; i < _serverSet.size() + 1; i++ )
-			Socket( i, true ).close();
+		for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin();
+			  it != _serverSet.end(); it++ )
+			it->second.first.close();
+		close( _epoll_fd );
 	}
 }
