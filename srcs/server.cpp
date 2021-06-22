@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/22 18:47:13 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/22 18:59:10 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ void http::Server::_watchFds( void ) throw( Socket::SocketException )
 
 	while ( _run )
 	{
-		event_count = epoll_wait( _epoll_fd, events, MAX_EVENTS, 5 );
+		event_count = epoll_wait( _epoll_fd, events, MAX_EVENTS, -1 );
 		for ( int i = 0; i < event_count; i++ )
 			_handleReady( _epoll_fd, events[ i ].data.fd, &events[ i ] );
 	}
