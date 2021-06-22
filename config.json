@@ -6,11 +6,11 @@
             "192.168.1.18"
         ],
         "error_page": {
-            "500": "/le/chemin/choisi.html",
-            "404": "/chemin/random.html"
+            "500": "error_views/500.html",
+            "404": "error_views/404.html"
         },
         "client_max_body_size": 1000,
-        "root": "directory",
+        "root": "www/",
         "autoindex": "on",
         "index": [
             "index.php",
@@ -25,7 +25,7 @@
                 ],
                 "fastcgi_param": {
                     "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "index.php",
+                    "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
                 "index": [
@@ -33,22 +33,22 @@
                     "index.html"
                 ],
                 "path": "/test",
-                "root": "directory"
+                "root": "www/"
             }
         ]
     },
     {
         "listen": 4000,
         "server_name": [
-            "localhost",
-            "192.168.1.18"
+            "localhost2",
+            "www.localhost2"
         ],
         "error_page": {
-            "500": "/le/chemin/choisi.html",
-            "404": "/chemin/random.html"
+            "500": "error_views/500.html",
+            "404": "error_views/404.html"
         },
         "client_max_body_size": 1000,
-        "root": "directory",
+        "root": "./www/",
         "autoindex": "on",
         "index": [
             "index.php",
@@ -63,7 +63,7 @@
                 ],
                 "fastcgi_param": {
                     "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "index.php",
+                    "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
                 "index": [
@@ -71,7 +71,7 @@
                     "index.html"
                 ],
                 "path": "/test",
-                "root": "directory"
+                "root": "./www/"
             }
         ]
     }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/22 09:31:51 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/22 09:31:54 by dboyer           ###   ########.fr       */
+/*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
+/*   Updated: 2021/06/22 12:49:06 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr, const cha
  */
 static void _initOptions( int fd, int *opt ) throw( Socket::SocketException )
 {
-	if ( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
+	// to work on macOS -> suppr SO_REUSEADDR
+	if ( setsockopt( fd, SOL_SOCKET, /*SO_REUSEADDR |*/ SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
 		throw( Socket::SocketException() );
 }
 
