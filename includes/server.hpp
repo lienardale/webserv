@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/06/22 13:59:43 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/22 14:17:45 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ class Server
 	int _epoll_fd;
 
 	void _handleReady( int epoll_fd, const int fd ) throw( Socket::SocketException );
-	void _handleWrite( const int fd );
 	void _watchFds( void ) throw( Socket::SocketException );
 };
 } // namespace http
