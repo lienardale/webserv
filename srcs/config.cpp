@@ -140,22 +140,32 @@ void	config::fastcgi_param_check( std::pair< const std::string, std::string > &f
 		throw ValueError::ParsingException("incorrect CGI index value : " + fcgi.second + ", no corresponding file found");
 
 	// fastcgi_param		| SCRIPT_FILENAME								| /scripts$fastcgi_script_name
-	
-	// TO DO
+	// -> TO DO
 
 	// fastcgi_pass			| 127.0.0.1:9000								| listen
 
-// TO FIX
-
-	// Socket sock(fcgi.second);
-	// if ( fcgi.first.compare(SSTR("fastcgi_index")) == 0 ) {
-	// 	try{
-	// 		sock.listen(fcgi.second);
-	// 	}
-	// 	catch (Socket::SocketException const &e){
-	// 		throw ValueError::ParsingException("incorrect listen value : " +  SSTR(fcgi.second) + " must be available port");
-	// 	}
-	// }
+	Socket sock;
+	std::string addr_ip;
+	int	listen;
+	if ( fcgi.first.compare(SSTR("fastcgi_pass")) == 0 ) {
+		try{
+				std::size_t found = fcgi.second.find( ":" );
+				if ( found != std::string::npos ){
+					addr_ip = fcgi.second.substr( 0, found );
+					listen = strToInt( fcgi.second.substr( found + 1, fcgi.second.size() - found ) );
+				}
+				else{
+					listen = strToInt( fcgi.second );
+					addr_ip = "0.0.0.0";
+				}
+				sock.listen(listen, addr_ip);
+			// std::cout << "fcgi.first : " << fcgi.first << std::endl;
+			// std::cout << "fcgi.second : " << fcgi.second << std::endl;
+		}
+		catch (Socket::SocketException const &e){
+			throw ValueError::ParsingException("incorrect fastcgi_pass value : " +  SSTR(fcgi.second) + " must be available port on valid address");
+		}
+	}
 
 }
 
@@ -234,7 +244,7 @@ int		config::sD_index_check(const char *dir, std::string &index){
 void	config::serverData_check(t_serverData &sD){
 	Socket sock;
 	try{
-		sock.listen(sD.listen);
+		sock.listen(sD.listen, sD.addr_ip);
 	}
 	catch (Socket::SocketException const &e){
 		throw ValueError::ParsingException("incorrect listen value : " +  SSTR(sD.listen) + " must be available port");
