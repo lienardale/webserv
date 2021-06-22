@@ -6,7 +6,7 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/06/22 14:17:45 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/22 17:14:36 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "socket.hpp"
 #include <cstdlib>
 #include <inttypes.h>
+#include <sys/epoll.h>
 #include <sys/select.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -46,7 +47,7 @@ class Server
 	bool _run;
 	int _epoll_fd;
 
-	void _handleReady( int epoll_fd, const int fd ) throw( Socket::SocketException );
+	void _handleReady( int epoll_fd, const int fd, struct epoll_event *event ) throw( Socket::SocketException );
 	void _watchFds( void ) throw( Socket::SocketException );
 };
 } // namespace http
