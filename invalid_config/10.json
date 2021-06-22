@@ -6,7 +6,7 @@
             "192.168.1.18"
         ],
         "error_page": {
-            "99": "error_views/500.html",
+            "500": "error_views/500.html",
             "404": "error_views/404.html"
         },
         "client_max_body_size": 1000,
@@ -24,7 +24,7 @@
                     "DELETE"
                 ],
                 "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
+                    "fastcgi_pass": "127.0.0.1:80",
                     "fastcgi_index": "index.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },

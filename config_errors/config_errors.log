@@ -14,5 +14,7 @@ Parsing [KO]
 Parsing [KO]
 [31mincorrect index value : no corresponding file found
 Parsing [KO]
-[31mincorrect method value : GETE, must be GET, POST, and/or DELETE
+[31mincorrect error code : 99, must be >= 100 or <= 599
+Parsing [KO]
+[31mincorrect error code : 600, must be >= 100 or <= 599
 Parsing [KO]

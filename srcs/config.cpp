@@ -117,15 +117,46 @@ void	config::methods_check(std::string &method){
 		throw ValueError::ParsingException("incorrect method value : " + method + ", must be GET, POST, and/or DELETE");
 }
 
-void	config::fastcgi_param_check( std::pair< const std::string, std::string > &fcgi){
-	std::cout << "fcgi.first : " << fcgi.first << std::endl;
-	std::cout << "fcgi.second : " << fcgi.second << std::endl;
+void	config::fastcgi_param_check( std::pair< const std::string, std::string > &fcgi, const char *root){
+	// std::cout << "fcgi.first : " << fcgi.first << std::endl;
+	// std::cout << "fcgi.second : " << fcgi.second << std::endl;
 
 	// first				| second										| check
+
 	// fastcgi_index		| index.php										| file exists
-	// fastcgi_param		| SCRIPT_FILENAME  /scripts$fastcgi_script_name	| ?
+	bool found = false;
+	if ( fcgi.first.compare(SSTR("fastcgi_index")) == 0 || (found = true)){
+		DIR *dirp;
+			struct dirent *tmp;
+			dirp = opendir(root);
+			while ((tmp = readdir(dirp)) != NULL) {
+				if (strlen(tmp->d_name) /*d_namlen*/ == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0) {
+					(void)closedir(dirp);
+					found = true;
+				}
+			}
+	}
+	if (!found)
+		throw ValueError::ParsingException("incorrect CGI index value : " + fcgi.second + ", no corresponding file found");
+
+	// fastcgi_param		| SCRIPT_FILENAME								| /scripts$fastcgi_script_name
+	
+	// TO DO
+
 	// fastcgi_pass			| 127.0.0.1:9000								| listen
-	(void) fcgi;
+
+// TO FIX
+
+	// Socket sock(fcgi.second);
+	// if ( fcgi.first.compare(SSTR("fastcgi_index")) == 0 ) {
+	// 	try{
+	// 		sock.listen(fcgi.second);
+	// 	}
+	// 	catch (Socket::SocketException const &e){
+	// 		throw ValueError::ParsingException("incorrect listen value : " +  SSTR(fcgi.second) + " must be available port");
+	// 	}
+	// }
+
 }
 
 int		config::lD_index_check(const char *dir, std::string &index){
@@ -162,7 +193,7 @@ void	config::locationData_check(t_locationData &lD){
 
 	// checking fast_cgi_param
 	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin() ; it != lD.fastcgi_param.end() ; it++ ){
-		config::fastcgi_param_check(*it);
+		config::fastcgi_param_check(*it, lD.root.c_str());
 	}
 
 	// checking autoindex
@@ -182,7 +213,8 @@ void	config::error_page_check(std::pair< const int, std::string > &error_page){
 		throw ValueError::ParsingException("incorrect error_page path : " + error_page.second + ", must be existing file");
 	else
 		fs.close();
-	// add a check for error_page.first ?
+	if (error_page.first < 100 || error_page.first > 599)
+		throw ValueError::ParsingException("incorrect error code : " + SSTR(error_page.first) + ", must be >= 100 or <= 599");
 }
 
 int		config::sD_index_check(const char *dir, std::string &index){

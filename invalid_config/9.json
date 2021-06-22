@@ -6,7 +6,7 @@
             "192.168.1.18"
         ],
         "error_page": {
-            "99": "error_views/500.html",
+            "600": "error_views/500.html",
             "404": "error_views/404.html"
         },
         "client_max_body_size": 1000,

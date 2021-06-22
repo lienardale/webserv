@@ -1,2 +1,2 @@
-[31mincorrect method value : GETE, must be GET, POST, and/or DELETE
+[31mincorrect error code : 99, must be >= 100 or <= 599
 Parsing [KO]
