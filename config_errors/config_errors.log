@@ -1,0 +1,20 @@
+[31mincorrect listen value : 80 must be available port
+Parsing [KO]
+[31mincorrect root value : directory, must be existing dir
+Parsing [KO]
+[31mincorrect client_max_body_size : 0 must be > 0
+Parsing [KO]
+[31mincorrect error_page path : /chemin/random.html, must be existing file
+Parsing [KO]
+[31mincorrect index value : no corresponding file found
+Parsing [KO]
+[31mincorrect root value : directory, must be existing dir
+Parsing [KO]
+[31mtwo servers have the save name value : localhost
+Parsing [KO]
+[31mincorrect index value : no corresponding file found
+Parsing [KO]
+[31mincorrect error code : 99, must be >= 100 or <= 599
+Parsing [KO]
+[31mincorrect error code : 600, must be >= 100 or <= 599
+Parsing [KO]
