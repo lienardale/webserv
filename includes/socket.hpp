@@ -6,13 +6,14 @@
 /*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
-/*   Updated: 2021/06/21 18:05:24 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/22 09:36:46 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
+#include "parsing/dataStructure.hpp"
 #include <arpa/inet.h>
 #include <cstddef>
 #include <cstdlib>
@@ -53,7 +54,7 @@ class Socket
 	void close( void );
 	Socket accept( void ) throw( Socket::SocketException );
 	void readContent( void ) throw( Socket::SocketException );
-	void serverResponse( void );
+	void serverResponse( t_serverData data );
 	void Get( void );
 	void Post( void );
 	void Delete( void );

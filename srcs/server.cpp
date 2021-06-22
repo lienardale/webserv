@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dess <dboyer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/19 14:54:53 by dess              #+#    #+#             */
-/*   Updated: 2021/06/21 18:15:17 by dboyer           ###   ########.fr       */
+/*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
+/*   Updated: 2021/06/22 09:31:25 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ void http::Server::_handleRead( const int fd ) throw( Socket::SocketException )
 		// this is a new connection
 		Socket s = found->second.first.accept();
 		FD_SET( s.Fd(), &_readSet );
+		_currentData = found->second.second;
 	}
 	else
 	{
@@ -129,7 +130,7 @@ void http::Server::_handleRead( const int fd ) throw( Socket::SocketException )
 void http::Server::_handleWrite( const int fd )
 {
 	// write to the client
-	_currentSock.serverResponse();
+	_currentSock.serverResponse( _currentData );
 	FD_CLR( fd, &_writeSet );
 	close( fd );
 }
