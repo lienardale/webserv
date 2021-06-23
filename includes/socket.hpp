@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
-/*   Updated: 2021/06/22 09:36:46 by dboyer           ###   ########.fr       */
+/*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
+/*   Updated: 2021/06/23 14:38:37 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ class Socket
 	char _buffer[ 30 ];
 	std::vector< std::string > _infos;
 	std::string _request;
+	char **env;
+	std::list<char *> l_env;
 };
 
 #endif
