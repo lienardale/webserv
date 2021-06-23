@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/23 16:40:52 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/23 17:23:53 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,7 +258,7 @@ void config::error_page_check( std::pair< const int, std::string > &error_page )
 	}
 	if ( error_page.first < 100 || error_page.first > 599 )
 		throw ValueError::ParsingException( "incorrect error code : " + SSTR( error_page.first ) +
-						   ", must be >= 100 or <= 599" );
+											", must be >= 100 or <= 599" );
 }
 
 int config::sD_index_check( const char *dir, std::string &index )
