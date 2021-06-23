@@ -257,6 +257,7 @@ void config::error_page_check( std::pair< const int, std::string > &error_page )
 	}
 	if ( error_page.first < 100 || error_page.first > 599 )
 		throw ValueError::ParsingException( "incorrect error code : " + SSTR( error_page.first ) +
+						   ", must be >= 100 or <= 599" );
 }
 
 int config::sD_index_check( const char *dir, std::string &index )
