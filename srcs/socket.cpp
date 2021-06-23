@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/23 17:10:26 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 17:12:30 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,10 +200,45 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 										 std::istream_iterator< std::string >() );
 }
 
-/*
- *	Send the requested page to the client
- *
- */
+void Socket::sendpage( t_serverData data, std::string content, std::string code )
+{
+	std::ostringstream oss;
+
+	oss << "HTTP/1.1 " << code << "\r\n";
+	oss << "Server: " << data.server_name.front() << "\r\n";
+	oss << "Content-Length: " << content.size() << "\r\n";
+	if ( !php_file() )
+		oss << "\r\n";
+	oss << content;
+	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
+	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+}
+
+void Socket::directoryListing( t_serverData data )
+{
+	DIR *dh;
+	struct dirent *contents;
+	std::string directory;
+	std::string content;
+	std::string code = "200 OK";
+
+	directory = data.root + _infos[ 1 ];
+	if ( _infos[ 1 ] == "/" )
+		directory = data.root;
+	if ( !( dh = opendir( directory.c_str() ) ) )
+	{
+		code = "404 Not Found";
+		!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
+	}
+	else
+	{
+		content += ( "<h1>Index of " + _infos[ 1 ] + "</h1>\n" );
+		while ( ( contents = readdir( dh ) ) != NULL )
+			content += ( "<li>" + ( std::string( contents->d_name ) + "</li>\n" ) );
+	}
+	closedir( dh );
+	sendpage( data, content, code );
+}
 
 // check extension of a file (.php)
 bool Socket::php_file()
@@ -285,49 +320,39 @@ void Socket::Post( void )
 	//	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::Get( void )
+void Socket::Get( t_serverData data )
 {
-	std::string content = "<h1>404 Not Found</h1>";
+	std::string content;
+
+	!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
 	std::string code = "200 OK";
 	std::fstream f;
 
-	if ( _infos.size() >= 3 && _infos[ 0 ] == "GET" )
+	if ( _infos[ 1 ] == "/" )
+		f.open( ( data.root + _infos[ 1 ] + data.index.front() ).c_str(), std::ios::in );
+	else
+		f.open( ( data.root + _infos[ 1 ] ).c_str(), std::ios::in );
+	if ( f && php_file() )
+		content = Cgi();
+	else if ( f )
 	{
-		if ( _infos[ 1 ] == "/" )
-			f.open( "www/index.html" );
-		else
-			f.open( ( "www" + _infos[ 1 ] ).c_str(), std::ios::in );
-		if ( f && php_file() )
-			content = Cgi();
-		else if ( f )
-		{
-			std::string page( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
-			content = page;
-		}
-		else
-			code = "404 Not Found";
-		f.close();
+		std::string page( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
+		content = page;
 	}
-	std::ostringstream oss;
-	oss << "HTTP/1.1 ";
-	oss << code;
-	oss << "\r\n";
-	oss << "Server: WEBSERV\r\n";
-	oss << "Content-Length: " << content.size() << "\r\n";
-	if ( !php_file() )
-		oss << "\r\n";
-	oss << content;
-	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
-	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+	else
+		code = "404 Not Found";
+	f.close();
+	sendpage( data, content, code );
 }
 
 void Socket::serverResponse( t_serverData data )
 {
-	std::cout << "SERVER PORT: " << data.listen << std::endl;
 	if ( _infos.size() >= 3 && _infos[ 2 ] == "HTTP/1.1" )
 	{
-		if ( _infos[ 0 ] == "GET" )
-			Get();
+		if ( _infos[ 0 ] == "GET" && !data.autoindex )
+			Get( data );
+		else if ( _infos[ 0 ] == "GET" && data.autoindex )
+			directoryListing( data );
 		else if ( _infos[ 0 ] == "POST" )
 			Post();
 		else if ( _infos[ 0 ] == "DELETE" )

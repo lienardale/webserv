@@ -11,10 +11,10 @@
 		},
 		"client_max_body_size": 1000,
 		"root": "www/",
-		"autoindex": "on",
+		"autoindex": "off",
 		"index": [
-			"index.php",
-			"index.html"
+			"index.html",
+			"index.php"
 		],
 		"location": [
 			{

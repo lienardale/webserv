@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 17:07:11 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 17:14:00 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,13 +156,12 @@ void http::Server::_watchFds( void ) throw( Socket::SocketException )
 	struct epoll_event events[ MAX_EVENTS ];
 	int event_count = 0;
 
+	bzero( events, MAX_EVENTS );
 	_epoll_fd = epoll_create1( EPOLL_CLOEXEC );
 	_run = true;
 	for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
 		  it++ )
 		_add_fd_to_poll( _epoll_fd, it->first, EPOLLIN );
-
-	bzero( events, MAX_EVENTS );
 	while ( _run )
 	{
 		event_count = epoll_wait( _epoll_fd, events, MAX_EVENTS, -1 );

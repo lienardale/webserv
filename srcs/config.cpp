@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/23 16:22:32 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 17:12:17 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,7 +251,11 @@ void config::error_page_check( std::pair< const int, std::string > &error_page )
 		throw ValueError::ParsingException( "incorrect error_page path : " + error_page.second +
 											", must be existing file" );
 	else
+	{
+		std::string page( ( std::istreambuf_iterator< char >( fs ) ), std::istreambuf_iterator< char >() );
+		error_page.second = page;
 		fs.close();
+	}
 	if ( error_page.first < 100 || error_page.first > 599 )
 		throw ValueError::ParsingException( "incorrect error code : " + SSTR( error_page.first ) +
 											", must be >= 100 or <= 599" );
