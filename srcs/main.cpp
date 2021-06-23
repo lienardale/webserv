@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/21 13:45:12 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/23 16:32:43 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,18 @@ void handleSignal( int sig )
 	SERVER.stop();
 }
 
-int main(int ac, char **av, char **env)
+int main( int ac, char **av, char **env )
 {
-	(void)env;
-	if (ac > 2){
+	( void )env;
+	if ( ac > 2 )
+	{
 		std::cerr << "Too many arguments, max 1 (config file)." << std::endl;
 	}
-	try {
-		if (ac == 1)
-			av[1] = NULL;
-		config	conf(av[1]);
+	try
+	{
+		if ( ac == 1 )
+			av[ 1 ] = NULL;
+		config conf( av[ 1 ] );
 
 		// Signal handling
 		std::signal( SIGINT, handleSignal );

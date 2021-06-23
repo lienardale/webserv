@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/23 12:21:57 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 17:10:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr, const cha
 static void _initOptions( int fd, int *opt ) throw( Socket::SocketException )
 {
 	// to work on macOS -> suppr SO_REUSEADDR
-	if ( setsockopt( fd, SOL_SOCKET, /*SO_REUSEADDR |*/ SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
+	if ( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
 		throw( Socket::SocketException() );
 }
 
@@ -225,9 +225,9 @@ std::string Socket::Cgi()
 {
 	int fd[ 2 ];
 	char content[ 100000 ];
-
+	int pid;
 	pipe( fd );
-	if ( fork() == 0 )
+	if ( ( pid = fork() ) == 0 )
 	{
 		dup2( fd[ 1 ], STDOUT_FILENO );
 		::close( fd[ 0 ] );
@@ -236,8 +236,8 @@ std::string Socket::Cgi()
 	}
 	::close( fd[ 1 ] );
 	read( fd[ 0 ], content, sizeof( content ) );
-	::close( fd[ 1 ] );
-	wait( NULL );
+	::close( fd[ 0 ] );
+	waitpid( pid, NULL, -1 );
 	return ( std::string( content ) );
 }
 
