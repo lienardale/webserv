@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/21 20:49:52 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/22 19:37:05 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ static void handleAutoindex( t_serverData &server, const std::string value ) thr
 
 static void handleRoot( t_serverData &server, const std::string value ) throw( ParsingException )
 {
+	if (value[ value.size() - 1 ] == '/')
+		value.substr(0, value.size() - 1);
 	server.root = value;
 }
 
@@ -73,7 +75,7 @@ static void handleErrorPage( t_serverData &server, const std::string value ) thr
 		{
 			_value = extract< std::string::const_iterator & >( "\"\"", ++begin, end );
 			server.error_page[ strToInt( key ) ] = _value;
-			if ( *begin == ',' && *( begin + 1 ) != '"' )
+			if ( *begin == ',' && *( begin + 1 ) != '"')
 			{
 				std::string error_msg = "Expected value \" -- Actual value ";
 				error_msg.push_back( *( begin + 1 ) );
