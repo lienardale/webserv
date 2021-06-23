@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/23 14:44:51 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/23 17:12:30 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void _initAddress( uint32_t port, struct sockaddr_in *infosPtr, const cha
 static void _initOptions( int fd, int *opt ) throw( Socket::SocketException )
 {
 	// to work on macOS -> suppr SO_REUSEADDR
-	if ( setsockopt( fd, SOL_SOCKET, /*SO_REUSEADDR |*/ SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
+	if ( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof( *opt ) ) < 0 )
 		throw( Socket::SocketException() );
 }
 
@@ -197,10 +197,10 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 	// transform result in words table (_infos)
 	std::istringstream iss( _request );
 	_infos = std::vector< std::string >( ( std::istream_iterator< std::string >( iss ) ),
-			std::istream_iterator< std::string >() );
+										 std::istream_iterator< std::string >() );
 }
 
-void Socket::sendpage( t_serverData data, std::string content, std::string code)
+void Socket::sendpage( t_serverData data, std::string content, std::string code )
 {
 	std::ostringstream oss;
 
@@ -214,27 +214,27 @@ void Socket::sendpage( t_serverData data, std::string content, std::string code)
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void	Socket::directoryListing(t_serverData data)
+void Socket::directoryListing( t_serverData data )
 {
 	DIR *dh;
-	struct dirent * contents; 
-	std::string	directory;
+	struct dirent *contents;
+	std::string directory;
 	std::string content;
 	std::string code = "200 OK";
 
 	directory = data.root + _infos[ 1 ];
 	if ( _infos[ 1 ] == "/" )
 		directory = data.root;
-	if (!(dh = opendir( directory.c_str() )))
+	if ( !( dh = opendir( directory.c_str() ) ) )
 	{
 		code = "404 Not Found";
-		!data.error_page[404].empty() ? content = data.error_page[404] : content = "<h1>404 Not Found</h1>";
+		!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
 	}
-	else 
+	else
 	{
-		content += ("<h1>Index of " + _infos[ 1 ] + "</h1>\n");
-		while ((contents = readdir( dh )) != NULL)
-			content += ("<li>" + (std::string(contents->d_name) + "</li>\n"));
+		content += ( "<h1>Index of " + _infos[ 1 ] + "</h1>\n" );
+		while ( ( contents = readdir( dh ) ) != NULL )
+			content += ( "<li>" + ( std::string( contents->d_name ) + "</li>\n" ) );
 	}
 	closedir( dh );
 	sendpage( data, content, code );
@@ -260,9 +260,9 @@ std::string Socket::Cgi()
 {
 	int fd[ 2 ];
 	char content[ 100000 ];
-
+	int pid;
 	pipe( fd );
-	if ( fork() == 0 )
+	if ( ( pid = fork() ) == 0 )
 	{
 		dup2( fd[ 1 ], STDOUT_FILENO );
 		::close( fd[ 0 ] );
@@ -271,8 +271,8 @@ std::string Socket::Cgi()
 	}
 	::close( fd[ 1 ] );
 	read( fd[ 0 ], content, sizeof( content ) );
-	::close( fd[ 1 ] );
-	wait( NULL );
+	::close( fd[ 0 ] );
+	waitpid( pid, NULL, -1 );
 	return ( std::string( content ) );
 }
 
@@ -324,12 +324,12 @@ void Socket::Get( t_serverData data )
 {
 	std::string content;
 
-	!data.error_page[404].empty() ? content = data.error_page[404] : content = "<h1>404 Not Found</h1>";
+	!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
 	std::string code = "200 OK";
 	std::fstream f;
 
 	if ( _infos[ 1 ] == "/" )
-		f.open( (data.root + _infos[ 1 ] + data.index.front()).c_str(), std::ios::in );
+		f.open( ( data.root + _infos[ 1 ] + data.index.front() ).c_str(), std::ios::in );
 	else
 		f.open( ( data.root + _infos[ 1 ] ).c_str(), std::ios::in );
 	if ( f && php_file() )
@@ -342,7 +342,7 @@ void Socket::Get( t_serverData data )
 	else
 		code = "404 Not Found";
 	f.close();
-	sendpage(data, content, code);
+	sendpage( data, content, code );
 }
 
 void Socket::serverResponse( t_serverData data )
@@ -351,7 +351,7 @@ void Socket::serverResponse( t_serverData data )
 	{
 		if ( _infos[ 0 ] == "GET" && !data.autoindex )
 			Get( data );
-		else if (_infos[ 0 ] == "GET" && data.autoindex)
+		else if ( _infos[ 0 ] == "GET" && data.autoindex )
 			directoryListing( data );
 		else if ( _infos[ 0 ] == "POST" )
 			Post();
