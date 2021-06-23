@@ -120,14 +120,11 @@ void http::Server::_handleReady( int epoll_fd, const int fd,
 {
 	std::map< int, std::pair< Socket, t_serverData > >::iterator found = _serverSet.find( fd );
 
-	std::cout << "FD = " << fd << std::endl;
 	if ( found != _serverSet.end() )
 	{
-		std::cout << "Inside server" << std::endl;
 		try
 		{
 			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN );
-			std::cout << "After add to poll" << std::endl;
 			_currentData = found->second.second;
 		}
 		catch ( Socket::SocketException &e )
@@ -137,7 +134,6 @@ void http::Server::_handleReady( int epoll_fd, const int fd,
 	}
 	else if ( event->events & EPOLLIN )
 	{
-		std::cout << "Inside client" << std::endl;
 		try
 		{
 			_currentSock = Socket( fd, true );
