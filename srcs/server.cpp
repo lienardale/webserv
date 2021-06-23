@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/22 14:07:00 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 14:26:53 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void http::Server::listen( void )
  *	@Parametres: Le fd sur lequel la lecture doit se faire
  *	@Infos La fonction lève une SocketException si erreur
  */
-void http::Server::_handleReady( int epoll_fd, const int fd ) throw( Socket::SocketException )
+void http::Server::_handleReady( int epoll_fd, const int fd) throw( Socket::SocketException )
 {
 	std::map< int, std::pair< Socket, t_serverData > >::iterator found = _serverSet.find( fd );
 
@@ -161,7 +161,6 @@ void http::Server::_watchFds( void ) throw( Socket::SocketException )
 	for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
 		  it++ )
 		_add_server_to_poll( epoll_fd, it->first );
-
 	while ( _run )
 	{
 		event_count = epoll_wait( epoll_fd, events, MAX_EVENTS, -1 );
