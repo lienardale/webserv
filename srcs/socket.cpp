@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/23 17:12:30 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 17:26:55 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,6 +261,7 @@ std::string Socket::Cgi()
 	int fd[ 2 ];
 	char content[ 100000 ];
 	int pid;
+
 	pipe( fd );
 	if ( ( pid = fork() ) == 0 )
 	{
