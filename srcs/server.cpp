@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 14:44:40 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/23 17:03:49 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void _add_fd_to_poll( int epoll_fd, int socket_fd, uint32_t mask ) throw(
  *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre chaque écoute
  *	@Lien: http://manpagesfr.free.fr/man/man2/select.2.html
  */
-http::Server::Server() : _run( false ), _epoll_fd( epoll_create( 1 ) )
+http::Server::Server() : _run( false ), _epoll_fd( epoll_create1( EPOLL_CLOEXEC ))
 {
 }
 
@@ -125,7 +125,7 @@ void http::Server::_handleReady( int epoll_fd, const int fd,
 	{
 		try
 		{
-			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN | EPOLLOUT | EPOLLET );
+			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN );
 			_currentData = found->second.second;
 		}
 		catch ( Socket::SocketException &e )
@@ -157,7 +157,10 @@ void http::Server::_watchFds( void ) throw( Socket::SocketException )
 	_run = true;
 	for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
 		  it++ )
+	{
 		_add_fd_to_poll( _epoll_fd, it->first, EPOLLIN );
+		std::cout << it->first << std::endl;
+	}
 	while ( _run )
 	{
 		event_count = epoll_wait( _epoll_fd, events, MAX_EVENTS, -1 );
