@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 14:38:37 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/23 14:55:51 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 #include <sys/wait.h>
 // #include <wait.h>
 #include "parsing/dataStructure.hpp"
+#include "dirent.h"
 
 #define MAX_CONN 3
 
@@ -57,12 +58,14 @@ class Socket
 	Socket accept( void ) throw( Socket::SocketException );
 	void readContent( void ) throw( Socket::SocketException );
 	void serverResponse( t_serverData data );
-	void Get( void );
+	void Get( t_serverData data );
 	void Post( void );
 	void Delete( void );
 	void badRequest( void );
 	std::string Cgi( void );
 	bool php_file( void );
+	void directoryListing( t_serverData data );
+	void sendpage( t_serverData data, std::string content, std::string code);
 
 	// Operator overloading
 	bool operator==( const int fd ) const;
