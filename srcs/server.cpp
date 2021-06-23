@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/22 18:59:10 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 11:14:57 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "parsing/dataStructure.hpp"
 #include "socket.hpp"
 #include <cstddef>
+#include <inttypes.h>
 #include <iostream>
 #include <list>
 #include <map>
@@ -25,11 +26,11 @@
 /****************************************************************************************
  *				Outils
  ***************************************************************************************/
-static void _add_server_to_poll( int epoll_fd, int socket_fd ) throw( Socket::SocketException )
+static void _add_fd_to_poll( int epoll_fd, int socket_fd, uint32_t mask ) throw( Socket::SocketException )
 {
 	struct epoll_event event;
 
-	event.events = EPOLLIN;
+	event.events = mask;
 	event.data.fd = socket_fd;
 	if ( epoll_ctl( epoll_fd, EPOLL_CTL_ADD, socket_fd, &event ) )
 	{
@@ -123,7 +124,7 @@ void http::Server::_handleReady( int epoll_fd, const int fd,
 	{
 		try
 		{
-			_add_server_to_poll( epoll_fd, found->second.first.accept().Fd() );
+			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN | EPOLLET );
 			_currentData = found->second.second;
 		}
 		catch ( Socket::SocketException &e )
@@ -155,7 +156,7 @@ void http::Server::_watchFds( void ) throw( Socket::SocketException )
 	_run = true;
 	for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
 		  it++ )
-		_add_server_to_poll( _epoll_fd, it->first );
+		_add_fd_to_poll( _epoll_fd, it->first, EPOLLIN );
 
 	while ( _run )
 	{
