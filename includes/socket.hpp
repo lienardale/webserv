@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 14:55:51 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/23 15:59:32 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,8 @@ class Socket
 	void Post( void );
 	void Delete( void );
 	void badRequest( void );
-	std::string Cgi( void );
+	void setCgiEnv( t_serverData *data );
+	std::string Cgi( t_serverData *data );
 	bool php_file( void );
 	void directoryListing( t_serverData data );
 	void sendpage( t_serverData data, std::string content, std::string code);
@@ -79,6 +80,31 @@ class Socket
 	};
 
   private:
+	enum cgi_variables
+	{
+		SERVER_SOFTWARE,
+		SERVER_NAME,
+		GATEWAY_INTERFACE,
+		SERVER_PROTOCOL,
+		SERVER_PORT,
+		PATH_INFO,
+		PATH_TRANSLATED,
+		SCRIPT_NAME,
+		QUERY_STRING,
+		REMOTE_HOST,
+		REMOTE_ADDR,
+		AUTH_TYPE,
+		REMOTE_USER,
+		REMOTE_IDENT,
+		CONTENT_TYPE,
+		CONTENT_LENGTH,
+		HTTP_ACCEPT,
+		HTTP_ACCEPT_LANGUAGE,
+		HTTP_USER_AGENT,
+		HTTP_COOKIE,
+		LEN_CGI_ENV
+	};
+	
 	int _fd;
 	int _opt;
 	struct sockaddr_in _address;
@@ -86,8 +112,9 @@ class Socket
 	char _buffer[ 30 ];
 	std::vector< std::string > _infos;
 	std::string _request;
-	char **env;
-	std::list<char *> l_env;
+	char *env[LEN_CGI_ENV + 1];
+	// std::list<char *> l_env;
+
 };
 
 #endif
