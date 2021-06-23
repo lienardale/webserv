@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 17:26:03 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/23 17:33:12 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,7 @@ void http::Server::_handleReady( int epoll_fd, const int fd,
 			_currentSock = Socket( fd, true );
 			_currentSock.readContent();
 			_currentSock.serverResponse( _currentData );
+			close( fd );
 		}
 		catch ( Socket::SocketException &e )
 		{
