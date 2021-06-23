@@ -158,10 +158,7 @@ void http::Server::_watchFds( void ) throw( Socket::SocketException )
 	_run = true;
 	for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
 		  it++ )
-	{
 		_add_fd_to_poll( _epoll_fd, it->first, EPOLLIN );
-		std::cout << it->first << std::endl;
-	}
 	while ( _run )
 	{
 		event_count = epoll_wait( _epoll_fd, events, MAX_EVENTS, -1 );
