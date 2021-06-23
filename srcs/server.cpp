@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 11:14:57 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/23 12:39:43 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <sys/epoll.h>
 #include <utility>
 
-#define MAX_EVENTS 5
+#define MAX_EVENTS 10
 
 /****************************************************************************************
  *				Outils
@@ -118,13 +118,14 @@ void http::Server::listen( void )
 void http::Server::_handleReady( int epoll_fd, const int fd,
 								 struct epoll_event *event ) throw( Socket::SocketException )
 {
+	( void )event;
 	std::map< int, std::pair< Socket, t_serverData > >::iterator found = _serverSet.find( fd );
 
-	if ( found != _serverSet.end() && ( event->events & EPOLLIN ) )
+	if ( found != _serverSet.end() )
 	{
 		try
 		{
-			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN | EPOLLET );
+			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN | EPOLLOUT | EPOLLET );
 			_currentData = found->second.second;
 		}
 		catch ( Socket::SocketException &e )
