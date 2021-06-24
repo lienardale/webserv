@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 16:14:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/21 18:27:59 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/24 14:40:17 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,14 @@ std::ostream &operator<<( std::ostream &os, const t_serverData &l )
 	os << "}";
 
 	return os;
+}
+/************************************************************************************
+ *			Constructeurs
+ ***********************************************************************************/
+t_serverData::s_serverData( void ) : listen( -1 ), autoindex( false ), client_max_body_size( 1000 )
+{
+}
+
+t_locationData::s_locationData( void ) : autoindex( false )
+{
 }
