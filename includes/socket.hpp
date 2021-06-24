@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 13:07:27 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/24 16:11:40 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Socket
 
 	// Getters
 	int Fd( void ) const;
+	std::string get_request( void ) const;
 	struct sockaddr_in infos( void ) const;
 
 	// Member functions
@@ -80,31 +81,6 @@ class Socket
 	};
 
   private:
-	enum cgi_variables
-	{
-		SERVER_SOFTWARE,
-		SERVER_NAME,
-		GATEWAY_INTERFACE,
-		SERVER_PROTOCOL,
-		SERVER_PORT,
-		PATH_INFO,
-		PATH_TRANSLATED,
-		SCRIPT_NAME,
-		QUERY_STRING,
-		REMOTE_HOST,
-		REMOTE_ADDR,
-		AUTH_TYPE,
-		REMOTE_USER,
-		REMOTE_IDENT,
-		CONTENT_TYPE,
-		CONTENT_LENGTH,
-		HTTP_ACCEPT,
-		HTTP_ACCEPT_LANGUAGE,
-		HTTP_USER_AGENT,
-		HTTP_COOKIE,
-		LEN_CGI_ENV
-	};
-	
 	int _fd;
 	int _opt;
 	struct sockaddr_in _address;
@@ -112,7 +88,7 @@ class Socket
 	char _buffer[ 30 ];
 	std::vector< std::string > _infos;
 	std::string _request;
-	char *env[LEN_CGI_ENV + 1];
+	// char *env[LEN_CGI_ENV + 1];
 	// std::list<char *> l_env;
 
 };

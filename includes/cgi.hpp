@@ -1,0 +1,98 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cgi.hpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
+/*   Updated: 2021/06/24 16:07:55 by alienard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#pragma once
+#include <iostream>
+#include <string>
+#include "parsing/dataStructure.hpp"
+#include "webserv.hpp"
+#include "socket.hpp"
+
+class cgi
+{
+		private:
+			enum cgi_variables
+			{
+				// variables specifiques a la requete
+				AUTH_TYPE,
+				CONTENT_LENGTH,
+				CONTENT_TYPE,
+				PATH_INFO,
+				PATH_TRANSLATED,
+				QUERY_STRING,
+				REMOTE_ADDR,
+				REMOTE_HOST,
+				REMOTE_IDENT,
+				REMOTE_USER,
+				REQUEST_METHOD,
+				SCRIPT_NAME,
+				SERVER_PORT,
+				SERVER_PROTOCOL,
+				// variables en rapport avec le client
+				GATEWAY_INTERFACE,
+				SERVER_NAME,
+				SERVER_SOFTWARE,
+				// variables provenant du client
+				HTTP_ACCEPT,
+				HTTP_ACCEPT_LANGUAGE,
+				HTTP_USER_AGENT,
+				HTTP_COOKIE,
+				// scheme,
+				// protocol_var_name,
+		// protocol-var-name  = ( protocol | scheme ) "_" var-name
+		// scheme             = alpha *( alpha | digit | "+" | "-" | "." )
+		// var-name           = token
+				// extension_var_name,
+		// extension-var-name = token
+				LEN_CGI_ENV
+			};
+
+			struct meta_var
+			{
+				std::string _auth_type;
+				std::string _content_length;
+				std::string _content_type;
+				std::string _path_info;
+				std::string _path_translated;
+				std::string _query_string;
+				std::string _remote_addr;
+				std::string _remote_host;
+				std::string _remote_ident;
+				std::string _remote_user;
+				std::string _request_method;
+				std::string _script_name;
+				std::string _server_port;
+				std::string _server_protocol;
+				std::string _gateway_interface;
+				std::string _server_name;
+				std::string _server_software;
+				std::string _http_accept;
+				std::string _http_accept_language;
+				std::string _http_user_agent;
+				std::string _http_cookie;
+			};
+			
+			char *env[LEN_CGI_ENV + 1];
+			cgi();
+		public:
+			cgi(Socket &sock) throw( cgi::CGIException );
+			cgi(const cgi&);
+			~cgi();
+			cgi&	operator=(const cgi&);
+			int	setCgiEnv( Socket &sock );
+
+			class CGIException : public std::exception
+			{
+				public:
+					const char *what( void ) const throw();
+			};
+};

@@ -6,11 +6,12 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/24 13:23:19 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/24 16:11:44 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/socket.hpp"
+#include "socket.hpp"
+#include "cgi.hpp"
 #include <inttypes.h>
 #include <netinet/in.h>
 
@@ -140,6 +141,14 @@ int Socket::Fd() const
 }
 
 /*
+ *	Retourne la request de la socket
+ */
+std::string Socket::get_request() const
+{
+	return _request;
+}
+
+/*
  *	Retourne les infos de la socket (structure sockaddr_in)
  */
 struct sockaddr_in Socket::infos() const
@@ -193,6 +202,8 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
 	std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
+
+	
 
 	// transform result in words table (_infos)
 	std::istringstream iss( _request );
@@ -256,38 +267,13 @@ bool Socket::php_file()
 	return false;
 }
 
-void setCgiEnv( t_serverData *data )
-{
-	// data->env[SERVER_SOFTWARE] = 
-	// data->env[SERVER_NAME] = 
-	// data->env[GATEWAY_INTERFACE] = 
-	// data->env[SERVER_PROTOCOL] = 
-	// data->env[SERVER_PORT] = 
-	// data->env[PATH_INFO] = 
-	// data->env[PATH_TRANSLATED] = 
-	// data->env[SCRIPT_NAME] = 
-	// data->env[QUERY_STRING] = 
-	// data->env[REMOTE_HOST] = 
-	// data->env[REMOTE_ADDR] = 
-	// data->env[AUTH_TYPE] = 
-	// data->env[REMOTE_USER] = 
-	// data->env[REMOTE_IDENT] = 
-	// data->env[CONTENT_TYPE] = 
-	// data->env[CONTENT_LENGTH] = 
-	// data->env[HTTP_ACCEPT] = 
-	// data->env[HTTP_ACCEPT_LANGUAGE] = 
-	// data->env[HTTP_USER_AGENT] = 
-	// data->env[HTTP_COOKIE] = 
-	// data->env[LEN_CGI_ENV] = NULL;
-	(void)data;
-}
-
 std::string Socket::Cgi(t_serverData *data)
 {
 	int fd[ 2 ];
 	char content[ 100000 ];
 	(void)data;
 	// setCgiEnv(data);
+	cgi	cgi_data(*this);
 	int pid;
 
 	pipe( fd );
