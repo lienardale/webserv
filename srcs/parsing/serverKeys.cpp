@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 11:29:56 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/24 14:42:57 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 
 static void handleListen( t_serverData &server, const std::string value ) throw( ParsingException )
 {
+	if ( server.listen != -1 )
+		throw ValueError( "Duplicate key: listen" );
 	std::size_t found = value.find( ":" );
 	if ( found != std::string::npos )
 	{
@@ -42,8 +44,6 @@ static void handleAutoindex( t_serverData &server, const std::string value ) thr
 {
 	std::string error_msg = "Autoindex value should be 'on' or 'off' not " + value;
 
-	if ( server.autoindex == true )
-		throw ValueError( "Duplicate key: autoindex" );
 	if ( value != "on" && value != "off" )
 		throw ValueError( error_msg );
 	server.autoindex = value == "on";
