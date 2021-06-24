@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/22 19:37:05 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/24 11:29:56 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ static void handleListen( t_serverData &server, const std::string value ) throw(
 
 static void handleServerName( t_serverData &server, const std::string value ) throw( ParsingException )
 {
+	if ( server.server_name.size() )
+		throw ValueError( "Duplicate key: server_name" );
 	parseStringList< std::list< std::string > & >( server.server_name, value );
 }
 
@@ -40,6 +42,8 @@ static void handleAutoindex( t_serverData &server, const std::string value ) thr
 {
 	std::string error_msg = "Autoindex value should be 'on' or 'off' not " + value;
 
+	if ( server.autoindex == true )
+		throw ValueError( "Duplicate key: autoindex" );
 	if ( value != "on" && value != "off" )
 		throw ValueError( error_msg );
 	server.autoindex = value == "on";
@@ -47,8 +51,10 @@ static void handleAutoindex( t_serverData &server, const std::string value ) thr
 
 static void handleRoot( t_serverData &server, const std::string value ) throw( ParsingException )
 {
-	if (value[ value.size() - 1 ] == '/')
-		value.substr(0, value.size() - 1);
+	if ( server.root.size() )
+		throw ValueError( "Duplicate key: root" );
+	if ( value[ value.size() - 1 ] == '/' )
+		value.substr( 0, value.size() - 1 );
 	server.root = value;
 }
 
@@ -59,10 +65,12 @@ static void handleClientMaxBody( t_serverData &server, const std::string value )
 
 static void handleIndex( t_serverData &server, const std::string value ) throw( ParsingException )
 {
+	if ( server.index.size() )
+		throw ValueError( "Duplicate key: index" );
 	parseStringList< std::list< std::string > & >( server.index, value );
 }
 
-static void handleErrorPage( t_serverData &server, const std::string value ) throw( ParsingException )
+static void fillErrorPage( t_serverData &server, const std::string value ) throw( ParsingException )
 {
 	std::string::const_iterator begin = value.begin();
 	std::string::const_iterator end = value.end();
@@ -71,24 +79,35 @@ static void handleErrorPage( t_serverData &server, const std::string value ) thr
 	if ( begin != end )
 	{
 		key = extract< std::string::const_iterator & >( "\"\"", begin, end );
+		if ( server.error_page.find( strToInt( key ) ) != server.error_page.end() )
+			throw ValueError( "Duplicate key: " + key );
 		if ( *begin == ':' )
 		{
 			_value = extract< std::string::const_iterator & >( "\"\"", ++begin, end );
 			server.error_page[ strToInt( key ) ] = _value;
-			if ( *begin == ',' && *( begin + 1 ) != '"')
+			if ( *begin == ',' && *( begin + 1 ) != '"' )
 			{
 				std::string error_msg = "Expected value \" -- Actual value ";
 				error_msg.push_back( *( begin + 1 ) );
 				throw SyntaxError( error_msg );
 			}
 			else if ( *begin == ',' )
-				handleErrorPage( server, ( ++begin ).base() );
+				fillErrorPage( server, ( ++begin ).base() );
 		}
 	}
 }
 
+static void handleErrorPage( t_serverData &server, const std::string value ) throw( ParsingException )
+{
+	if ( server.error_page.size() )
+		throw ValueError( "Duplicate key: error_page" );
+	fillErrorPage( server, value );
+}
+
 static void handleLocation( t_serverData &server, const std::string value ) throw( std::exception )
 {
+	if ( server.locations.size() )
+		throw ValueError( "Duplicate key: location" );
 	server.locations = parseStructList< t_locationData, castLocation >( castLocationMap(), value );
 }
 
