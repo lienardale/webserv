@@ -301,7 +301,7 @@ void Socket::Delete( t_serverData data )
 	else if ( errno != 2 )
 		headerCode("403 Forbidden", 403, data);
 	else
-		headerCode("404 Not Found", 403, data);
+		headerCode("404 Not Found", 404, data);
 	sendpage( data );
 }
 
