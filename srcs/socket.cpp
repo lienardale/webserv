@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/23 16:04:29 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/24 13:18:17 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,44 +258,44 @@ bool Socket::php_file()
 
 void setCgiEnv( t_serverData *data )
 {
-	data->env[SERVER_SOFTWARE] = 
-	data->env[SERVER_NAME] = 
-	data->env[GATEWAY_INTERFACE] = 
-	data->env[SERVER_PROTOCOL] = 
-	data->env[SERVER_PORT] = 
-	data->env[PATH_INFO] = 
-	data->env[PATH_TRANSLATED] = 
-	data->env[SCRIPT_NAME] = 
-	data->env[QUERY_STRING] = 
-	data->env[REMOTE_HOST] = 
-	data->env[REMOTE_ADDR] = 
-	data->env[AUTH_TYPE] = 
-	data->env[REMOTE_USER] = 
-	data->env[REMOTE_IDENT] = 
-	data->env[CONTENT_TYPE] = 
-	data->env[CONTENT_LENGTH] = 
-	data->env[HTTP_ACCEPT] = 
-	data->env[HTTP_ACCEPT_LANGUAGE] = 
-	data->env[HTTP_USER_AGENT] = 
-	data->env[HTTP_COOKIE] = 
-	data->env[LEN_CGI_ENV] = NULL;
-
+	// data->env[SERVER_SOFTWARE] = 
+	// data->env[SERVER_NAME] = 
+	// data->env[GATEWAY_INTERFACE] = 
+	// data->env[SERVER_PROTOCOL] = 
+	// data->env[SERVER_PORT] = 
+	// data->env[PATH_INFO] = 
+	// data->env[PATH_TRANSLATED] = 
+	// data->env[SCRIPT_NAME] = 
+	// data->env[QUERY_STRING] = 
+	// data->env[REMOTE_HOST] = 
+	// data->env[REMOTE_ADDR] = 
+	// data->env[AUTH_TYPE] = 
+	// data->env[REMOTE_USER] = 
+	// data->env[REMOTE_IDENT] = 
+	// data->env[CONTENT_TYPE] = 
+	// data->env[CONTENT_LENGTH] = 
+	// data->env[HTTP_ACCEPT] = 
+	// data->env[HTTP_ACCEPT_LANGUAGE] = 
+	// data->env[HTTP_USER_AGENT] = 
+	// data->env[HTTP_COOKIE] = 
+	// data->env[LEN_CGI_ENV] = NULL;
+	(void)data;
 }
 
 std::string Socket::Cgi(t_serverData *data)
 {
 	int fd[ 2 ];
 	char content[ 100000 ];
-
-	setCgiEnv(data);
+	(void)data;
+	// setCgiEnv(data);
 	pipe( fd );
 	if ( fork() == 0 )
 	{
 		dup2( fd[ 1 ], STDOUT_FILENO );
 		::close( fd[ 0 ] );
 		::close( fd[ 1 ] );
-		// execl( "php-cgi", "php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL );
-		execl( "php-cgi", "php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL, data->env );
+		execl( "/cgi-bin/php-cgi", "/cgi-bin/php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL );
+		// execl( "php-cgi", "php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL, data->env );
 		// execve(  , , data->env );
 	}
 	::close( fd[ 1 ] );
