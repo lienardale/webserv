@@ -48,8 +48,8 @@
             "404": "error_views/404.html"
         },
         "client_max_body_size": 1000,
-        "root": "./www/",
-        "autoindex": "on",
+        "root": "www/",
+        "autoindex": "off",
         "index": [
             "index.php",
             "index.html"
@@ -71,7 +71,7 @@
                     "index.html"
                 ],
                 "path": "/test",
-                "root": "./www/"
+                "root": "www/"
             }
         ]
     }

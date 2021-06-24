@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   locationKeys.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 11:55:00 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/24 12:51:36 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ static void handleAutoindex( t_locationData &location, const std::string value )
 {
 	std::string error_msg = "Value error: autoindex value should be 'on' or 'off' not " + value;
 
-	if ( location.autoindex == true )
-		throw ValueError( "Duplicate key: Autoindex" );
+	// if ( location.autoindex == true )
+	// 	throw ValueError( "Duplicate key: Autoindex" );
 	if ( value != "on" && value != "off" )
 		throw ValueError( error_msg );
 	location.autoindex = value == "on";
