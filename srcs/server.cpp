@@ -6,7 +6,7 @@
 /*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 14:44:40 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/23 17:33:12 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void _add_fd_to_poll( int epoll_fd, int socket_fd, uint32_t mask ) throw(
  *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre chaque écoute
  *	@Lien: http://manpagesfr.free.fr/man/man2/select.2.html
  */
-http::Server::Server() : _run( false ), _epoll_fd( epoll_create( 1 ) )
+http::Server::Server() : _run( false )
 {
 }
 
@@ -118,14 +118,13 @@ void http::Server::listen( void )
 void http::Server::_handleReady( int epoll_fd, const int fd,
 								 struct epoll_event *event ) throw( Socket::SocketException )
 {
-	( void )event;
 	std::map< int, std::pair< Socket, t_serverData > >::iterator found = _serverSet.find( fd );
 
 	if ( found != _serverSet.end() )
 	{
 		try
 		{
-			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN | EPOLLOUT | EPOLLET );
+			_add_fd_to_poll( epoll_fd, found->second.first.accept().Fd(), EPOLLIN );
 			_currentData = found->second.second;
 		}
 		catch ( Socket::SocketException &e )
@@ -133,13 +132,14 @@ void http::Server::_handleReady( int epoll_fd, const int fd,
 			std::cerr << e.what() << std::endl;
 		}
 	}
-	else
+	else if ( event->events & EPOLLIN )
 	{
 		try
 		{
 			_currentSock = Socket( fd, true );
 			_currentSock.readContent();
 			_currentSock.serverResponse( _currentData );
+			close( fd );
 		}
 		catch ( Socket::SocketException &e )
 		{
@@ -152,8 +152,9 @@ void http::Server::_watchFds( void ) throw( Socket::SocketException )
 {
 	struct epoll_event events[ MAX_EVENTS ];
 	int event_count = 0;
-	bzero( events, MAX_EVENTS );
 
+	bzero( events, MAX_EVENTS );
+	_epoll_fd = epoll_create1( EPOLL_CLOEXEC );
 	_run = true;
 	for ( std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
 		  it++ )

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   locationKeys.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/16 15:25:38 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/24 12:51:36 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,29 @@
 
 static void handleMethods( t_locationData &location, const std::string value ) throw( ParsingException )
 {
+	if ( location.methods.size() )
+		throw ValueError( "Duplicate key: methods" );
 	parseStringList< std::list< std::string > & >( location.methods, value );
 }
 
 static void handleIndex( t_locationData &location, const std::string value ) throw( ParsingException )
 {
+	if ( location.index.size() )
+		throw ValueError( "Duplicate key: Index" );
 	parseStringList< std::list< std::string > & >( location.index, value );
 }
 
 static void handleRoot( t_locationData &location, const std::string value ) throw( ParsingException )
 {
+	if ( location.root.size() )
+		throw ValueError( "Duplicate key: root" );
 	location.root = value;
 }
 
 static void handlePath( t_locationData &location, const std::string value ) throw( ParsingException )
 {
+	if ( location.path.size() )
+		throw ValueError( "Duplicate key: path" );
 	location.path = value;
 }
 
@@ -42,12 +50,14 @@ static void handleAutoindex( t_locationData &location, const std::string value )
 {
 	std::string error_msg = "Value error: autoindex value should be 'on' or 'off' not " + value;
 
+	// if ( location.autoindex == true )
+	// 	throw ValueError( "Duplicate key: Autoindex" );
 	if ( value != "on" && value != "off" )
 		throw ValueError( error_msg );
 	location.autoindex = value == "on";
 }
 
-static void handleFastCGI( t_locationData &location, const std::string value ) throw( ParsingException )
+static void fillFastCGI( t_locationData &location, const std::string value ) throw( ParsingException )
 {
 	std::string::const_iterator begin = value.begin();
 	std::string::const_iterator end = value.end();
@@ -56,6 +66,8 @@ static void handleFastCGI( t_locationData &location, const std::string value ) t
 	if ( begin != end )
 	{
 		key = extract< std::string::const_iterator & >( "\"\"", begin, end );
+		if ( location.fastcgi_param.find( key ) != location.fastcgi_param.end() )
+			throw ValueError( "Duplicate key: " + key );
 		if ( *begin == ':' )
 		{
 			_value = extract< std::string::const_iterator & >( "\"\"", ++begin, end );
@@ -67,9 +79,16 @@ static void handleFastCGI( t_locationData &location, const std::string value ) t
 				throw SyntaxError( error_msg );
 			}
 			else if ( *begin == ',' )
-				handleFastCGI( location, ( ++begin ).base() );
+				fillFastCGI( location, ( ++begin ).base() );
 		}
 	}
+}
+
+static void handleFastCGI( t_locationData &location, const std::string value ) throw( ParsingException )
+{
+	if ( location.fastcgi_param.size() )
+		throw ValueError( "Duplicate key: fastcgi_param" );
+	fillFastCGI( location, value );
 }
 
 static std::pair< std::string, castLocation > KEY_FUNCTIONS[] = {

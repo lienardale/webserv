@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/23 14:43:20 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/23 17:23:53 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,7 @@ void config::fastcgi_param_check( std::pair< const std::string, std::string > &f
 				addr_ip = "0.0.0.0";
 			}
 			sock.listen( listen, addr_ip );
+			sock.close();
 			// std::cout << "fcgi.first : " << fcgi.first << std::endl;
 			// std::cout << "fcgi.second : " << fcgi.second << std::endl;
 		}
@@ -257,7 +258,7 @@ void config::error_page_check( std::pair< const int, std::string > &error_page )
 	}
 	if ( error_page.first < 100 || error_page.first > 599 )
 		throw ValueError::ParsingException( "incorrect error code : " + SSTR( error_page.first ) +
-						   ", must be >= 100 or <= 599" );
+											", must be >= 100 or <= 599" );
 }
 
 int config::sD_index_check( const char *dir, std::string &index )
@@ -283,6 +284,7 @@ void config::serverData_check( t_serverData &sD )
 	try
 	{
 		sock.listen( sD.listen, sD.addr_ip );
+		sock.close();
 	}
 	catch ( Socket::SocketException const &e )
 	{
