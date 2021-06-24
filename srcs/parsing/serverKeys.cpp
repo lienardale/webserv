@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 14:30:56 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/24 18:11:08 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 
 static void handleListen( t_serverData &server, const std::string value ) throw( ParsingException )
 {
+	if ( server.listen != -1 )
+		throw ValueError( "Duplicate key: listen" );
 	std::size_t found = value.find( ":" );
 	if ( found != std::string::npos )
 	{
