@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
-/*   Updated: 2021/06/22 20:56:47 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/24 17:57:58 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,13 @@ class Socket
 	void serverResponse( t_serverData data );
 	void Get( t_serverData data );
 	void Post( void );
-	void Delete( void );
+	void Delete( t_serverData data );
 	void badRequest( void );
 	std::string Cgi( void );
 	bool php_file( void );
 	void directoryListing( t_serverData data );
-	void sendpage( t_serverData data, std::string content, std::string code);
+	void sendpage( t_serverData data);
+	void headerCode(std::string content, int code, t_serverData data);
 
 	// Operator overloading
 	bool operator==( const int fd ) const;
@@ -86,6 +87,8 @@ class Socket
 	char _buffer[ 30 ];
 	std::vector< std::string > _infos;
 	std::string _request;
+	std::string	_content;
+	std::string	_code;
 };
 
 #endif

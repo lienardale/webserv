@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/23 17:26:55 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/24 18:01:26 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,16 +200,22 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 										 std::istream_iterator< std::string >() );
 }
 
-void Socket::sendpage( t_serverData data, std::string content, std::string code )
+void Socket::headerCode(std::string content, int code, t_serverData data)
+{
+	!data.error_page[ code ].empty() ? _content = data.error_page[ code ] : _content = "<h1>" + content + "</h1>";
+	_code = content;
+}
+
+void Socket::sendpage( t_serverData data )
 {
 	std::ostringstream oss;
 
-	oss << "HTTP/1.1 " << code << "\r\n";
+	oss << "HTTP/1.1 " << _code << "\r\n";
 	oss << "Server: " << data.server_name.front() << "\r\n";
-	oss << "Content-Length: " << content.size() << "\r\n";
-	if ( !php_file() )
+	oss << "Content-Length: " << _content.size() << "\r\n";
+	if ( !php_file() || _code != "200 OK" )
 		oss << "\r\n";
-	oss << content;
+	oss << _content;
 	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
@@ -219,25 +225,21 @@ void Socket::directoryListing( t_serverData data )
 	DIR *dh;
 	struct dirent *contents;
 	std::string directory;
-	std::string content;
-	std::string code = "200 OK";
+	_code = "200 OK";
 
 	directory = data.root + _infos[ 1 ];
 	if ( _infos[ 1 ] == "/" )
 		directory = data.root;
 	if ( !( dh = opendir( directory.c_str() ) ) )
-	{
-		code = "404 Not Found";
-		!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
-	}
+		headerCode("404 Not Found", 404, data);
 	else
 	{
-		content += ( "<h1>Index of " + _infos[ 1 ] + "</h1>\n" );
+		_content += ( "<h1>Index of " + _infos[ 1 ] + "</h1>\n" );
 		while ( ( contents = readdir( dh ) ) != NULL )
-			content += ( "<li>" + ( std::string( contents->d_name ) + "</li>\n" ) );
+			_content += ( "<li>" + ( std::string( contents->d_name ) + "</li>\n" ) );
 	}
 	closedir( dh );
-	sendpage( data, content, code );
+	sendpage( data );
 }
 
 // check extension of a file (.php)
@@ -289,29 +291,18 @@ void Socket::badRequest( void )
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::Delete( void )
+void Socket::Delete( t_serverData data )
 {
-	std::string content = "<h1>404 Not Found</h1>";
 	std::ostringstream oss;
-	std::string code = "404 Not Found";
+	_code = "200 OK";
 
 	if ( !remove( ( "www" + _infos[ 1 ] ).c_str() ) )
-	{
-		code = "200 OK";
-		content = "<h1>" + _infos[ 1 ] + " deleted</h1>";
-	}
+		_content = "<h1>" + _infos[ 1 ] + " deleted</h1>";
 	else if ( errno != 2 )
-	{
-		code = "403 Forbidden";
-		content = "<h1>403 Forbidden</h1>";
-	}
-	oss << "HTTP/1.1 ";
-	oss << code;
-	oss << "\r\n";
-	oss << content;
-
-	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
-	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+		headerCode("403 Forbidden", 403, data);
+	else
+		headerCode("404 Not Found", 404, data);
+	sendpage( data );
 }
 
 void Socket::Post( void )
@@ -323,27 +314,25 @@ void Socket::Post( void )
 
 void Socket::Get( t_serverData data )
 {
-	std::string content;
-
-	!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
-	std::string code = "200 OK";
 	std::fstream f;
+	std::string	file;
+	_code = "200 OK";
 
 	if ( _infos[ 1 ] == "/" )
-		f.open( ( data.root + _infos[ 1 ] + data.index.front() ).c_str(), std::ios::in );
+		file = data.root + _infos[ 1 ] + data.index.front();
 	else
-		f.open( ( data.root + _infos[ 1 ] ).c_str(), std::ios::in );
-	if ( f && php_file() )
-		content = Cgi();
-	else if ( f )
-	{
-		std::string page( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
-		content = page;
-	}
+		file = data.root + _infos[ 1 ];
+	f.open(file.c_str(), std::ios::in);
+	if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access( file.c_str(), F_OK )))
+		headerCode("403 Forbidden", 403, data);
+	else if ( f.good() && php_file() )
+		_content = Cgi();	
+	else if ( f.good() )
+		_content = std::string( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
 	else
-		code = "404 Not Found";
+		headerCode("404 Not Found", 404, data);
 	f.close();
-	sendpage( data, content, code );
+	sendpage( data );
 }
 
 void Socket::serverResponse( t_serverData data )
@@ -357,7 +346,7 @@ void Socket::serverResponse( t_serverData data )
 		else if ( _infos[ 0 ] == "POST" )
 			Post();
 		else if ( _infos[ 0 ] == "DELETE" )
-			Delete();
+			Delete( data );
 	}
 	else
 		badRequest();
