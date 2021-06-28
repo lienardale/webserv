@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/24 18:01:26 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/28 16:27:57 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,7 +197,21 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 	// transform result in words table (_infos)
 	std::istringstream iss( _request );
 	_infos = std::vector< std::string >( ( std::istream_iterator< std::string >( iss ) ),
-										 std::istream_iterator< std::string >() );
+			std::istream_iterator< std::string >() );
+}
+
+/*
+ * Generic function to find if an element of any type exists in list
+ */
+template<typename T>
+
+bool contains(std::list<T> & listOfElements, const T & element)
+{
+	// Find the iterator if element in list
+	typename std::list<T>::iterator	it = std::find(listOfElements.begin(), listOfElements.end(), element);
+	//return if iterator points to end or not. It points to end then it means element
+	// does not exists in list
+	return it != listOfElements.end();
 }
 
 void Socket::headerCode(std::string content, int code, t_serverData data)
@@ -220,26 +234,34 @@ void Socket::sendpage( t_serverData data )
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::directoryListing( t_serverData data )
+void Socket::directoryListing( std::string file, t_serverData data)
 {
 	DIR *dh;
+	DIR *is_dir;
 	struct dirent *contents;
-	std::string directory;
-	_code = "200 OK";
+	std::string directory = file;
+	std::fstream f;
+	std::string d_slash;
 
-	directory = data.root + _infos[ 1 ];
-	if ( _infos[ 1 ] == "/" )
-		directory = data.root;
 	if ( !( dh = opendir( directory.c_str() ) ) )
 		headerCode("404 Not Found", 404, data);
 	else
 	{
 		_content += ( "<h1>Index of " + _infos[ 1 ] + "</h1>\n" );
 		while ( ( contents = readdir( dh ) ) != NULL )
-			_content += ( "<li>" + ( std::string( contents->d_name ) + "</li>\n" ) );
+		{
+			if ( ( is_dir = opendir(  ( data.root + _infos[ 1 ] + std::string(contents->d_name) ).c_str() ) ) )
+				d_slash = "/";
+			closedir( is_dir );	
+			if (std::string( contents->d_name ) != ".")
+				_content += ( "<li><a href=\"" +  std::string( contents->d_name ) + d_slash +  "\">" +
+						( std::string( contents->d_name ) + d_slash + "</a></li>\n" ) );
+			d_slash = "";
+		}
 	}
+	if ( directory[directory.size() - 1 ] != '/' )
+		headerCode("301 Moved Permanently", 301, data);
 	closedir( dh );
-	sendpage( data );
 }
 
 // check extension of a file (.php)
@@ -318,39 +340,101 @@ void Socket::Get( t_serverData data )
 	std::string	file;
 	_code = "200 OK";
 
-	if ( _infos[ 1 ] == "/" )
+	if ( _infos[ 1 ] == "/" )//root request
 		file = data.root + _infos[ 1 ] + data.index.front();
+	else if ( _loc && !_loc->index.front().empty() && !data.autoindex )//index in location request
+		file = data.root + _infos[ 1 ] + _loc->index.front();
 	else
-		file = data.root + _infos[ 1 ];
+		file = data.root + _infos[ 1 ];//classic path request
 	f.open(file.c_str(), std::ios::in);
-	if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access( file.c_str(), F_OK )))
-		headerCode("403 Forbidden", 403, data);
-	else if ( f.good() && php_file() )
+	if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access( file.c_str(), F_OK )))//if directory or file with no rights
+	{
+		if ( (f.good() && !f.rdbuf()->in_avail()) && data.autoindex )
+			directoryListing( file, data );
+		else
+			headerCode("403 Forbidden", 403, data);
+	}
+	else if ( f.good() && php_file() )//if .php
 		_content = Cgi();	
 	else if ( f.good() )
 		_content = std::string( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
+	else if ( _loc && !_loc->index.front().empty() && !data.autoindex )
+		headerCode("403 Forbidden", 403, data);
 	else
 		headerCode("404 Not Found", 404, data);
 	f.close();
 	sendpage( data );
 }
 
+
+//return location if matches with request's path
+t_locationData* Socket::initLocation( t_serverData data )
+{
+	std::string path1;//location path
+	std::string path2;//request path
+
+	path2 = (_infos[ 1 ][ _infos[ 1 ].size() - 1 ] == '/') ? _infos[ 1 ].substr(0, _infos[ 1 ].size() - 1)  : _infos[ 1 ];
+	for (std::list<t_locationData>::iterator it=data.locations.begin(); it != data.locations.end(); ++it)	
+	{
+		path1 = (it->path[ it->path.size() - 1 ] == '/') ? it->path.substr(0, it->path.size() - 1)  : it->path;
+		if (path1 == path2)
+			return &(*it);
+	}
+	return NULL;
+}
+
+//return true if autoindex is activated in a parent's location
+bool Socket::locAutoindex( t_serverData data )
+{
+	std::string	path1;
+
+	if (data.autoindex)
+		return true;
+	for (std::list<t_locationData>::iterator it=data.locations.begin(); it != data.locations.end(); ++it)	
+	{
+		path1 = (it->path[ it->path.size() - 1 ] == '/') ? it->path.substr(0, it->path.size() - 1)  : it->path;
+		if ( it->autoindex && _infos[ 1 ].find( path1 ) != std::string::npos )
+			return true;
+	}
+	return false;
+}
+
+//return true if method is not allowed in a parent's location
+bool Socket::methodAllowed( t_serverData data )
+{
+	std::string	path1;
+
+	for (std::list<t_locationData>::iterator it=data.locations.begin(); it != data.locations.end(); ++it)	
+	{
+		path1 = (it->path[ it->path.size() - 1 ] == '/') ? it->path.substr(0, it->path.size() - 1)  : it->path;
+		if ( _infos[ 1 ].find( path1 ) != std::string::npos && contains(it->methods, _infos[ 0 ]))
+			return false;
+	}
+	return true;
+}
+
 void Socket::serverResponse( t_serverData data )
 {
+	_loc = initLocation( data );//set location's data if there is one
+	data.autoindex = locAutoindex( data );
 	if ( _infos.size() >= 3 && _infos[ 2 ] == "HTTP/1.1" )
 	{
-		if ( _infos[ 0 ] == "GET" && !data.autoindex )
-			Get( data );
-		else if ( _infos[ 0 ] == "GET" && data.autoindex )
-			directoryListing( data );
-		else if ( _infos[ 0 ] == "POST" )
+		if ( _infos[ 0 ] == "GET" && methodAllowed( data ))
+			Get( data );	
+		else if ( _infos[ 0 ] == "POST" && methodAllowed( data ))
 			Post();
-		else if ( _infos[ 0 ] == "DELETE" )
+		else if ( _infos[ 0 ] == "DELETE" && methodAllowed( data ))
 			Delete( data );
+		else
+		{
+			headerCode("405 Method Not Allowed", 405, data);
+			sendpage( data );
+		}
 	}
 	else
 		badRequest();
 	_request.clear();
+	_content.clear();
 }
 
 /*
