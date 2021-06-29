@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/29 19:19:29 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 19:30:13 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -307,11 +307,10 @@ bool Socket::php_file()
 	return false;
 }
 
-std::string Socket::Cgi(t_serverData *data)
+std::string Socket::Cgi( )
 {
 	int fd[ 2 ];
 	char content[ 100000 ];
-	(void)data;
 	// setCgiEnv(data);
 	cgi	cgi_data(*this);
 	int pid;

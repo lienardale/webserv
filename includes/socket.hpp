@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/29 19:17:28 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 19:29:41 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 // #include <wait.h>
 #include "parsing/dataStructure.hpp"
 #include "dirent.h"
+#include "cgi.hpp"
 
 #define MAX_CONN 3
 
@@ -65,8 +66,8 @@ class Socket
 	void Post( void );
 	void Delete( t_serverData data );
 	void badRequest( void );
-	void setCgiEnv( t_serverData *data );
-	std::string Cgi( t_serverData *data );
+	void setCgiEnv( void );
+	std::string Cgi( void );
 	bool php_file( void );
 	void directoryListing( std::string file, t_serverData data );
 	void sendpage( t_serverData data);
@@ -98,6 +99,7 @@ class Socket
 	std::string	_content;
 	std::string	_code;
 	t_locationData *_loc;
+	std::map<std::string, std::string> m_request;
 };
 
 #endif
