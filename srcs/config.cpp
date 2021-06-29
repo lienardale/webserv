@@ -209,7 +209,7 @@ void config::locationData_check( t_locationData &lD )
 {
 
 	if (lD.path == NULL)
-		throw ValueError::ParsingException( "incorrect path, must be set" );
+		throw ValueError::ParsingException( "incorrect location's path, must be set" );
 
 	// checking fast_cgi_param
 	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end();
