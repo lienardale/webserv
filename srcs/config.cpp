@@ -211,13 +211,6 @@ void config::locationData_check( t_locationData &lD )
 	if ( lD.path.empty() )
 		throw ValueError::ParsingException( "incorrect location's path, must be set" );
 
-	// checking fast_cgi_param
-	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end();
-		  it++ )
-	{
-		config::fastcgi_param_check( *it, lD.root.c_str() );
-	}
-
 	// checking autoindex
 	if ( lD.autoindex != true && lD.autoindex != false )
 		throw ValueError::ParsingException( "incorrect autoindex" );
