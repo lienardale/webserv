@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/28 16:27:57 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/28 17:44:46 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,9 +223,13 @@ void Socket::headerCode(std::string content, int code, t_serverData data)
 void Socket::sendpage( t_serverData data )
 {
 	std::ostringstream oss;
+	time_t now = time(0);
+	char* dt = ctime(&now);
 
+	(void)data;
 	oss << "HTTP/1.1 " << _code << "\r\n";
-	oss << "Server: " << data.server_name.front() << "\r\n";
+	oss << "Server: Webserv" << "\r\n";
+	oss << "Date: " << dt;
 	oss << "Content-Length: " << _content.size() << "\r\n";
 	if ( !php_file() || _code != "200 OK" )
 		oss << "\r\n";

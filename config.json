@@ -11,7 +11,7 @@
         },
         "client_max_body_size": 1000,
         "root": "www/",
-        "autoindex": "off",
+        "autoindex": "on",
         "index": [
             "index.html",
             "index.php"
@@ -20,7 +20,8 @@
             {
         		"autoindex": "on",
                 "methods": [
-                    "DELETE"
+                    "DELETE",
+					"POST"
                 ],
                 "fastcgi_param": {
                     "fastcgi_pass": "127.0.0.1:9000",
@@ -31,7 +32,6 @@
             		"index.php",
             		"index.html"
         		],
-                "path": "/directory/dir",
                 "root": "www/"
             }
         ]
@@ -47,18 +47,14 @@
             "404": "error_views/404.html"
         },
         "client_max_body_size": 1000,
-        "autoindex": "off",
         "root": "./www/",
         "index": [
-            "index.php",
+            "index.html",
             "index.html"
         ],
         "location": [
             {
                 "methods": [
-                    "GET",
-                    "POST",
-                    "DELETE"
                 ],
                 "fastcgi_param": {
                     "fastcgi_pass": "127.0.0.1:9000",
