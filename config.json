@@ -18,9 +18,8 @@
         ],
         "location": [
             {
+        		"autoindex": "on",
                 "methods": [
-                    "GET",
-                    "POST",
                     "DELETE"
                 ],
                 "fastcgi_param": {
@@ -28,11 +27,11 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "index": [
-                    "index.php",
-                    "index.html"
-                ],
-                "path": "/test",
+				"index": [
+            		"index.php",
+            		"index.html"
+        		],
+                "path": "/directory/dir",
                 "root": "www/"
             }
         ]

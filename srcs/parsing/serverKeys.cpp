@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 18:11:08 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/25 19:04:29 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ static void handleRoot( t_serverData &server, const std::string value ) throw( P
 {
 	if ( server.root.size() )
 		throw ValueError( "Duplicate key: root" );
-	if ( value[ value.size() - 1 ] == '/' )
-		value.substr( 0, value.size() - 1 );
 	server.root = value;
 }
 
