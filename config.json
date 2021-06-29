@@ -56,7 +56,6 @@
         "location": [
             {
                 "methods": [
-                    "GET",
                     "POST",
                     "DELETE"
                 ],
@@ -66,7 +65,7 @@
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
                 "index": [
-                    "index.php",
+                    "test.php",
                     "index.html"
                 ],
                 "path": "/test",

@@ -208,7 +208,7 @@ int config::lD_index_check( const char *dir, std::string &index )
 void config::locationData_check( t_locationData &lD )
 {
 
-	if (lD.path == NULL)
+	if ( lD.path.empty() )
 		throw ValueError::ParsingException( "incorrect location's path, must be set" );
 
 	// checking fast_cgi_param

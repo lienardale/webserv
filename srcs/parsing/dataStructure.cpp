@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 16:14:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 14:40:17 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/29 18:43:14 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ std::ostream &operator<<( std::ostream &os, const t_locationData &l )
 	os << "\t\tautoindex: " << l.autoindex << std::endl;
 	os << "\t\tmethods: " << l.methods << std::endl;
 	os << "\t\tpath: " << l.path << std::endl;
-	os << "\t\troot: " << l.root << std::endl;
 	os << "\t}";
 	return os;
 }
