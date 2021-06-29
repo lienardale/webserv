@@ -55,6 +55,8 @@
         "location": [
             {
                 "methods": [
+                    "POST",
+                    "DELETE"
                 ],
                 "fastcgi_param": {
                     "fastcgi_pass": "127.0.0.1:9000",
@@ -62,7 +64,7 @@
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
                 "index": [
-                    "index.php",
+                    "test.php",
                     "index.html"
                 ],
                 "path": "/test",
