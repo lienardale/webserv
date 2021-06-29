@@ -32,7 +32,7 @@
             		"index.php",
             		"index.html"
         		],
-                "root": "www/"
+                "path": "/directory/dir"
             }
         ]
     },
@@ -67,8 +67,7 @@
                     "test.php",
                     "index.html"
                 ],
-                "path": "/test",
-                "root": "./www/"
+                "path": "/test"
             }
         ]
     }

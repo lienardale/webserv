@@ -6,11 +6,12 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/29 18:42:25 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/29 19:05:36 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
+#include <iostream>
 #include <map>
 #include <sys/types.h>
 
@@ -19,6 +20,7 @@
  ******************************************************************************/
 Request::Request( const std::string content )
 {
+	std::cout << content << std::endl;
 }
 
 Request::Request( const Request &other )
@@ -29,7 +31,12 @@ Request::Request( const Request &other )
 
 Request &Request::operator=( const Request &other )
 {
-	*this = other;
+	_headers = other._headers;
+	_host = other._host;
+	_method = other._method;
+	_protocol = other._protocol;
+	_uri = other._uri;
+	( void )other;
 	return *this;
 }
 
