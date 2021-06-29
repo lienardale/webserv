@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 16:14:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/21 18:27:59 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/29 18:43:14 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ std::ostream &operator<<( std::ostream &os, const t_locationData &l )
 	os << "\t\tautoindex: " << l.autoindex << std::endl;
 	os << "\t\tmethods: " << l.methods << std::endl;
 	os << "\t\tpath: " << l.path << std::endl;
-	os << "\t\troot: " << l.root << std::endl;
 	os << "\t}";
 	return os;
 }
@@ -39,4 +38,14 @@ std::ostream &operator<<( std::ostream &os, const t_serverData &l )
 	os << "}";
 
 	return os;
+}
+/************************************************************************************
+ *			Constructeurs
+ ***********************************************************************************/
+t_serverData::s_serverData( void ) : listen( -1 ), autoindex( false ), client_max_body_size( 1000 )
+{
+}
+
+t_locationData::s_locationData( void ) : autoindex( false )
+{
 }

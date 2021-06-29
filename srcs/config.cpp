@@ -207,30 +207,9 @@ int config::lD_index_check( const char *dir, std::string &index )
 
 void config::locationData_check( t_locationData &lD )
 {
-	// lD.path -> not checking validity
 
-	// lD.root
-	DIR *dirp;
-	if ( ( dirp = opendir( lD.root.c_str() ) ) == NULL )
-		throw ValueError::ParsingException( "incorrect root value : " + lD.root + ", must be existing dir" );
-	else
-		closedir( dirp );
-
-	// checking index
-	int check = 0;
-	for ( std::list< std::string >::iterator it = lD.index.begin(); it != lD.index.end(); it++ )
-	{
-		check += config::lD_index_check( lD.root.c_str(), *it );
-	}
-	if ( !check )
-		throw ValueError::ParsingException( "incorrect index value : no corresponding file found" );
-
-	// checking fast_cgi_param
-	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end();
-		  it++ )
-	{
-		config::fastcgi_param_check( *it, lD.root.c_str() );
-	}
+	if ( lD.path.empty() )
+		throw ValueError::ParsingException( "incorrect location's path, must be set" );
 
 	// checking autoindex
 	if ( lD.autoindex != true && lD.autoindex != false )

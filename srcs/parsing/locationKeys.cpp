@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 12:51:36 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 19:13:30 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,6 @@ static void handleIndex( t_locationData &location, const std::string value ) thr
 	parseStringList< std::list< std::string > & >( location.index, value );
 }
 
-static void handleRoot( t_locationData &location, const std::string value ) throw( ParsingException )
-{
-	if ( location.root.size() )
-		throw ValueError( "Duplicate key: root" );
-	location.root = value;
-}
-
 static void handlePath( t_locationData &location, const std::string value ) throw( ParsingException )
 {
 	if ( location.path.size() )
@@ -50,8 +43,6 @@ static void handleAutoindex( t_locationData &location, const std::string value )
 {
 	std::string error_msg = "Value error: autoindex value should be 'on' or 'off' not " + value;
 
-	// if ( location.autoindex == true )
-	// 	throw ValueError( "Duplicate key: Autoindex" );
 	if ( value != "on" && value != "off" )
 		throw ValueError( error_msg );
 	location.autoindex = value == "on";
@@ -92,9 +83,9 @@ static void handleFastCGI( t_locationData &location, const std::string value ) t
 }
 
 static std::pair< std::string, castLocation > KEY_FUNCTIONS[] = {
-	std::make_pair( "methods", handleMethods ),		std::make_pair( "path", handlePath ),
-	std::make_pair( "index", handleIndex ),			std::make_pair( "root", handleRoot ),
-	std::make_pair( "autoindex", handleAutoindex ), std::make_pair( "fastcgi_param", handleFastCGI ) };
+	std::make_pair( "methods", handleMethods ), std::make_pair( "path", handlePath ),
+	std::make_pair( "index", handleIndex ), std::make_pair( "autoindex", handleAutoindex ),
+	std::make_pair( "fastcgi_param", handleFastCGI ) };
 
 std::map< std::string, castLocation > castLocationMap( void )
 {
