@@ -6,7 +6,7 @@
 #    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/06/24 16:05:09 by alienard         ###   ########.fr        #
+#    Updated: 2021/06/29 19:17:12 by alienard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,8 +26,9 @@ SRCS    			=	socket\
 					parsing/dataStructure\
 					parsing/serverKeys\
 					parsing/parsingExceptions\
-					parsing/utils \
-					cgi
+					parsing/utils\
+					cgi \
+					request
 
 INCLUDES			=	-I ./includes
 

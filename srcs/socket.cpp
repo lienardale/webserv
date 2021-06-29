@@ -6,14 +6,11 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/29 18:16:51 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 19:19:29 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "socket.hpp"
-#include "cgi.hpp"
-#include <inttypes.h>
-#include <netinet/in.h>
+#include "webserv.hpp"
 
 /******************************************************************************
  *			Fonctions statiques permettant l'initialisation d'une socket
@@ -215,6 +212,8 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 	int ret = 0;
 	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) )
 		_request.append( _buffer );
+
+	Request req( _request );
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
 	
@@ -228,44 +227,68 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 										 std::istream_iterator< std::string >() );
 }
 
-void Socket::sendpage( t_serverData data, std::string content, std::string code )
+/*
+ * Generic function to find if an element of any type exists in list
+ */
+template < typename T >
+
+bool contains( std::list< T > &listOfElements, const T &element )
+{
+	// Find the iterator if element in list
+	typename std::list< T >::iterator it = std::find( listOfElements.begin(), listOfElements.end(), element );
+	// return if iterator points to end or not. It points to end then it means element
+	// does not exists in list
+	return it != listOfElements.end();
+}
+
+void Socket::headerCode( std::string content, int code, t_serverData data )
+{
+	!data.error_page[ code ].empty() ? _content = data.error_page[ code ] : _content = "<h1>" + content + "</h1>";
+	_code = content;
+}
+
+void Socket::sendpage( t_serverData data )
 {
 	std::ostringstream oss;
 
-	oss << "HTTP/1.1 " << code << "\r\n";
+	oss << "HTTP/1.1 " << _code << "\r\n";
 	oss << "Server: " << data.server_name.front() << "\r\n";
-	oss << "Content-Length: " << content.size() << "\r\n";
-	if ( !php_file() )
+	oss << "Content-Length: " << _content.size() << "\r\n";
+	if ( !php_file() || _code != "200 OK" )
 		oss << "\r\n";
-	oss << content;
+	oss << _content;
 	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
 	// std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::directoryListing( t_serverData data )
+void Socket::directoryListing( std::string file, t_serverData data )
 {
 	DIR *dh;
+	DIR *is_dir;
 	struct dirent *contents;
-	std::string directory;
-	std::string content;
-	std::string code = "200 OK";
+	std::string directory = file;
+	std::fstream f;
+	std::string d_slash;
 
-	directory = data.root + _infos[ 1 ];
-	if ( _infos[ 1 ] == "/" )
-		directory = data.root;
 	if ( !( dh = opendir( directory.c_str() ) ) )
-	{
-		code = "404 Not Found";
-		!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
-	}
+		headerCode( "404 Not Found", 404, data );
 	else
 	{
-		content += ( "<h1>Index of " + _infos[ 1 ] + "</h1>\n" );
+		_content += ( "<h1>Index of " + _infos[ 1 ] + "</h1>\n" );
 		while ( ( contents = readdir( dh ) ) != NULL )
-			content += ( "<li>" + ( std::string( contents->d_name ) + "</li>\n" ) );
+		{
+			if ( ( is_dir = opendir( ( data.root + _infos[ 1 ] + std::string( contents->d_name ) ).c_str() ) ) )
+				d_slash = "/";
+			closedir( is_dir );
+			if ( std::string( contents->d_name ) != "." )
+				_content += ( "<li><a href=\"" + std::string( contents->d_name ) + d_slash + "\">" +
+							  ( std::string( contents->d_name ) + d_slash + "</a></li>\n" ) );
+			d_slash = "";
+		}
 	}
+	if ( directory[ directory.size() - 1 ] != '/' )
+		headerCode( "301 Moved Permanently", 301, data );
 	closedir( dh );
-	sendpage( data, content, code );
 }
 
 // check extension of a file (.php)
@@ -322,29 +345,18 @@ void Socket::badRequest( void )
 	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::Delete( void )
+void Socket::Delete( t_serverData data )
 {
-	std::string content = "<h1>404 Not Found</h1>";
 	std::ostringstream oss;
-	std::string code = "404 Not Found";
+	_code = "200 OK";
 
 	if ( !remove( ( "www" + _infos[ 1 ] ).c_str() ) )
-	{
-		code = "200 OK";
-		content = "<h1>" + _infos[ 1 ] + " deleted</h1>";
-	}
+		_content = "<h1>" + _infos[ 1 ] + " deleted</h1>";
 	else if ( errno != 2 )
-	{
-		code = "403 Forbidden";
-		content = "<h1>403 Forbidden</h1>";
-	}
-	oss << "HTTP/1.1 ";
-	oss << code;
-	oss << "\r\n";
-	oss << content;
-
-	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
-	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+		headerCode( "403 Forbidden", 403, data );
+	else
+		headerCode( "404 Not Found", 404, data );
+	sendpage( data );
 }
 
 void Socket::Post( void )
@@ -356,45 +368,106 @@ void Socket::Post( void )
 
 void Socket::Get( t_serverData data )
 {
-	std::string content;
-
-	!data.error_page[ 404 ].empty() ? content = data.error_page[ 404 ] : content = "<h1>404 Not Found</h1>";
-	std::string code = "200 OK";
 	std::fstream f;
+	std::string file;
+	_code = "200 OK";
 
-	if ( _infos[ 1 ] == "/" )
-		f.open( ( data.root + _infos[ 1 ] + data.index.front() ).c_str(), std::ios::in );
+	if ( _infos[ 1 ] == "/" ) // root request
+		file = data.root + _infos[ 1 ] + data.index.front();
+	else if ( _loc && !_loc->index.front().empty() && !data.autoindex ) // index in location request
+		file = data.root + _infos[ 1 ] + _loc->index.front();
 	else
-		f.open( ( data.root + _infos[ 1 ] ).c_str(), std::ios::in );
-	if ( f && php_file() )
-		content = Cgi(&data);
-	else if ( f )
+		file = data.root + _infos[ 1 ]; // classic path request
+	f.open( file.c_str(), std::ios::in );
+	if ( ( f.good() && !f.rdbuf()->in_avail() ) ||
+		 ( !f.good() && !access( file.c_str(), F_OK ) ) ) // if directory or file with no rights
 	{
-		std::string page( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
-		content = page;
+		if ( ( f.good() && !f.rdbuf()->in_avail() ) && data.autoindex )
+			directoryListing( file, data );
+		else
+			headerCode( "403 Forbidden", 403, data );
 	}
+	else if ( f.good() && php_file() ) // if .php
+		_content = Cgi();
+	else if ( f.good() )
+		_content = std::string( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
+	else if ( _loc && !_loc->index.front().empty() && !data.autoindex )
+		headerCode( "403 Forbidden", 403, data );
 	else
-		code = "404 Not Found";
+		headerCode( "404 Not Found", 404, data );
 	f.close();
-	sendpage( data, content, code );
+	sendpage( data );
+}
+
+// return location if matches with request's path
+t_locationData *Socket::initLocation( t_serverData data )
+{
+	std::string path1; // location path
+	std::string path2; // request path
+
+	path2 = ( _infos[ 1 ][ _infos[ 1 ].size() - 1 ] == '/' ) ? _infos[ 1 ].substr( 0, _infos[ 1 ].size() - 1 )
+															 : _infos[ 1 ];
+	for ( std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it )
+	{
+		path1 = ( it->path[ it->path.size() - 1 ] == '/' ) ? it->path.substr( 0, it->path.size() - 1 ) : it->path;
+		if ( path1 == path2 )
+			return &( *it );
+	}
+	return NULL;
+}
+
+// return true if autoindex is activated in a parent's location
+bool Socket::locAutoindex( t_serverData data )
+{
+	std::string path1;
+
+	if ( data.autoindex )
+		return true;
+	for ( std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it )
+	{
+		path1 = ( it->path[ it->path.size() - 1 ] == '/' ) ? it->path.substr( 0, it->path.size() - 1 ) : it->path;
+		if ( it->autoindex && _infos[ 1 ].find( path1 ) != std::string::npos )
+			return true;
+	}
+	return false;
+}
+
+// return true if method is not allowed in a parent's location
+bool Socket::methodAllowed( t_serverData data )
+{
+	std::string path1;
+
+	for ( std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it )
+	{
+		path1 = ( it->path[ it->path.size() - 1 ] == '/' ) ? it->path.substr( 0, it->path.size() - 1 ) : it->path;
+		if ( _infos[ 1 ].find( path1 ) != std::string::npos && contains( it->methods, _infos[ 0 ] ) )
+			return false;
+	}
+	return true;
 }
 
 void Socket::serverResponse( t_serverData data )
 {
+	_loc = initLocation( data ); // set location's data if there is one
+	data.autoindex = locAutoindex( data );
 	if ( _infos.size() >= 3 && _infos[ 2 ] == "HTTP/1.1" )
 	{
-		if ( _infos[ 0 ] == "GET" && !data.autoindex )
+		if ( _infos[ 0 ] == "GET" && methodAllowed( data ) )
 			Get( data );
-		else if ( _infos[ 0 ] == "GET" && data.autoindex )
-			directoryListing( data );
-		else if ( _infos[ 0 ] == "POST" )
+		else if ( _infos[ 0 ] == "POST" && methodAllowed( data ) )
 			Post();
-		else if ( _infos[ 0 ] == "DELETE" )
-			Delete();
+		else if ( _infos[ 0 ] == "DELETE" && methodAllowed( data ) )
+			Delete( data );
+		else
+		{
+			headerCode( "405 Method Not Allowed", 405, data );
+			sendpage( data );
+		}
 	}
 	else
 		badRequest();
 	_request.clear();
+	_content.clear();
 }
 
 /*

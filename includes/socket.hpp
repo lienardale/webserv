@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/29 18:48:56 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 19:17:28 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <vector>
 #include <sys/wait.h>
+#include <algorithm>
 // #include <wait.h>
 #include "parsing/dataStructure.hpp"
 #include "dirent.h"
@@ -62,13 +63,17 @@ class Socket
 	void serverResponse( t_serverData data );
 	void Get( t_serverData data );
 	void Post( void );
-	void Delete( void );
+	void Delete( t_serverData data );
 	void badRequest( void );
 	void setCgiEnv( t_serverData *data );
 	std::string Cgi( t_serverData *data );
 	bool php_file( void );
-	void directoryListing( t_serverData data );
-	void sendpage( t_serverData data, std::string content, std::string code);
+	void directoryListing( std::string file, t_serverData data );
+	void sendpage( t_serverData data);
+	void headerCode(std::string content, int code, t_serverData data);
+	t_locationData* initLocation(t_serverData data);
+	bool locAutoindex( t_serverData data );
+	bool methodAllowed( t_serverData data );
 
 	// Operator overloading
 	bool operator==( const int fd ) const;
@@ -90,7 +95,9 @@ class Socket
 	char _buffer[ 30 ];
 	std::vector< std::string > _infos;
 	std::string _request;
-
+	std::string	_content;
+	std::string	_code;
+	t_locationData *_loc;
 };
 
 #endif

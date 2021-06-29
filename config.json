@@ -18,9 +18,8 @@
         ],
         "location": [
             {
+        		"autoindex": "on",
                 "methods": [
-                    "GET",
-                    "POST",
                     "DELETE"
                 ],
                 "fastcgi_param": {
@@ -28,12 +27,11 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "index": [
-                    "index.php",
-                    "index.html"
-                ],
-                "path": "/test",
-                "root": "www/"
+				"index": [
+            		"index.php",
+            		"index.html"
+        		],
+                "path": "/directory/dir"
             }
         ]
     },
@@ -48,8 +46,8 @@
             "404": "error_views/404.html"
         },
         "client_max_body_size": 1000,
-        "root": "www/",
         "autoindex": "off",
+        "root": "./www/",
         "index": [
             "index.php",
             "index.html"
@@ -57,7 +55,6 @@
         "location": [
             {
                 "methods": [
-                    "GET",
                     "POST",
                     "DELETE"
                 ],
@@ -67,11 +64,10 @@
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
                 "index": [
-                    "index.php",
+                    "test.php",
                     "index.html"
                 ],
-                "path": "/test",
-                "root": "www/"
+                "path": "/test"
             }
         ]
     }
