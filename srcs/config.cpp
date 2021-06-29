@@ -216,14 +216,16 @@ void config::locationData_check( t_locationData &lD )
 	else
 		closedir( dirp );
 
-	// checking index
-	int check = 0;
-	for ( std::list< std::string >::iterator it = lD.index.begin(); it != lD.index.end(); it++ )
-	{
-		check += config::lD_index_check( lD.root.c_str(), *it );
-	}
-	if ( !check )
-		throw ValueError::ParsingException( "incorrect index value : no corresponding file found" );
+	lD.path
+
+	// checking index - pas obligatoire, ne pas throw si pas present
+	// int check = 0;
+	// for ( std::list< std::string >::iterator it = lD.index.begin(); it != lD.index.end(); it++ )
+	// {
+	// 	check += config::lD_index_check( lD.root.c_str(), *it );
+	// }
+	// if ( !check )
+	// 	throw ValueError::ParsingException( "incorrect index value : no corresponding file found" );
 
 	// checking fast_cgi_param
 	for ( std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end();

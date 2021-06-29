@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 16:11:40 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 18:48:56 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ class Socket
 	void close( void );
 	Socket accept( void ) throw( Socket::SocketException );
 	void readContent( void ) throw( Socket::SocketException );
+	void parseRequest( void );
 	void serverResponse( t_serverData data );
 	void Get( t_serverData data );
 	void Post( void );
@@ -81,6 +82,7 @@ class Socket
 	};
 
   private:
+
 	int _fd;
 	int _opt;
 	struct sockaddr_in _address;
@@ -88,8 +90,6 @@ class Socket
 	char _buffer[ 30 ];
 	std::vector< std::string > _infos;
 	std::string _request;
-	// char *env[LEN_CGI_ENV + 1];
-	// std::list<char *> l_env;
 
 };
 

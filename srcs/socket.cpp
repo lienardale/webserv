@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/24 16:11:44 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 18:16:51 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,22 @@ Socket Socket::accept( void ) throw( Socket::SocketException )
 	return Socket( clientSocket, false );
 }
 
+// void Socket::parseRequest( void ){
+// 	std::string found;
+// 	size_t pos;
+// 	size_t i;
+// 	pos = 0;
+
+// 	while ((pos = request.find(" ")) != std::string::npos && i < 3)
+// 	{
+// 		if (i == 0)
+// 			t_request-> = const_cast<char*>(request.substr(0, pos).c_str());
+// 		request.erase(0, pos + 1);
+// 		std::cout << i << " | " << env[i] << std::endl;
+// 		i++;
+// 	}
+// }
+
 /*
  *	Lis la totalité du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
@@ -201,7 +217,8 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 		_request.append( _buffer );
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
-	std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
+	
+	// std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
 
 	
 
@@ -222,7 +239,7 @@ void Socket::sendpage( t_serverData data, std::string content, std::string code 
 		oss << "\r\n";
 	oss << content;
 	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
-	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+	// std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
 void Socket::directoryListing( t_serverData data )

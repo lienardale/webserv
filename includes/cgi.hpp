@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/06/24 16:07:55 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/29 18:51:19 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,26 +23,26 @@ class cgi
 			enum cgi_variables
 			{
 				// variables specifiques a la requete
-				AUTH_TYPE,
-				CONTENT_LENGTH,
+				AUTH_TYPE, // : AuthType Basic
+				CONTENT_LENGTH, // size of body (empty if none) : Content-Length: <length> 
 				CONTENT_TYPE,
 				PATH_INFO,
 				PATH_TRANSLATED,
-				QUERY_STRING,
+				QUERY_STRING, // everything after "?" in the url
 				REMOTE_ADDR,
 				REMOTE_HOST,
 				REMOTE_IDENT,
 				REMOTE_USER,
-				REQUEST_METHOD,
-				SCRIPT_NAME,
-				SERVER_PORT,
+				REQUEST_METHOD, // GET
+				SCRIPT_NAME, // SCRIPT_FILENAME in config
+				SERVER_PORT, // Host: localhost:8000 -> in request
 				SERVER_PROTOCOL,
 				// variables en rapport avec le client
-				GATEWAY_INTERFACE,
-				SERVER_NAME,
-				SERVER_SOFTWARE,
+				GATEWAY_INTERFACE, //
+				SERVER_NAME, // "webserv" or "localhost" -> in config
+				SERVER_SOFTWARE, //
 				// variables provenant du client
-				HTTP_ACCEPT,
+				HTTP_ACCEPT, 
 				HTTP_ACCEPT_LANGUAGE,
 				HTTP_USER_AGENT,
 				HTTP_COOKIE,
