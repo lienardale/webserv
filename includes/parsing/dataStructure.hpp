@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/24 14:36:39 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/29 18:43:25 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ typedef struct s_locationData
 	std::map< std::string, std::string > fastcgi_param;
 	bool autoindex;
 	std::list< std::string > methods;
-	std::string root;
 	s_locationData( void );
 
 } t_locationData;
