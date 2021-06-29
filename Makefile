@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
+#    By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/06/15 17:35:51 by dboyer           ###   ########.fr        #
+#    Updated: 2021/06/29 19:03:10 by dboyer           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,8 @@ SRCS    			=	socket\
 					parsing/dataStructure\
 					parsing/serverKeys\
 					parsing/parsingExceptions\
-					parsing/utils
+					parsing/utils\
+					request
 
 INCLUDES			=	-I ./includes
 

@@ -6,13 +6,11 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/29 10:51:20 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/29 19:01:48 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/socket.hpp"
-#include <inttypes.h>
-#include <netinet/in.h>
+#include "webserv.hpp"
 
 /******************************************************************************
  *			Fonctions statiques permettant l'initialisation d'une socket
@@ -190,6 +188,8 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 	int ret = 0;
 	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) )
 		_request.append( _buffer );
+
+	Request req( _request );
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
 	std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
