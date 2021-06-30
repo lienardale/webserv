@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
-/*   Updated: 2021/06/28 15:49:52 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/30 18:36:03 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,12 @@ class Socket
 	void directoryListing( std::string file, t_serverData data );
 	void sendpage( t_serverData data);
 	void headerCode(std::string content, int code, t_serverData data);
-	t_locationData* initLocation(t_serverData data);
-	bool locAutoindex( t_serverData data );
+	void locAutoindex( t_serverData data );
 	bool methodAllowed( t_serverData data );
+	void directory(const std::string &name);
+	void locIndex( t_serverData data );
+	bool fileExists(t_serverData data, const std::string& name );
+	void redirectDir( t_serverData data);
 
 	// Operator overloading
 	bool operator==( const int fd ) const;
@@ -93,7 +96,9 @@ class Socket
 	std::string _request;
 	std::string	_content;
 	std::string	_code;
-	t_locationData *_loc;
+	bool	_directory;
+	bool	_isDir;
+	std::string	_index;
 };
 
 #endif
