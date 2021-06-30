@@ -6,11 +6,12 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/29 19:30:13 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 10:51:00 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
+#include "cgi.hpp"
 
 /******************************************************************************
  *			Fonctions statiques permettant l'initialisation d'une socket
@@ -146,11 +147,24 @@ std::string Socket::get_request() const
 }
 
 /*
+ *	Retourne la request parsée de la socket
+ */
+Request		&Socket::get_m_request( void ) const
+{
+	return m_request;
+}
+
+/*
  *	Retourne les infos de la socket (structure sockaddr_in)
  */
 struct sockaddr_in Socket::infos() const
 {
 	return _address;
+}
+
+t_locationData &Socket::get_locationData( void ) const
+{
+	return _loc;
 }
 
 /******************************************************************************
@@ -213,15 +227,16 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) )
 		_request.append( _buffer );
 
-	Request req( _request );
+	// request parsing
+	// Request req( _request );
+	m_request( _request );
+	
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
 	
-	// std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
+	std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
 
-	
-
-	// transform result in words table (_infos)
+	// transform result in words table (_infos) 
 	std::istringstream iss( _request );
 	_infos = std::vector< std::string >( ( std::istream_iterator< std::string >( iss ) ),
 										 std::istream_iterator< std::string >() );

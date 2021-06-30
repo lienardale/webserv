@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/29 19:29:41 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 10:48:51 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 // #include <wait.h>
 #include "parsing/dataStructure.hpp"
 #include "dirent.h"
-#include "cgi.hpp"
+// #include "cgi.hpp"
 
 #define MAX_CONN 3
 
@@ -53,7 +53,9 @@ class Socket
 	// Getters
 	int Fd( void ) const;
 	std::string get_request( void ) const;
+	Request		&get_m_request( void ) const;
 	struct sockaddr_in infos( void ) const;
+	t_locationData &get_locationData( void ) const;
 
 	// Member functions
 	void listen( const int port, const std::string ) throw( Socket::SocketException );
@@ -99,7 +101,7 @@ class Socket
 	std::string	_content;
 	std::string	_code;
 	t_locationData *_loc;
-	std::map<std::string, std::string> m_request;
+	Request m_request;
 };
 
 #endif

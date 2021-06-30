@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/06/29 18:51:19 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 10:18:27 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <string>
 #include "parsing/dataStructure.hpp"
 #include "webserv.hpp"
-#include "socket.hpp"
 
 class cgi
 {
@@ -80,19 +79,22 @@ class cgi
 				std::string _http_user_agent;
 				std::string _http_cookie;
 			};
-			
-			char *env[LEN_CGI_ENV + 1];
+
+			meta_var	s_env;
+			char 		*env[LEN_CGI_ENV + 1];
 			cgi();
 		public:
-			cgi(Socket &sock) throw( cgi::CGIException );
+			cgi(Socket &sock)/* throw( cgi::CGIException )*/;
 			cgi(const cgi&);
 			~cgi();
 			cgi&	operator=(const cgi&);
-			int	setCgiEnv( Socket &sock );
+			void	setCgi( Socket &sock );
+			void	setCgiMetaVar( Socket &sock );
+			void	setCgiEnv( void );
 
-			class CGIException : public std::exception
-			{
-				public:
-					const char *what( void ) const throw();
-			};
+			// class CGIException : public std::exception
+			// {
+			// 	public:
+			// 		const char *what( void ) const throw();
+			// };
 };
