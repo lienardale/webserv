@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/30 12:13:01 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 17:38:45 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ std::string Socket::get_request() const
 /*
  *	Retourne la request parsée de la socket
  */
-Request		*Socket::get_m_request( void ) const
+Request		Socket::get_m_request( void ) const
 {
 	return m_request;
 }
@@ -217,8 +217,7 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 		_request.append( _buffer );
 
 	// request parsing
-	Request req( _request );
-	m_request = &req;
+	m_request = Request( _request );
 	
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
@@ -317,6 +316,9 @@ std::string Socket::Cgi( t_serverData &data )
 	char content[ 100000 ];
 	// setCgiEnv(data);
 	cgi	cgi_data(*this, data);
+	for (int i = 0; cgi_data.getCgiEnv()[i]; i++){
+		std::cout << "env["<<i<<"] = |" << cgi_data.getCgiEnv()[i]<<"|" << std::endl;
+	}
 	int pid;
 
 	pipe( fd );
