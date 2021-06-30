@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/06/30 17:44:16 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 18:15:10 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ class cgi
 			void	setCgi( Socket &sock, t_serverData &data );
 			void	setCgiMetaVar( Socket &sock, t_serverData &data);
 			void	setCgiEnv( void );
+			std::string parseURI(std::string uri);
 			char	**getCgiEnv( void );
 
 			// class CGIException : public std::exception
