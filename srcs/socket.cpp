@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/30 18:41:06 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/30 19:04:35 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
+#include "cgi.hpp"
 
 /******************************************************************************
  *			Fonctions statiques permettant l'initialisation d'une socket
@@ -138,11 +139,37 @@ int Socket::Fd() const
 }
 
 /*
+ *	Retourne la request de la socket
+ */
+std::string Socket::get_request() const
+{
+	return _request;
+}
+
+/*
+ *	Retourne la request parsée de la socket
+ */
+Request		*Socket::get_m_request( void ) const
+{
+	return m_request;
+}
+
+/*
  *	Retourne les infos de la socket (structure sockaddr_in)
  */
 struct sockaddr_in Socket::infos() const
 {
 	return _address;
+}
+
+t_locationData *Socket::get_locationData( void ) const
+{
+	return _loc;
+}
+
+std::vector< std::string > Socket::get_infos( void ) const
+{
+	return _infos;
 }
 
 /******************************************************************************
@@ -189,12 +216,16 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) )
 		_request.append( _buffer );
 
+	// request parsing
 	Request req( _request );
+	m_request = &req;
+	
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
+	
 	std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
 
-	// transform result in words table (_infos)
+	// transform result in words table (_infos) 
 	std::istringstream iss( _request );
 	_infos = std::vector< std::string >( ( std::istream_iterator< std::string >( iss ) ),
 										 std::istream_iterator< std::string >() );
@@ -254,7 +285,7 @@ void Socket::sendpage( t_serverData data )
 		oss << "\r\n";
 	oss << _content;
 	send( _fd, oss.str().c_str(), oss.str().size(), 0 );
-	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+	// std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
 void Socket::directoryListing( std::string file, t_serverData data )
@@ -303,10 +334,12 @@ bool Socket::php_file()
 	return false;
 }
 
-std::string Socket::Cgi()
+std::string Socket::Cgi( t_serverData &data )
 {
 	int fd[ 2 ];
 	char content[ 100000 ];
+	// setCgiEnv(data);
+	cgi	cgi_data(*this, data);
 	int pid;
 
 	pipe( fd );
@@ -315,7 +348,9 @@ std::string Socket::Cgi()
 		dup2( fd[ 1 ], STDOUT_FILENO );
 		::close( fd[ 0 ] );
 		::close( fd[ 1 ] );
-		execl( "php-cgi", "php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL );
+		execl( "cgi-bin/php-cgi", "cgi-bin/php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL );
+		// execl( "php-cgi", "php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL, data->env );
+		// execve(  , , data->env );
 	}
 	::close( fd[ 1 ] );
 	read( fd[ 0 ], content, sizeof( content ) );
@@ -379,7 +414,7 @@ void Socket::Get( t_serverData data )
 			headerCode( "403 Forbidden", 403, data );
 	}
 	else if ( f.good() && php_file() ) // if .php
-		_content = Cgi();
+		_content = Cgi( data );
 	else if ( f.good() )
 		_content = std::string( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
 	else if ( _directory && !_index.empty() && !data.autoindex )
