@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/30 10:51:00 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 12:13:01 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ std::string Socket::get_request() const
 /*
  *	Retourne la request parsée de la socket
  */
-Request		&Socket::get_m_request( void ) const
+Request		*Socket::get_m_request( void ) const
 {
 	return m_request;
 }
@@ -162,9 +162,14 @@ struct sockaddr_in Socket::infos() const
 	return _address;
 }
 
-t_locationData &Socket::get_locationData( void ) const
+t_locationData *Socket::get_locationData( void ) const
 {
 	return _loc;
+}
+
+std::vector< std::string > Socket::get_infos( void ) const
+{
+	return _infos;
 }
 
 /******************************************************************************
@@ -201,22 +206,6 @@ Socket Socket::accept( void ) throw( Socket::SocketException )
 	return Socket( clientSocket, false );
 }
 
-// void Socket::parseRequest( void ){
-// 	std::string found;
-// 	size_t pos;
-// 	size_t i;
-// 	pos = 0;
-
-// 	while ((pos = request.find(" ")) != std::string::npos && i < 3)
-// 	{
-// 		if (i == 0)
-// 			t_request-> = const_cast<char*>(request.substr(0, pos).c_str());
-// 		request.erase(0, pos + 1);
-// 		std::cout << i << " | " << env[i] << std::endl;
-// 		i++;
-// 	}
-// }
-
 /*
  *	Lis la totalité du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
@@ -228,8 +217,8 @@ void Socket::readContent( void ) throw( Socket::SocketException )
 		_request.append( _buffer );
 
 	// request parsing
-	// Request req( _request );
-	m_request( _request );
+	Request req( _request );
+	m_request = &req;
 	
 	if ( ret < 0 )
 		throw( Socket::SocketException() );
@@ -322,12 +311,12 @@ bool Socket::php_file()
 	return false;
 }
 
-std::string Socket::Cgi( )
+std::string Socket::Cgi( t_serverData &data )
 {
 	int fd[ 2 ];
 	char content[ 100000 ];
 	// setCgiEnv(data);
-	cgi	cgi_data(*this);
+	cgi	cgi_data(*this, data);
 	int pid;
 
 	pipe( fd );
@@ -402,7 +391,7 @@ void Socket::Get( t_serverData data )
 			headerCode( "403 Forbidden", 403, data );
 	}
 	else if ( f.good() && php_file() ) // if .php
-		_content = Cgi();
+		_content = Cgi( data );
 	else if ( f.good() )
 		_content = std::string( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
 	else if ( _loc && !_loc->index.front().empty() && !data.autoindex )
