@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/29 18:28:42 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/30 12:05:32 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 class Request
 {
   public:
+	Request( void ); // Private default constructor
 	Request( const std::string content );
 	Request( const Request &other );
 	Request &operator=( const Request &other );
@@ -40,7 +41,6 @@ class Request
 	std::string _host;
 	std::map< std::string, std::string > _headers;
 
-	Request( void ); // Private default constructor
 };
 
 #endif

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Updated: 2021/06/10 19:04:52 by dboyer           ###   ########.fr       */
-/*   Updated: 2021/06/28 15:49:52 by pcariou          ###   ########.fr       */
+/*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
+/*   Updated: 2021/06/30 12:13:45 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 // #include <wait.h>
 #include "parsing/dataStructure.hpp"
 #include "dirent.h"
+#include "request.hpp"
 
 #define MAX_CONN 3
 
@@ -51,19 +52,25 @@ class Socket
 
 	// Getters
 	int Fd( void ) const;
+	std::string get_request( void ) const;
+	Request		*get_m_request( void ) const;
 	struct sockaddr_in infos( void ) const;
+	t_locationData *get_locationData( void ) const;
+	std::vector< std::string > get_infos( void ) const;
 
 	// Member functions
 	void listen( const int port, const std::string ) throw( Socket::SocketException );
 	void close( void );
 	Socket accept( void ) throw( Socket::SocketException );
 	void readContent( void ) throw( Socket::SocketException );
+	void parseRequest( void );
 	void serverResponse( t_serverData data );
 	void Get( t_serverData data );
 	void Post( void );
 	void Delete( t_serverData data );
 	void badRequest( void );
-	std::string Cgi( void );
+	void setCgiEnv( void );
+	std::string Cgi( t_serverData &data );
 	bool php_file( void );
 	void directoryListing( std::string file, t_serverData data );
 	void sendpage( t_serverData data);
@@ -84,6 +91,7 @@ class Socket
 	};
 
   private:
+
 	int _fd;
 	int _opt;
 	struct sockaddr_in _address;
@@ -94,6 +102,7 @@ class Socket
 	std::string	_content;
 	std::string	_code;
 	t_locationData *_loc;
+	Request *m_request;
 };
 
 #endif
