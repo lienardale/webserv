@@ -32,7 +32,7 @@ class Parser
     Parser &operator=(const Parser &other);
     ~Parser(void);
 
-    std::list< t_serverData > parse(void) throw(ParsingException);
+    std::list<t_serverData> parse(void) throw(ParsingException);
 
   private:
     std::string _content;

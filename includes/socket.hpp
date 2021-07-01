@@ -56,7 +56,7 @@ class Socket
     Request get_m_request(void) const;
     struct sockaddr_in infos(void) const;
     t_locationData *get_locationData(void) const;
-    std::vector< std::string > get_infos(void) const;
+    std::vector<std::string> get_infos(void) const;
 
     // Member functions
     void listen(const int port, const std::string) throw(Socket::SocketException);
@@ -99,7 +99,7 @@ class Socket
     struct sockaddr_in _address;
     socklen_t _socklen;
     char _buffer[30];
-    std::vector< std::string > _infos;
+    std::vector<std::string> _infos;
     std::string _request;
     std::string _content;
     std::string _code;

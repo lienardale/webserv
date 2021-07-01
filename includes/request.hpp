@@ -32,7 +32,7 @@ class Request
     std::string method(void) const;
     std::string uri(void) const;
     std::string protocol(void) const;
-    std::map< std::string, std::string > getHeader(void) const;
+    std::map<std::string, std::string> getHeader(void) const;
 
     /**************************************************************************
      *				Fonctions membres
@@ -44,7 +44,7 @@ class Request
     std::string _uri;
     std::string _protocol;
     std::string _host;
-    std::map< std::string, std::string > _headers;
+    std::map<std::string, std::string> _headers;
 };
 
 std::ostream &operator<<(std::ostream &os, const Request &r);

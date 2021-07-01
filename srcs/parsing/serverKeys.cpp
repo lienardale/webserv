@@ -37,7 +37,7 @@ static void handleServerName(t_serverData &server, const std::string value) thro
 {
     if (server.server_name.size())
         throw ValueError("Duplicate key: server_name");
-    parseStringList< std::list< std::string > & >(server.server_name, value);
+    parseStringList<std::list<std::string> &>(server.server_name, value);
 }
 
 static void handleAutoindex(t_serverData &server, const std::string value) throw(ParsingException)
@@ -65,7 +65,7 @@ static void handleIndex(t_serverData &server, const std::string value) throw(Par
 {
     if (server.index.size())
         throw ValueError("Duplicate key: index");
-    parseStringList< std::list< std::string > & >(server.index, value);
+    parseStringList<std::list<std::string> &>(server.index, value);
 }
 
 static void fillErrorPage(t_serverData &server, const std::string value) throw(ParsingException)
@@ -76,12 +76,12 @@ static void fillErrorPage(t_serverData &server, const std::string value) throw(P
 
     if (begin != end)
     {
-        key = extract< std::string::const_iterator & >("\"\"", begin, end);
+        key = extract<std::string::const_iterator &>("\"\"", begin, end);
         if (server.error_page.find(strToInt(key)) != server.error_page.end())
             throw ValueError("Duplicate key: " + key);
         if (*begin == ':')
         {
-            _value = extract< std::string::const_iterator & >("\"\"", ++begin, end);
+            _value = extract<std::string::const_iterator &>("\"\"", ++begin, end);
             server.error_page[strToInt(key)] = _value;
             if (*begin == ',' && *(begin + 1) != '"')
             {
@@ -106,10 +106,10 @@ static void handleLocation(t_serverData &server, const std::string value) throw(
 {
     if (server.locations.size())
         throw ValueError("Duplicate key: location");
-    server.locations = parseStructList< t_locationData, castLocation >(castLocationMap(), value);
+    server.locations = parseStructList<t_locationData, castLocation>(castLocationMap(), value);
 }
 
-static std::pair< std::string, castServer > KEY_FUNCTIONS[] = {
+static std::pair<std::string, castServer> KEY_FUNCTIONS[] = {
     std::make_pair("listen", handleListen),
     std::make_pair("server_name", handleServerName),
     std::make_pair("error_page", handleErrorPage),
@@ -120,8 +120,8 @@ static std::pair< std::string, castServer > KEY_FUNCTIONS[] = {
     std::make_pair("location", handleLocation),
 };
 
-std::map< std::string, castServer > castServerMap(void)
+std::map<std::string, castServer> castServerMap(void)
 {
-    return std::map< std::string, castServer >(KEY_FUNCTIONS,
-                                               KEY_FUNCTIONS + sizeof(KEY_FUNCTIONS) / sizeof(*KEY_FUNCTIONS));
+    return std::map<std::string, castServer>(KEY_FUNCTIONS,
+                                             KEY_FUNCTIONS + sizeof(KEY_FUNCTIONS) / sizeof(*KEY_FUNCTIONS));
 }

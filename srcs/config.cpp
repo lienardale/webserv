@@ -119,7 +119,7 @@ void config::methods_check(std::string &method)
         throw ValueError::ParsingException("incorrect method value : " + method + ", must be GET, POST, and/or DELETE");
 }
 
-void config::fastcgi_param_check(std::pair< const std::string, std::string > &fcgi, const char *root)
+void config::fastcgi_param_check(std::pair<const std::string, std::string> &fcgi, const char *root)
 {
     // std::cout << "fcgi.first : " << fcgi.first << std::endl;
     // std::cout << "fcgi.second : " << fcgi.second << std::endl;
@@ -196,19 +196,19 @@ void config::locationData_check(t_locationData &lD)
         throw ValueError::ParsingException("incorrect autoindex");
 
     // checking methods
-    for (std::list< std::string >::iterator it = lD.methods.begin(); it != lD.methods.end(); it++)
+    for (std::list<std::string>::iterator it = lD.methods.begin(); it != lD.methods.end(); it++)
     {
         config::methods_check(*it);
     }
 }
 
-void config::error_page_check(std::pair< const int, std::string > &error_page)
+void config::error_page_check(std::pair<const int, std::string> &error_page)
 {
     std::fstream fs;
     fs.open(error_page.second.c_str(), std::fstream::in);
     if (fs.is_open())
     {
-        std::string page((std::istreambuf_iterator< char >(fs)), std::istreambuf_iterator< char >());
+        std::string page((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
         error_page.second = page;
         fs.close();
     }
@@ -232,20 +232,20 @@ void config::serverData_check(t_serverData &sD)
         throw ValueError::ParsingException("incorrect client_max_body_size : " + SSTR(sD.client_max_body_size) +
                                            " must be > 0");
 
-    for (std::map< int, std::string >::iterator it = sD.error_page.begin(); it != sD.error_page.end(); it++)
+    for (std::map<int, std::string>::iterator it = sD.error_page.begin(); it != sD.error_page.end(); it++)
         config::error_page_check(*it);
 
-    for (std::list< t_locationData >::iterator it = sD.locations.begin(); it != sD.locations.end(); it++)
+    for (std::list<t_locationData>::iterator it = sD.locations.begin(); it != sD.locations.end(); it++)
     {
         config::locationData_check(*it);
     }
 }
 
-void config::config_check(std::list< t_serverData > *_content) throw(ParsingException)
+void config::config_check(std::list<t_serverData> *_content) throw(ParsingException)
 {
-    std::list< std::string >::iterator it_name;
-    std::map< std::string, bool > map_name;
-    for (std::list< t_serverData >::iterator it = _content->begin(); it != _content->end(); it++)
+    std::list<std::string>::iterator it_name;
+    std::map<std::string, bool> map_name;
+    for (std::list<t_serverData>::iterator it = _content->begin(); it != _content->end(); it++)
     {
         /*
             Several servers can listen on the same port
@@ -279,7 +279,7 @@ void config::set(t_serverData *data)
         data->index.push_back("index.html");
 }
 
-std::list< t_serverData > config::getContent() const
+std::list<t_serverData> config::getContent() const
 {
     return this->_content;
 }
