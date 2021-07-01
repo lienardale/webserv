@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 12:27:56 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 14:30:39 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,7 @@ template < typename T >
 
 bool contains( std::list< T > &listOfElements, const T &element )
 {
-	// Find the iterator if element in list
+	// Find the iterator if element in li st
 	typename std::list< T >::iterator it = std::find( listOfElements.begin(), listOfElements.end(), element );
 	// return if iterator points to end or not. It points to end then it means element
 	// does not exists in list
@@ -249,6 +249,18 @@ bool contains( std::list< T > &listOfElements, const T &element )
 
 void Socket::headerCode( std::string content, int code, t_serverData data )
 {
+	if (!data.error_page[ code ].empty() && data.error_page[code] == "error_page_not_valid" && code != 404)
+	{
+		!data.error_page[ 404 ].empty() ? _content = data.error_page[ 404 ] : _content = "<h1>" + content + "</h1>";
+		_code = "404 Not Found";
+		return ;
+	}
+	if (!data.error_page[ code ].empty() && data.error_page[code] == "error_page_not_valid")
+	{
+		_content = "<h1>" + content + "</h1>";
+		_code = content;
+		return ;
+	}
 	!data.error_page[ code ].empty() ? _content = data.error_page[ code ] : _content = "<h1>" + content + "</h1>";
 	_code = content;
 }
@@ -256,10 +268,21 @@ void Socket::headerCode( std::string content, int code, t_serverData data )
 void Socket::sendpage( t_serverData data )
 {
 	std::ostringstream oss;
+	time_t now = time(0);
+	char* dt = ctime(&now);
 
+	(void)data;
 	oss << "HTTP/1.1 " << _code << "\r\n";
-	oss << "Server: " << data.server_name.front() << "\r\n";
+	oss << "Server: Webserv" << "\r\n";
+	oss << "Date: " << dt;
 	oss << "Content-Length: " << _content.size() << "\r\n";
+	if (_code == "301 Moved Permanently")
+	{
+		oss << "Location: http://localhost:8000" + _infos[1] + "/";
+		if (_isDir)
+			oss << _index;
+		oss << "\r\n";
+	}
 	if ( !php_file() || _code != "200 OK" )
 		oss << "\r\n";
 	oss << _content;
@@ -380,10 +403,8 @@ void Socket::Get( t_serverData data )
 	std::string file;
 	_code = "200 OK";
 
-	if ( _infos[ 1 ] == "/" ) // root request
-		file = data.root + _infos[ 1 ] + data.index.front();
-	else if ( _loc && !_loc->index.front().empty() && !data.autoindex ) // index in location request
-		file = data.root + _infos[ 1 ] + _loc->index.front();
+	if ( _infos[ 1 ] == "/" || (_directory && !_index.empty() && !data.autoindex) ) // directory request
+		file = data.root + _infos[ 1 ] + _index;
 	else
 		file = data.root + _infos[ 1 ]; // classic path request
 	f.open( file.c_str(), std::ios::in );
@@ -392,6 +413,8 @@ void Socket::Get( t_serverData data )
 	{
 		if ( ( f.good() && !f.rdbuf()->in_avail() ) && data.autoindex )
 			directoryListing( file, data );
+		else if ( f.good() && !f.rdbuf()->in_avail() && !_index.empty() )
+			headerCode( "301 Moved Permanently", 301, data );
 		else
 			headerCode( "403 Forbidden", 403, data );
 	}
@@ -399,7 +422,7 @@ void Socket::Get( t_serverData data )
 		_content = Cgi( data );
 	else if ( f.good() )
 		_content = std::string( ( std::istreambuf_iterator< char >( f ) ), std::istreambuf_iterator< char >() );
-	else if ( _loc && !_loc->index.front().empty() && !data.autoindex )
+	else if ( _directory && !_index.empty() && !data.autoindex )
 		headerCode( "403 Forbidden", 403, data );
 	else
 		headerCode( "404 Not Found", 404, data );
@@ -407,41 +430,72 @@ void Socket::Get( t_serverData data )
 	sendpage( data );
 }
 
-// return location if matches with request's path
-t_locationData *Socket::initLocation( t_serverData data )
-{
-	std::string path1; // location path
-	std::string path2; // request path
-
-	path2 = ( _infos[ 1 ][ _infos[ 1 ].size() - 1 ] == '/' ) ? _infos[ 1 ].substr( 0, _infos[ 1 ].size() - 1 )
-															 : _infos[ 1 ];
-	for ( std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it )
-	{
-		path1 = ( it->path[ it->path.size() - 1 ] == '/' ) ? it->path.substr( 0, it->path.size() - 1 ) : it->path;
-		if ( path1 == path2 )
-			return &( *it );
-	}
-	return NULL;
-}
-
-// return true if autoindex is activated in a parent's location
-bool Socket::locAutoindex( t_serverData data )
+// set autoindex true if autoindex is activated in a parent's location
+void	Socket::locAutoindex( t_serverData data )
 {
 	std::string path1;
 
-	if ( data.autoindex )
-		return true;
 	for ( std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it )
 	{
 		path1 = ( it->path[ it->path.size() - 1 ] == '/' ) ? it->path.substr( 0, it->path.size() - 1 ) : it->path;
 		if ( it->autoindex && _infos[ 1 ].find( path1 ) != std::string::npos )
-			return true;
+			data.autoindex = true;
 	}
-	return false;
+}
+
+// check if path/
+void	Socket::directory(const std::string &name)
+{
+	_directory = (*name.rbegin() == '/') ? true : false;
+}
+
+bool	Socket::fileExists(t_serverData data, const std::string& name )
+{
+	bool	exists;
+
+	//std::cout << data.root + _infos[1] + "/" + name;
+	std::ifstream f((data.root + _infos[1] + "/" + name).c_str());
+	exists = f.good();
+	f.close();
+	return exists;
+}
+
+// check which file to use in index
+// set index if set in a parent's location
+void	Socket::locIndex( t_serverData data )
+{
+	std::string path1;
+
+	for ( std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it )
+	{
+		if (!it->empty() && fileExists(data, *it))
+		{
+			_index = *it;
+			break ;
+		}
+	}
+	for ( std::list< t_locationData >::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1 )
+	{
+		path1 = ( it1->path[ it1->path.size() - 1 ] == '/' ) ? it1->path.substr( 0, it1->path.size() - 1 ) : it1->path;
+		if ( !it1->index.front().empty() && _infos[ 1 ].find( path1 ) != std::string::npos )
+		{
+			for ( std::list< std::string >::iterator it2 = it1->index.begin(); it2 != it1->index.end(); ++it2 )
+			{
+				if (!it2->empty() && fileExists(data, *it2))
+				{
+					_index = *it2;
+					break ;
+				}
+			}
+		}
+	}
+	std::ifstream f((data.root + _infos[1] + "/" + _index).c_str());
+	_isDir = ( f.good() && !f.rdbuf()->in_avail() ) ? true : false ;
+	f.close();
 }
 
 // return true if method is not allowed in a parent's location
-bool Socket::methodAllowed( t_serverData data )
+bool	Socket::methodAllowed( t_serverData data )
 {
 	std::string path1;
 
@@ -456,8 +510,9 @@ bool Socket::methodAllowed( t_serverData data )
 
 void Socket::serverResponse( t_serverData data )
 {
-	_loc = initLocation( data ); // set location's data if there is one
-	data.autoindex = locAutoindex( data );
+	directory(_infos[1]);
+	locIndex( data );
+	locAutoindex( data );
 	if ( _infos.size() >= 3 && _infos[ 2 ] == "HTTP/1.1" )
 	{
 		if ( _infos[ 0 ] == "GET" && methodAllowed( data ) )
