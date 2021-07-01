@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/06/30 10:45:40 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 18:04:00 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,12 @@ class Server
     //    Member functions
     void listen(void);
     void stop(void);
-    void init(const std::list<t_serverData> &configs, uint32_t timeout);
+    void init(const std::list< t_serverData > &configs, uint32_t timeout);
 
   private:
     struct timeval _timeout;
-    std::list<t_serverData> _configs;
-    std::map<int, std::pair<Socket, t_serverData>> _serverSet;
+    std::list< t_serverData > _configs;
+    std::map< int, std::pair< Socket, t_serverData > > _serverSet;
     Socket _currentSock;
     t_serverData _currentData;
     bool _run;
