@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 17:03:40 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 18:04:28 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ t_locationData *Socket::get_locationData(void) const
     return _loc;
 }
 
-std::vector<std::string> Socket::get_infos(void) const
+std::vector< std::string > Socket::get_infos(void) const
 {
     return _infos;
 }
@@ -239,18 +239,19 @@ void Socket::readContent(void) throw(Socket::SocketException)
 
     // transform result in words table (_infos)
     std::istringstream iss(_request);
-    _infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    _infos =
+        std::vector< std::string >((std::istream_iterator< std::string >(iss)), std::istream_iterator< std::string >());
 }
 
 /*
  * Generic function to find if an element of any type exists in list
  */
-template <typename T>
+template < typename T >
 
-bool contains(std::list<T> &listOfElements, const T &element)
+bool contains(std::list< T > &listOfElements, const T &element)
 {
     // Find the iterator if element in li st
-    typename std::list<T>::iterator it = std::find(listOfElements.begin(), listOfElements.end(), element);
+    typename std::list< T >::iterator it = std::find(listOfElements.begin(), listOfElements.end(), element);
     // return if iterator points to end or not. It points to end then it means
     // element does not exists in list
     return it != listOfElements.end();
@@ -427,7 +428,7 @@ void Socket::Get(t_serverData data)
     else if (f.good() && php_file()) // if .php
         _content = Cgi(data);
     else if (f.good())
-        _content = std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        _content = std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >());
     else if (_directory && !_index.empty() && !data.autoindex)
         headerCode("403 Forbidden", 403, data);
     else
@@ -441,7 +442,7 @@ void Socket::locAutoindex(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<t_locationData>::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (it->autoindex && _infos[1].find(path1) != std::string::npos)
@@ -472,7 +473,7 @@ void Socket::locIndex(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<std::string>::iterator it = data.index.begin(); it != data.index.end(); ++it)
+    for (std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it)
     {
         if (!it->empty() && fileExists(data, *it))
         {
@@ -480,12 +481,12 @@ void Socket::locIndex(t_serverData data)
             break;
         }
     }
-    for (std::list<t_locationData>::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
+    for (std::list< t_locationData >::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
     {
         path1 = (it1->path[it1->path.size() - 1] == '/') ? it1->path.substr(0, it1->path.size() - 1) : it1->path;
         if (!it1->index.front().empty() && _infos[1].find(path1) != std::string::npos)
         {
-            for (std::list<std::string>::iterator it2 = it1->index.begin(); it2 != it1->index.end(); ++it2)
+            for (std::list< std::string >::iterator it2 = it1->index.begin(); it2 != it1->index.end(); ++it2)
             {
                 if (!it2->empty() && fileExists(data, *it2))
                 {
@@ -505,7 +506,7 @@ bool Socket::methodAllowed(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<t_locationData>::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (_infos[1].find(path1) != std::string::npos && contains(it->methods, _infos[0]))
