@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/23 17:33:12 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/06/30 13:00:10 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,9 @@ void http::Server::_handleReady( int epoll_fd, const int fd,
 		{
 			_currentSock = Socket( fd, true );
 			_currentSock.readContent();
+			// si chunk, retourner au listen du fd correspondant
 			_currentSock.serverResponse( _currentData );
+			// close si pas chunked et si time < keep_alive
 			close( fd );
 		}
 		catch ( Socket::SocketException &e )

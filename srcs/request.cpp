@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 14:49:31 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 15:25:41 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,10 @@ static void extractHeader(std::map<std::string, std::string> &headers, std::stri
 /******************************************************************************
  *               Constructeurs
  ******************************************************************************/
+Request::Request(void)
+{
+}
+
 Request::Request(std::string content) throw(ParsingException)
 {
     int n = 0;

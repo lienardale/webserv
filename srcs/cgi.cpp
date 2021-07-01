@@ -6,11 +6,12 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/01 14:39:40 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 15:13:17 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
+#include <stdlib.h>
 
 /******************************************************************************
  *				Constructeurs et Destructeurs
@@ -58,6 +59,15 @@ cgi &cgi::operator=(const cgi &obj)
 // }
 
 /******************************************************************************
+ *					Geters
+ *****************************************************************************/
+
+char **cgi::getCgiEnv(void)
+{
+    return this->env;
+}
+
+/******************************************************************************
  *							Fonction membres
  *****************************************************************************/
 
@@ -86,30 +96,42 @@ cgi &cgi::operator=(const cgi &obj)
 // }
 // env[LEN_CGI_ENV] = NULL;
 
+std::string cgi::parseURI(std::string uri)
+{
+    size_t pos;
+
+    if ((pos = uri.find("?")) != std::string::npos)
+        return uri.substr(pos + 1, uri.size());
+    return "";
+}
+
 void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
 {
     (void)data;
-    s_env._auth_type = "AUTH_TYPE=" + sock.get_m_request()->header("AuthType");
-    s_env._content_length = "CONTENT_LENGTH=" + sock.get_m_request()->header("Content-Length");
-    s_env._content_type = "CONTENT_TYPE=" + sock.get_m_request()->header("Content-Type");
-    s_env._path_info = "PATH_INFO=" + sock.get_infos()[1];
-    s_env._path_translated = "PATH_TRANSLATED=" + sock.get_m_request()->header("      ");
-    s_env._query_string = "QUERY_STRING=" + sock.get_m_request()->uri(); // to parse
-    s_env._remote_addr = "REMOTE_ADDR=" + sock.get_m_request()->header("              ");
-    s_env._remote_host = "REMOTE_HOST=" + sock.get_m_request()->header("Host");
-    s_env._remote_ident = "REMOTE_IDENT=" + sock.get_m_request()->header("            ");
-    s_env._remote_user = "REMOTE_USER=" + sock.get_m_request()->header("              ");
-    s_env._request_method = "REQUEST_METHOD=" + sock.get_m_request()->method();
-    s_env._script_name = "SCRIPT_NAME=" + sock.get_m_request()->header("              ");
-    s_env._server_port = "SERVER_PORT=" + sock.get_m_request()->header("              ");
-    s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request()->protocol();
-    s_env._gateway_interface = "GATEWAY_INTERFACE=" + sock.get_m_request()->header("AuthType");
-    s_env._server_name = "SERVER_NAME=" + sock.get_m_request()->header("              ");
-    s_env._server_software = "SERVER_SOFTWARE=" + sock.get_m_request()->header("      ");
-    s_env._http_accept = "HTTP_ACCEPT=" + sock.get_m_request()->header("Accept");
-    s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + sock.get_m_request()->header("Accept-Language");
-    s_env._http_user_agent = "HTTP_USER_AGENT=" + sock.get_m_request()->header("User-Agent");
-    s_env._http_cookie = "HTTP_COOKIE=" + sock.get_m_request()->header("AuthType");
+    //  char buffer [33];
+    // std::cout << "\nIN SET CGI META VAR\n" << std::endl;
+    // std::cout << "\nAUTH TYPE : "<< sock.get_m_request().header( "AuthType" ) << std::endl;
+    s_env._auth_type = "AUTH_TYPE=" + sock.get_m_request().header("AuthType");                 // ok
+    s_env._content_length = "CONTENT_LENGTH=" + sock.get_m_request().header("Content-Length"); // ok
+    s_env._content_type = "CONTENT_TYPE=" + sock.get_m_request().header("Content-Type");       // ok
+    s_env._path_info = "PATH_INFO=" + sock.get_infos()[1];                                     // ok
+    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + sock.get_infos()[1];   // ok
+    s_env._query_string = "QUERY_STRING=" + parseURI(sock.get_m_request().uri());              // ok
+    s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                              // ok
+    s_env._remote_host = "REMOTE_HOST=" + sock.get_m_request().header("Host");                 // ok
+    s_env._remote_ident = "REMOTE_IDENT=user_id";                                              // ok
+    s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
+    s_env._request_method = "REQUEST_METHOD=" + sock.get_m_request().method();                 // ok
+    s_env._script_name = "SCRIPT_NAME=" + sock.get_m_request().header("                                            ");
+    s_env._server_port = "SERVER_PORT=" /* + itoa(data.listen,buffer,10)*/;
+    s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request().protocol();                          // ok
+    s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                                 // ok
+    s_env._server_name = "SERVER_NAME=" + data.addr_ip;                                                     // ok
+    s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";                                                   // ok
+    s_env._http_accept = "HTTP_ACCEPT=" + sock.get_m_request().header("Accept");                            // ok
+    s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + sock.get_m_request().header("Accept-Language"); // ok
+    s_env._http_user_agent = "HTTP_USER_AGENT=" + sock.get_m_request().header("User-Agent");                // ok
+    s_env._http_cookie = "HTTP_COOKIE=" + sock.get_m_request().header("                                            ");
 }
 
 void cgi::setCgiEnv(void)
@@ -140,6 +162,11 @@ void cgi::setCgiEnv(void)
 
 void cgi::setCgi(Socket &sock, t_serverData &data)
 {
+    // (void) sock;
+    // (void) data;
     setCgiMetaVar(sock, data);
     setCgiEnv();
+    // for (int i = 0; env[i]; i++){
+    // 	std::cout << "env["<<i<<"] = |" << env[i]<<"|" << std::endl;
+    // }
 }
