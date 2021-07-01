@@ -1,8 +1,8 @@
 on: push
-name: clang-format Code Formatter
+name: clang-format formatter
 jobs:
   lint:
-    name: clang-format Code Formatter
+    name: clang-format formatter
     runs-on: ubuntu-latest
     steps:
     - name: Clang Code Formatter
