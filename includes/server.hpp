@@ -40,8 +40,13 @@ class Server
 
   private:
     struct timeval _timeout;
+<<<<<<< HEAD
     std::list< t_serverData > _configs;
     std::map< int, std::pair< Socket, t_serverData > > _serverSet;
+=======
+    std::list<t_serverData> _configs;
+    std::map<int, std::pair<Socket, t_serverData>> _serverSet;
+>>>>>>> 91fead2c2a1fc28b3d5a4fb04443524b33127989
     Socket _currentSock;
     t_serverData _currentData;
     bool _run;
