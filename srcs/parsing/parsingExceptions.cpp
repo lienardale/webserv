@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsingExceptions.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 15:50:31 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/17 14:23:35 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 17:33:42 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,38 @@ ValueError::~ValueError() throw()
 }
 
 const char *ValueError::what() const throw()
+{
+	return _msg.c_str();
+}
+
+/****************************************************************************************
+ *			BadRequest
+ ****************************************************************************************/
+BadRequest::BadRequest( const std::string msg ) : ParsingException( msg ), _msg( "BadRequest: " + msg )
+{
+}
+
+BadRequest::~BadRequest() throw()
+{
+}
+
+const char *BadRequest::what() const throw()
+{
+	return _msg.c_str();
+}
+
+/****************************************************************************************
+ *			Forbidden
+ ****************************************************************************************/
+Forbidden::Forbidden( const std::string msg ) : ParsingException( msg ), _msg( "Forbidden: " + msg )
+{
+}
+
+Forbidden::~Forbidden() throw()
+{
+}
+
+const char *Forbidden::what() const throw()
 {
 	return _msg.c_str();
 }
