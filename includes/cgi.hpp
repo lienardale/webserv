@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/07/01 16:56:42 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 17:03:05 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ class cgi
         GATEWAY_INTERFACE, //
         SERVER_NAME,       // "webserv" or "localhost" -> in config
         SERVER_SOFTWARE,   //
-        // variables provenant du client
+                           // variables provenant du client
         HTTP_ACCEPT,
         HTTP_ACCEPT_LANGUAGE,
         HTTP_USER_AGENT,

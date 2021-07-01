@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:42:33 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/17 13:49:38 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 17:03:15 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,52 +17,52 @@
 /****************************************************************************************
  *               	Nettoyage et lecture de fichier
  ***************************************************************************************/
-static std::string _cleanConfig( const std::string &config )
+static std::string _cleanConfig(const std::string &config)
 {
-	char quote = 0;
-	std::string result( "" );
+    char quote = 0;
+    std::string result("");
 
-	for ( std::string::const_iterator it = config.begin(); it != config.end(); it++ )
-	{
-		if ( !std::isspace( *it ) || ( std::isspace( *it ) && quote ) )
-			result.push_back( *it );
-		if ( *it == '"' )
-			quote = quote == *it ? 0 : *it;
-	}
-	return result;
+    for (std::string::const_iterator it = config.begin(); it != config.end(); it++)
+    {
+        if (!std::isspace(*it) || (std::isspace(*it) && quote))
+            result.push_back(*it);
+        if (*it == '"')
+            quote = quote == *it ? 0 : *it;
+    }
+    return result;
 }
 
-static std::string _readFile( std::fstream &fs )
+static std::string _readFile(std::fstream &fs)
 {
-	std::string ret( "" );
-	for ( std::string line; std::getline( fs, line ); )
-		ret += line;
+    std::string ret("");
+    for (std::string line; std::getline(fs, line);)
+        ret += line;
 
-	return _cleanConfig( ret );
+    return _cleanConfig(ret);
 }
 
 /******************************************************************************
  *               Construtors
  ******************************************************************************/
-Parser::Parser( std::fstream &fs ) : _content( _readFile( fs ) )
+Parser::Parser(std::fstream &fs) : _content(_readFile(fs))
 {
-	std::string::iterator begin = _content.begin();
-	std::string::iterator end = _content.end();
-	_content = extract( "[]", begin, end );
+    std::string::iterator begin = _content.begin();
+    std::string::iterator end = _content.end();
+    _content = extract("[]", begin, end);
 }
 
-Parser::Parser( const Parser &other )
+Parser::Parser(const Parser &other)
 {
-	*this = other;
+    *this = other;
 }
 
-Parser &Parser::operator=( const Parser &other )
+Parser &Parser::operator=(const Parser &other)
 {
-	_content = other._content;
-	return *this;
+    _content = other._content;
+    return *this;
 }
 
-Parser::~Parser( void )
+Parser::~Parser(void)
 {
 }
 
@@ -70,7 +70,7 @@ Parser::~Parser( void )
  *              Member functions
  ******************************************************************************/
 
-std::list< t_serverData > Parser::parse( void ) throw( ParsingException )
+std::list< t_serverData > Parser::parse(void) throw(ParsingException)
 {
-	return parseStructList< t_serverData >( castServerMap(), _content );
+    return parseStructList< t_serverData >(castServerMap(), _content);
 }

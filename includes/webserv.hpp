@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/29 18:29:54 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 17:02:56 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,6 @@
 #include <unistd.h>
 #include <vector>
 
-#define SSTR( x ) static_cast< std::ostringstream & >( ( std::ostringstream() << std::dec << x ) ).str()
+#define SSTR(x) static_cast< std::ostringstream & >((std::ostringstream() << std::dec << x)).str()
 
 #endif

@@ -1,0 +1,23 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: make
+      run: make
+    - name: clean
+      run: make clean
+    - name: fclean
+      run: make fclean
+    - name: re
+      run: make re
