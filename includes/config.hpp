@@ -32,23 +32,23 @@ class config
     config &operator=(const config &rhs);
     std::string getServer(void) const;
     int getPort(void) const;
-    void config_check(std::list< t_serverData > *_content) throw(ParsingException);
+    void config_check(std::list<t_serverData> *_content) throw(ParsingException);
     void serverData_check(t_serverData &sD);
     void set(t_serverData *data);
     int sD_index_check(const char *dir, std::string &index);
     void server_name_check(std::string &server_name);
-    void error_page_check(std::pair< const int, std::string > &error_page);
+    void error_page_check(std::pair<const int, std::string> &error_page);
     void locationData_check(t_locationData &lD);
     int lD_index_check(const char *dir, std::string &index);
-    void fastcgi_param_check(std::pair< const std::string, std::string > &fcgi, const char *root);
+    void fastcgi_param_check(std::pair<const std::string, std::string> &fcgi, const char *root);
     void methods_check(std::string &method);
-    std::list< t_serverData > getContent() const;
+    std::list<t_serverData> getContent() const;
     // int ft_print_config(void);
 
   private:
     std::string server;
     int port;
-    std::list< t_serverData > _content;
+    std::list<t_serverData> _content;
 };
 
 #endif

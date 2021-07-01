@@ -36,12 +36,12 @@ class Server
     //    Member functions
     void listen(void);
     void stop(void);
-    void init(const std::list< t_serverData > &configs, uint32_t timeout);
+    void init(const std::list<t_serverData> &configs, uint32_t timeout);
 
   private:
     struct timeval _timeout;
-    std::list< t_serverData > _configs;
-    std::map< int, std::pair< Socket, t_serverData > > _serverSet;
+    std::list<t_serverData> _configs;
+    std::map<int, std::pair<Socket, t_serverData>> _serverSet;
     Socket _currentSock;
     t_serverData _currentData;
     bool _run;

@@ -80,7 +80,7 @@ http::Server::~Server(void)
  *			Fonctions membres
  ***************************************************************************************/
 
-void http::Server::init(const std::list< t_serverData > &configs, uint32_t timeout)
+void http::Server::init(const std::list<t_serverData> &configs, uint32_t timeout)
 {
     _timeout.tv_sec = timeout;
     _timeout.tv_usec = 0;
@@ -95,7 +95,7 @@ void http::Server::listen(void)
 {
     try
     {
-        for (std::list< t_serverData >::iterator it = _configs.begin(); it != _configs.end(); it++)
+        for (std::list<t_serverData>::iterator it = _configs.begin(); it != _configs.end(); it++)
         {
             Socket s;
             s.listen(it->listen, it->addr_ip);
@@ -117,7 +117,7 @@ void http::Server::listen(void)
  */
 void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException)
 {
-    std::map< int, std::pair< Socket, t_serverData > >::iterator found = _serverSet.find(fd);
+    std::map<int, std::pair<Socket, t_serverData>>::iterator found = _serverSet.find(fd);
 
     if (found != _serverSet.end())
     {
@@ -157,8 +157,7 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
     bzero(events, MAX_EVENTS);
     _epoll_fd = epoll_create1(EPOLL_CLOEXEC);
     _run = true;
-    for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
-         it++)
+    for (std::map<int, std::pair<Socket, t_serverData>>::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
         _add_fd_to_poll(_epoll_fd, it->first, EPOLLIN);
     while (_run)
     {
@@ -177,8 +176,8 @@ void http::Server::stop(void)
     if (_run)
     {
         _run = false;
-        for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin();
-             it != _serverSet.end(); it++)
+        for (std::map<int, std::pair<Socket, t_serverData>>::iterator it = _serverSet.begin(); it != _serverSet.end();
+             it++)
             it->second.first.close();
         close(_epoll_fd);
     }

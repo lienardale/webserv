@@ -70,7 +70,7 @@ Parser::~Parser(void)
  *              Member functions
  ******************************************************************************/
 
-std::list< t_serverData > Parser::parse(void) throw(ParsingException)
+std::list<t_serverData> Parser::parse(void) throw(ParsingException)
 {
-    return parseStructList< t_serverData >(castServerMap(), _content);
+    return parseStructList<t_serverData>(castServerMap(), _content);
 }

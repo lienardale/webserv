@@ -22,14 +22,14 @@ static void handleMethods(t_locationData &location, const std::string value) thr
 {
     if (location.methods.size())
         throw ValueError("Duplicate key: methods");
-    parseStringList< std::list< std::string > & >(location.methods, value);
+    parseStringList<std::list<std::string> &>(location.methods, value);
 }
 
 static void handleIndex(t_locationData &location, const std::string value) throw(ParsingException)
 {
     if (location.index.size())
         throw ValueError("Duplicate key: Index");
-    parseStringList< std::list< std::string > & >(location.index, value);
+    parseStringList<std::list<std::string> &>(location.index, value);
 }
 
 static void handlePath(t_locationData &location, const std::string value) throw(ParsingException)
@@ -56,12 +56,12 @@ static void fillFastCGI(t_locationData &location, const std::string value) throw
 
     if (begin != end)
     {
-        key = extract< std::string::const_iterator & >("\"\"", begin, end);
+        key = extract<std::string::const_iterator &>("\"\"", begin, end);
         if (location.fastcgi_param.find(key) != location.fastcgi_param.end())
             throw ValueError("Duplicate key: " + key);
         if (*begin == ':')
         {
-            _value = extract< std::string::const_iterator & >("\"\"", ++begin, end);
+            _value = extract<std::string::const_iterator &>("\"\"", ++begin, end);
             location.fastcgi_param[key] = _value;
             if (*begin == ',' && *(begin + 1) != '"')
             {
@@ -82,14 +82,14 @@ static void handleFastCGI(t_locationData &location, const std::string value) thr
     fillFastCGI(location, value);
 }
 
-static std::pair< std::string, castLocation > KEY_FUNCTIONS[] = {
+static std::pair<std::string, castLocation> KEY_FUNCTIONS[] = {
     std::make_pair("methods", handleMethods), std::make_pair("path", handlePath), std::make_pair("index", handleIndex),
     std::make_pair("autoindex", handleAutoindex), std::make_pair("fastcgi_param", handleFastCGI)};
 
-std::map< std::string, castLocation > castLocationMap(void)
+std::map<std::string, castLocation> castLocationMap(void)
 {
-    return std::map< std::string, castLocation >(KEY_FUNCTIONS,
-                                                 KEY_FUNCTIONS + sizeof(KEY_FUNCTIONS) / sizeof(*KEY_FUNCTIONS));
+    return std::map<std::string, castLocation>(KEY_FUNCTIONS,
+                                               KEY_FUNCTIONS + sizeof(KEY_FUNCTIONS) / sizeof(*KEY_FUNCTIONS));
 }
 
 #endif

@@ -26,9 +26,9 @@
  *				Outils
  *****************************************************************************/
 
-static std::list< std::string > ft_split(std::string str, std::string toFind)
+static std::list<std::string> ft_split(std::string str, std::string toFind)
 {
-    std::list< std::string > l;
+    std::list<std::string> l;
     std::string::size_type pos;
     std::string s;
 
@@ -42,7 +42,7 @@ static std::list< std::string > ft_split(std::string str, std::string toFind)
     return l;
 }
 
-static void extractHeader(std::map< std::string, std::string > &headers, std::string content) throw(ParsingException)
+static void extractHeader(std::map<std::string, std::string> &headers, std::string content) throw(ParsingException)
 {
 
     std::string key, value;
@@ -83,7 +83,7 @@ Request::Request(std::string content) throw(ParsingException)
 
         if (n == 0)
         {
-            std::list< std::string > query = ft_split(s, " ");
+            std::list<std::string> query = ft_split(s, " ");
             if (query.size() != 3)
                 throw BadRequest("Bad request");
             _method = *query.begin();
@@ -145,7 +145,7 @@ std::string Request::protocol(void) const
     return _protocol;
 }
 
-std::map< std::string, std::string > Request::getHeader() const
+std::map<std::string, std::string> Request::getHeader() const
 {
     return _headers;
 }
@@ -154,7 +154,7 @@ std::map< std::string, std::string > Request::getHeader() const
  ******************************************************************************/
 std::string Request::header(const std::string key) const
 {
-    std::map< std::string, std::string >::const_iterator found = _headers.find(key);
+    std::map<std::string, std::string>::const_iterator found = _headers.find(key);
     if (found != _headers.end())
         return found->second;
     return "";
@@ -169,8 +169,8 @@ std::ostream &operator<<(std::ostream &os, const Request &r)
     os << "Uri: " << r.uri() << std::endl;
     os << "Protocol: " << r.protocol() << std::endl;
 
-    std::map< std::string, std::string > headers = r.getHeader();
-    for (std::map< std::string, std::string >::iterator it = headers.begin(); it != headers.end(); it++)
+    std::map<std::string, std::string> headers = r.getHeader();
+    for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
         os << it->first << ": " << it->second << std::endl;
     return os;
 }
