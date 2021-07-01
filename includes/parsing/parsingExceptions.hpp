@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 15:44:07 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/15 16:03:34 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/06/30 17:24:23 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,27 @@ class ValueError : public ParsingException
 	std::string _msg;
 };
 
+class BadRequest : public ParsingException
+{
+  public:
+	BadRequest( std::string msg );
+	virtual ~BadRequest() throw();
+
+	const char *what( void ) const throw();
+
+  private:
+	std::string _msg;
+};
+
+class Forbidden : public ParsingException
+{
+  public:
+	Forbidden( std::string msg );
+	virtual ~Forbidden() throw();
+
+	const char *what( void ) const throw();
+
+  private:
+	std::string _msg;
+};
 #endif
