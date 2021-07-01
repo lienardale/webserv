@@ -18,60 +18,60 @@
 class ParsingException : public std::exception
 {
   public:
-	ParsingException( const std::string msg );
-	virtual ~ParsingException() throw();
+    ParsingException(const std::string msg);
+    virtual ~ParsingException() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class SyntaxError : public ParsingException
 {
   public:
-	SyntaxError( std::string msg );
-	virtual ~SyntaxError() throw();
+    SyntaxError(std::string msg);
+    virtual ~SyntaxError() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class ValueError : public ParsingException
 {
   public:
-	ValueError( std::string msg );
-	virtual ~ValueError() throw();
+    ValueError(std::string msg);
+    virtual ~ValueError() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class BadRequest : public ParsingException
 {
   public:
-	BadRequest( std::string msg );
-	virtual ~BadRequest() throw();
+    BadRequest(std::string msg);
+    virtual ~BadRequest() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class Forbidden : public ParsingException
 {
   public:
-	Forbidden( std::string msg );
-	virtual ~Forbidden() throw();
+    Forbidden(std::string msg);
+    virtual ~Forbidden() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 #endif

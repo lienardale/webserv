@@ -14,17 +14,17 @@
 
 static int ft_len(int value, int base)
 {
-	int len;
-	unsigned int v;
+    int len;
+    unsigned int v;
 
-	len = 0;
-	if (v < 0)
-		len++;
+    len = 0;
+    if (v < 0)
+        len++;
 
-	return len;
+    return len;
 }
 
-char *  itoa ( int value, char * str, int base )
+char *itoa(int value, char *str, int base)
 {
-	return str;
+    return str;
 }
