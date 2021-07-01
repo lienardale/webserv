@@ -41,7 +41,7 @@ class Server
   private:
     struct timeval _timeout;
     std::list<t_serverData> _configs;
-    std::map<int, std::pair<Socket, t_serverData> > _serverSet;
+    std::map<int, std::pair<Socket, t_serverData>> _serverSet;
     Socket _currentSock;
     t_serverData _currentData;
     bool _run;

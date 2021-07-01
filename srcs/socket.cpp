@@ -331,107 +331,110 @@ void Socket::directoryListing(std::string file, t_serverData data)
 }
 
 // check extension of a file (.php)
-bool Socket::php_file() {
-	std::string ext;
+bool Socket::php_file()
+{
+    std::string ext;
 
-	for (std::string::reverse_iterator it = _infos[1].rbegin();
-			it != _infos[1].rend(); ++it) {
-		if (*it == '.')
-			break;
-		ext += *it;
-	}
-	if (ext == "php")
-		return true;
-	return false;
+    for (std::string::reverse_iterator it = _infos[1].rbegin(); it != _infos[1].rend(); ++it)
+    {
+        if (*it == '.')
+            break;
+        ext += *it;
+    }
+    if (ext == "php")
+        return true;
+    return false;
 }
 
-std::string Socket::Cgi(t_serverData &data) {
-	int fd[2];
-	char content[100000];
-	int pid;
+std::string Socket::Cgi(t_serverData &data)
+{
+    int fd[2];
+    char content[100000];
+    int pid;
 
-	// setCgiEnv(data);
-	cgi cgi_data(*this, data);
-	//for (int i = 0; cgi_data.getCgiEnv()[i]; i++){
-	//	std::cout << "env["<<i<<"] = |"<<cgi_data.getCgiEnv()[i] << "|"<< std::endl;
-	//}
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		dup2(fd[1], STDOUT_FILENO);
-		::close(fd[0]);
-		::close(fd[1]);
-		execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
-		// execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
-	}
-	::close(fd[1]);
-	read(fd[0], content, sizeof(content));
-	::close(fd[0]);
-	waitpid(pid, NULL, -1);
-	return (std::string(content));
+    // setCgiEnv(data);
+    cgi cgi_data(*this, data);
+    // for (int i = 0; cgi_data.getCgiEnv()[i]; i++){
+    //	std::cout << "env["<<i<<"] = |"<<cgi_data.getCgiEnv()[i] << "|"<< std::endl;
+    //}
+    pipe(fd);
+    if ((pid = fork()) == 0)
+    {
+        dup2(fd[1], STDOUT_FILENO);
+        ::close(fd[0]);
+        ::close(fd[1]);
+        execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
+        // execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
+    }
+    ::close(fd[1]);
+    read(fd[0], content, sizeof(content));
+    ::close(fd[0]);
+    waitpid(pid, NULL, -1);
+    return (std::string(content));
 }
 
-void Socket::badRequest(void) {
-	std::string content = "<h1>400 Bad Request</h1>";
-	std::ostringstream oss;
+void Socket::badRequest(void)
+{
+    std::string content = "<h1>400 Bad Request</h1>";
+    std::ostringstream oss;
 
-	oss << "HTTP/1.1 400 Bad Request\r\n";
-	oss << content;
+    oss << "HTTP/1.1 400 Bad Request\r\n";
+    oss << content;
 
-	send(_fd, oss.str().c_str(), oss.str().size(), 0);
-	std::cout << "		-- SERVER RESPONSE --\n\n"
-		<< oss.str().c_str() << "\n"
-		<< std::endl;
+    send(_fd, oss.str().c_str(), oss.str().size(), 0);
+    std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::Delete(t_serverData data) {
-	std::ostringstream oss;
-	_code = "200 OK";
+void Socket::Delete(t_serverData data)
+{
+    std::ostringstream oss;
+    _code = "200 OK";
 
-	if (!remove(("www" + _infos[1]).c_str()))
-		_content = "<h1>" + _infos[1] + " deleted</h1>";
-	else if (errno != 2)
-		headerCode("403 Forbidden", 403, data);
-	else
-		headerCode("404 Not Found", 404, data);
-	sendpage(data);
+    if (!remove(("www" + _infos[1]).c_str()))
+        _content = "<h1>" + _infos[1] + " deleted</h1>";
+    else if (errno != 2)
+        headerCode("403 Forbidden", 403, data);
+    else
+        headerCode("404 Not Found", 404, data);
+    sendpage(data);
 }
 
-void Socket::Post(void) {
-	std::cout << "REQUEST" << _request << std::endl;
+void Socket::Post(void)
+{
+    std::cout << "REQUEST" << _request << std::endl;
 }
 
-void Socket::Get(t_serverData data) {
-	std::fstream f;
-	std::string file;
-	_code = "200 OK";
+void Socket::Get(t_serverData data)
+{
+    std::fstream f;
+    std::string file;
+    _code = "200 OK";
 
-	if (_infos[1] == "/" ||
-			(_directory && !_index.empty() && !data.autoindex)) // directory request
-		file = data.root + _infos[1] + _index;
-	else
-		file = data.root + _infos[1]; // classic path request
-	f.open(file.c_str(), std::ios::in);
-	if ((f.good() && !f.rdbuf()->in_avail()) ||
-			(!f.good() &&
-			 !access(file.c_str(), F_OK))) // if directory or file with no rights
-	{
-		if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
-			directoryListing(file, data);
-		else if (f.good() && !f.rdbuf()->in_avail() && !_index.empty())
-			headerCode("301 Moved Permanently", 301, data);
-		else
-			headerCode("403 Forbidden", 403, data);
-	} else if (f.good() && php_file()) // if .php
-		_content = Cgi(data);
-	else if (f.good())
-		_content = std::string((std::istreambuf_iterator<char>(f)),
-				std::istreambuf_iterator<char>());
-	else if (_directory && !_index.empty() && !data.autoindex)
-		headerCode("403 Forbidden", 403, data);
-	else
-		headerCode("404 Not Found", 404, data);
-	f.close();
-	sendpage(data);
+    if (_infos[1] == "/" || (_directory && !_index.empty() && !data.autoindex)) // directory request
+        file = data.root + _infos[1] + _index;
+    else
+        file = data.root + _infos[1]; // classic path request
+    f.open(file.c_str(), std::ios::in);
+    if ((f.good() && !f.rdbuf()->in_avail()) ||
+        (!f.good() && !access(file.c_str(), F_OK))) // if directory or file with no rights
+    {
+        if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
+            directoryListing(file, data);
+        else if (f.good() && !f.rdbuf()->in_avail() && !_index.empty())
+            headerCode("301 Moved Permanently", 301, data);
+        else
+            headerCode("403 Forbidden", 403, data);
+    }
+    else if (f.good() && php_file()) // if .php
+        _content = Cgi(data);
+    else if (f.good())
+        _content = std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    else if (_directory && !_index.empty() && !data.autoindex)
+        headerCode("403 Forbidden", 403, data);
+    else
+        headerCode("404 Not Found", 404, data);
+    f.close();
+    sendpage(data);
 }
 
 // set autoindex true if autoindex is activated in a parent's location
