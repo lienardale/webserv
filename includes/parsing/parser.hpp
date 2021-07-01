@@ -20,22 +20,22 @@
 #include <fstream>
 #include <iostream>
 
-#define RED "\033[31m"	 /* Red */
+#define RED "\033[31m"   /* Red */
 #define GREEN "\033[32m" /* Green */
 #define WHITE "\033[37m" /* White */
 
 class Parser
 {
   public:
-	Parser( std::fstream &fs );
-	Parser( const Parser &other );
-	Parser &operator=( const Parser &other );
-	~Parser( void );
+    Parser(std::fstream &fs);
+    Parser(const Parser &other);
+    Parser &operator=(const Parser &other);
+    ~Parser(void);
 
-	std::list< t_serverData > parse( void ) throw( ParsingException );
+    std::list<t_serverData> parse(void) throw(ParsingException);
 
   private:
-	std::string _content;
+    std::string _content;
 };
 
 #endif

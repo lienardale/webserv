@@ -17,11 +17,11 @@
  *               		Conversion
  ***************************************************************************************/
 
-int strToInt( const std::string &value ) throw( ValueError )
+int strToInt(const std::string &value) throw(ValueError)
 {
-	std::string error_msg = value + " is not a number";
-	for ( std::string::const_iterator it = value.begin(); it != value.end(); it++ )
-		if ( !std::isdigit( *it ) )
-			throw ValueError( error_msg );
-	return atoi( value.c_str() );
+    std::string error_msg = value + " is not a number";
+    for (std::string::const_iterator it = value.begin(); it != value.end(); it++)
+        if (!std::isdigit(*it))
+            throw ValueError(error_msg);
+    return atoi(value.c_str());
 }
