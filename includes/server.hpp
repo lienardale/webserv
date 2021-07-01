@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 19:17:16 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 19:22:42 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,8 @@ class Server
 
   private:
     struct timeval _timeout;
-<<<<<<< HEAD
     std::list< t_serverData > _configs;
     std::map< int, std::pair< Socket, t_serverData > > _serverSet;
-=======
-    std::list<t_serverData> _configs;
-    std::map<int, std::pair<Socket, t_serverData>> _serverSet;
->>>>>>> 91fead2c2a1fc28b3d5a4fb04443524b33127989
     Socket _currentSock;
     t_serverData _currentData;
     bool _run;
