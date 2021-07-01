@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 15:44:07 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/30 17:24:23 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 16:56:36 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,60 +18,60 @@
 class ParsingException : public std::exception
 {
   public:
-	ParsingException( const std::string msg );
-	virtual ~ParsingException() throw();
+    ParsingException(const std::string msg);
+    virtual ~ParsingException() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class SyntaxError : public ParsingException
 {
   public:
-	SyntaxError( std::string msg );
-	virtual ~SyntaxError() throw();
+    SyntaxError(std::string msg);
+    virtual ~SyntaxError() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class ValueError : public ParsingException
 {
   public:
-	ValueError( std::string msg );
-	virtual ~ValueError() throw();
+    ValueError(std::string msg);
+    virtual ~ValueError() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class BadRequest : public ParsingException
 {
   public:
-	BadRequest( std::string msg );
-	virtual ~BadRequest() throw();
+    BadRequest(std::string msg);
+    virtual ~BadRequest() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 
 class Forbidden : public ParsingException
 {
   public:
-	Forbidden( std::string msg );
-	virtual ~Forbidden() throw();
+    Forbidden(std::string msg);
+    virtual ~Forbidden() throw();
 
-	const char *what( void ) const throw();
+    const char *what(void) const throw();
 
   private:
-	std::string _msg;
+    std::string _msg;
 };
 #endif

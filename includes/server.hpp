@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/06/30 10:45:40 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 16:56:48 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,27 +28,27 @@ namespace http
 class Server
 {
   public:
-	Server( void );
-	Server( const Server &other );
-	Server &operator=( const Server &other );
-	~Server( void );
+    Server(void);
+    Server(const Server &other);
+    Server &operator=(const Server &other);
+    ~Server(void);
 
-	//    Member functions
-	void listen( void );
-	void stop( void );
-	void init( const std::list< t_serverData > &configs, uint32_t timeout );
+    //    Member functions
+    void listen(void);
+    void stop(void);
+    void init(const std::list< t_serverData > &configs, uint32_t timeout);
 
   private:
-	struct timeval _timeout;
-	std::list< t_serverData > _configs;
-	std::map< int, std::pair< Socket, t_serverData > > _serverSet;
-	Socket _currentSock;
-	t_serverData _currentData;
-	bool _run;
-	int _epoll_fd;
+    struct timeval _timeout;
+    std::list< t_serverData > _configs;
+    std::map< int, std::pair< Socket, t_serverData > > _serverSet;
+    Socket _currentSock;
+    t_serverData _currentData;
+    bool _run;
+    int _epoll_fd;
 
-	void _handleReady( int epoll_fd, const int fd, struct epoll_event *event ) throw( Socket::SocketException );
-	void _watchFds( void ) throw( Socket::SocketException );
+    void _handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException);
+    void _watchFds(void) throw(Socket::SocketException);
 };
 } // namespace http
 #endif
