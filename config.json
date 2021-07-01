@@ -20,7 +20,7 @@
 					"POST"
                 ],
 				"index": [
-            		"index1.html",
+            		"dir",
 					"test.html",
             		"index.php"
         		],
