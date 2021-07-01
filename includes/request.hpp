@@ -6,20 +6,21 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/29 18:28:42 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 11:42:24 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
 
+#include "parsing/parsingExceptions.hpp"
 #include <iostream>
 #include <map>
 
 class Request
 {
   public:
-	Request( const std::string content );
+	Request( std::string &content ) throw( ParsingException );
 	Request( const Request &other );
 	Request &operator=( const Request &other );
 	~Request( void );

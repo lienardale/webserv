@@ -6,11 +6,12 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/29 19:01:48 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 12:29:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
+#include <strings.h>
 
 /******************************************************************************
  *			Fonctions statiques permettant l'initialisation d'une socket
@@ -186,8 +187,13 @@ Socket Socket::accept( void ) throw( Socket::SocketException )
 void Socket::readContent( void ) throw( Socket::SocketException )
 {
 	int ret = 0;
+
+	bzero( _buffer, sizeof( _buffer ) );
 	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) )
+	{
 		_request.append( _buffer );
+		bzero( _buffer, sizeof( _buffer ) );
+	}
 
 	Request req( _request );
 	if ( ret < 0 )
