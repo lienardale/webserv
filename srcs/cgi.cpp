@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/06/30 18:29:28 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 13:08:38 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ std::string cgi::parseURI(std::string uri)
 void cgi::setCgiMetaVar( Socket &sock, t_serverData &data)
 {
 	(void) data;
+	 char buffer [33];
 	// std::cout << "\nIN SET CGI META VAR\n" << std::endl;
 	// std::cout << "\nAUTH TYPE : "<< sock.get_m_request().header( "AuthType" ) << std::endl;
 	s_env._auth_type = "AUTH_TYPE=" + sock.get_m_request().header( "AuthType" );									// ok
@@ -124,11 +125,11 @@ void cgi::setCgiMetaVar( Socket &sock, t_serverData &data)
 	s_env._remote_user = "REMOTE_USER=user_name";																	// ok
 	s_env._request_method = "REQUEST_METHOD=" + sock.get_m_request().method();										// ok
 	s_env._script_name = "SCRIPT_NAME=" + sock.get_m_request().header( "                                            " );
-	s_env._server_port = "SERVER_PORT=" + sock.get_m_request().header( "                                            " );
+	s_env._server_port = "SERVER_PORT=" + itoa(data.listen,buffer,10);
 	s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request().protocol();									// ok
 	s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";															// ok
-	s_env._server_name = "SERVER_NAME=" + sock.get_m_request().header( "                                            " );
-	s_env._server_software = "SERVER_SOFTWARE=" + sock.get_m_request().header( "                                    " );
+	s_env._server_name = "SERVER_NAME=" + data.addr_ip;																// ok
+	s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";															// ok
 	s_env._http_accept = "HTTP_ACCEPT=" + sock.get_m_request().header( "Accept" );									// ok
 	s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + sock.get_m_request().header( "Accept-Language" );		// ok
 	s_env._http_user_agent = "HTTP_USER_AGENT=" + sock.get_m_request().header( "User-Agent" );						// ok

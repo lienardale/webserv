@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/06/30 17:48:14 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 12:27:56 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,8 +213,11 @@ Socket Socket::accept( void ) throw( Socket::SocketException )
 void Socket::readContent( void ) throw( Socket::SocketException )
 {
 	int ret = 0;
-	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) )
+	bzero(_buffer, sizeof(_buffer));
+	while ( ( ret = recv( _fd, _buffer, sizeof( _buffer ), MSG_DONTWAIT ) > 0 ) ){
 		_request.append( _buffer );
+		bzero(_buffer, sizeof(_buffer));
+	}
 
 	// request parsing
 	m_request = Request( _request );
