@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 15:28:53 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 15:41:48 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,10 +297,7 @@ void Socket::sendpage(t_serverData data)
         oss << "\r\n";
     oss << _content;
     send(_fd, oss.str().c_str(), oss.str().size(), 0);
-    // std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str()
-    // <<
-    // "\n"
-    // << std::endl;
+    std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str();
 }
 
 void Socket::directoryListing(std::string file, t_serverData data)
@@ -353,24 +350,20 @@ std::string Socket::Cgi(t_serverData &data)
 {
     int fd[2];
     char content[100000];
+    int pid;
 
     // setCgiEnv(data);
     cgi cgi_data(*this, data);
-    for (int i = 0; cgi_data.getCgiEnv()[i]; i++)
-    {
-        std::cout << "env[" << i << "] = |" << cgi_data.getCgiEnv()[i] << "|" << std::endl;
-    }
-    int pid;
-
+    // for (int i = 0; cgi_data.getCgiEnv()[i]; i++){
+    //	std::cout << "env["<<i<<"] = |"<<cgi_data.getCgiEnv()[i] << "|"<< std::endl;
+    //}
     pipe(fd);
     if ((pid = fork()) == 0)
     {
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
-        execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
-        // execl( "php-cgi", "php-cgi", ( "www" + _infos[ 1 ] ).c_str(), NULL,
-        // data->env ); execve(  , , data->env );
+        execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
@@ -408,10 +401,6 @@ void Socket::Delete(t_serverData data)
 void Socket::Post(void)
 {
     std::cout << "REQUEST" << _request << std::endl;
-    //	send(_fd, oss.str().c_str(), oss.str().size(), 0);
-    //	std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str()
-    //<<
-    //"\n" << std::endl;
 }
 
 void Socket::Get(t_serverData data)
