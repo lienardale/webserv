@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 13:04:13 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 14:46:46 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
+#include "request.hpp"
 #include "webserv.hpp"
 #include <strings.h>
 
@@ -145,7 +146,7 @@ std::string Socket::get_request() const { return _request; }
 /*
  *	Retourne la request parsée de la socket
  */
-Request *Socket::get_m_request(void) const { return m_request; }
+Request Socket::get_m_request(void) const { return m_request; }
 
 /*
  *	Retourne les infos de la socket (structure sockaddr_in)
@@ -205,8 +206,7 @@ void Socket::readContent(void) throw(Socket::SocketException) {
   }
 
   // request parsing
-  Request req(_request);
-  m_request = &req;
+  m_request = Request( _request );
 
   if (ret < 0)
     throw(Socket::SocketException());
@@ -332,6 +332,9 @@ std::string Socket::Cgi(t_serverData &data) {
 
   // setCgiEnv(data);
   cgi cgi_data(*this, data);
+  for (int i = 0; cgi_data.getCgiEnv()[i]; i++){
+	  std::cout << "env["<<i<<"] = |"<<cgi_data.getCgiEnv()[i] << "|"<< std::endl;
+  }
   int pid;
 
   pipe(fd);

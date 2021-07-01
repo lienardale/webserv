@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 13:05:28 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/01 14:44:01 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,10 @@ static void extractHeader(std::map<std::string, std::string> &headers,
 /******************************************************************************
  *               Constructeurs
  ******************************************************************************/
+Request::Request( void ) {
+
+}
+
 Request::Request(std::string content) throw(ParsingException) {
   int n = 0;
   bool body = false;
