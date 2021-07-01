@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/01 16:53:18 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 18:19:45 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,9 @@ void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
     s_env._remote_ident = "REMOTE_IDENT=user_id";                                              // ok
     s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
     s_env._request_method = "REQUEST_METHOD=" + sock.get_m_request().method();                 // ok
-    s_env._script_name = "SCRIPT_NAME=/cgi-bin/php-cgi"; // FAST_CGI_CONF
+    s_env._request_uri = "REQUEST_URI=" + sock.get_m_request().uri();
+    s_env._script_name = "SCRIPT_NAME=php-cgi"; // FAST_CGI_CONF
+    s_env._script_file_name = "SCRIPT_FILENAME=/cgi-bin/php-cgi";
     s_env._server_port = "SERVER_PORT=8000" /* + itoa(data.listen,buffer,10)*/;
     s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request().protocol();                          // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
@@ -120,7 +122,9 @@ void cgi::setCgiEnv(void)
     env[REMOTE_IDENT] = const_cast<char *>(s_env._remote_ident.c_str());
     env[REMOTE_USER] = const_cast<char *>(s_env._remote_user.c_str());
     env[REQUEST_METHOD] = const_cast<char *>(s_env._request_method.c_str());
+    env[REQUEST_URI] = const_cast<char *>(s_env._request_uri.c_str());
     env[SCRIPT_NAME] = const_cast<char *>(s_env._script_name.c_str());
+    env[SCRIPT_FILENAME] = const_cast<char *>(s_env._script_file_name.c_str());
     env[SERVER_PORT] = const_cast<char *>(s_env._server_port.c_str());
     env[SERVER_PROTOCOL] = const_cast<char *>(s_env._server_protocol.c_str());
     env[REDIRECT_STATUS] = const_cast<char *>(s_env._redirect_status.c_str()); 

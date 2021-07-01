@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/07/01 16:28:47 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 18:18:19 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ class cgi
         REMOTE_IDENT,
         REMOTE_USER,
         REQUEST_METHOD, // GET
+        REQUEST_URI,
         SCRIPT_NAME,    // SCRIPT_FILENAME in config
+        SCRIPT_FILENAME, 
         SERVER_PORT,    // Host: localhost:8000 -> in request
         SERVER_PROTOCOL,
         REDIRECT_STATUS,
@@ -69,7 +71,9 @@ class cgi
         std::string _remote_ident;
         std::string _remote_user;
         std::string _request_method;
+        std::string _request_uri;
         std::string _script_name;
+        std::string _script_file_name;
         std::string _server_port;
         std::string _server_protocol;
         std::string _redirect_status;
