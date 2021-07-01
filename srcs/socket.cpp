@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 16:44:15 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 19:18:46 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ t_locationData *Socket::get_locationData(void) const
     return _loc;
 }
 
-std::vector<std::string> Socket::get_infos(void) const
+std::vector< std::string > Socket::get_infos(void) const
 {
     return _infos;
 }
@@ -239,18 +239,19 @@ void Socket::readContent(void) throw(Socket::SocketException)
 
     // transform result in words table (_infos)
     std::istringstream iss(_request);
-    _infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    _infos =
+        std::vector< std::string >((std::istream_iterator< std::string >(iss)), std::istream_iterator< std::string >());
 }
 
 /*
  * Generic function to find if an element of any type exists in list
  */
-template <typename T>
+template < typename T >
 
-bool contains(std::list<T> &listOfElements, const T &element)
+bool contains(std::list< T > &listOfElements, const T &element)
 {
     // Find the iterator if element in li st
-    typename std::list<T>::iterator it = std::find(listOfElements.begin(), listOfElements.end(), element);
+    typename std::list< T >::iterator it = std::find(listOfElements.begin(), listOfElements.end(), element);
     // return if iterator points to end or not. It points to end then it means
     // element does not exists in list
     return it != listOfElements.end();
@@ -331,108 +332,111 @@ void Socket::directoryListing(std::string file, t_serverData data)
 }
 
 // check extension of a file (.php)
-bool Socket::php_file() {
-	std::string ext;
+bool Socket::php_file()
+{
+    std::string ext;
 
-	for (std::string::reverse_iterator it = _infos[1].rbegin();
-			it != _infos[1].rend(); ++it) {
-		if (*it == '.')
-			break;
-		ext += *it;
-	}
-	if (ext == "php")
-		return true;
-	return false;
+    for (std::string::reverse_iterator it = _infos[1].rbegin(); it != _infos[1].rend(); ++it)
+    {
+        if (*it == '.')
+            break;
+        ext += *it;
+    }
+    if (ext == "php")
+        return true;
+    return false;
 }
 
-std::string Socket::Cgi(t_serverData &data) {
-	int fd[2];
-	char content[100000];
-	int pid;
+std::string Socket::Cgi(t_serverData &data)
+{
+    int fd[2];
+    char content[100000];
+    int pid;
 
-	// setCgiEnv(data);
-	cgi cgi_data(*this, data);
-	for (int i = 0; cgi_data.getCgiEnv()[i]; i++){
-		std::cout << "env["<<i<<"] = |"<<cgi_data.getCgiEnv()[i] << "|"<< std::endl;
-	}
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		dup2(fd[1], STDOUT_FILENO);
-		::close(fd[0]);
-		::close(fd[1]);
-		// execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
+    // setCgiEnv(data);
+    cgi cgi_data(*this, data);
+    // for (int i = 0; cgi_data.getCgiEnv()[i]; i++){
+    //	std::cout << "env["<<i<<"] = |"<<cgi_data.getCgiEnv()[i] << "|"<< std::endl;
+    //}
+    pipe(fd);
+    if ((pid = fork()) == 0)
+    {
+        dup2(fd[1], STDOUT_FILENO);
+        ::close(fd[0]);
+        ::close(fd[1]);
+        // execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
         execle("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL, cgi_data.getCgiEnv());
 		// execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
-	}
-	::close(fd[1]);
-	read(fd[0], content, sizeof(content));
-	::close(fd[0]);
-	waitpid(pid, NULL, -1);
-	return (std::string(content));
+    }
+    ::close(fd[1]);
+    read(fd[0], content, sizeof(content));
+    ::close(fd[0]);
+    waitpid(pid, NULL, -1);
+    return (std::string(content));
 }
 
-void Socket::badRequest(void) {
-	std::string content = "<h1>400 Bad Request</h1>";
-	std::ostringstream oss;
+void Socket::badRequest(void)
+{
+    std::string content = "<h1>400 Bad Request</h1>";
+    std::ostringstream oss;
 
-	oss << "HTTP/1.1 400 Bad Request\r\n";
-	oss << content;
+    oss << "HTTP/1.1 400 Bad Request\r\n";
+    oss << content;
 
-	send(_fd, oss.str().c_str(), oss.str().size(), 0);
-	std::cout << "		-- SERVER RESPONSE --\n\n"
-		<< oss.str().c_str() << "\n"
-		<< std::endl;
+    send(_fd, oss.str().c_str(), oss.str().size(), 0);
+    std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 
-void Socket::Delete(t_serverData data) {
-	std::ostringstream oss;
-	_code = "200 OK";
+void Socket::Delete(t_serverData data)
+{
+    std::ostringstream oss;
+    _code = "200 OK";
 
-	if (!remove(("www" + _infos[1]).c_str()))
-		_content = "<h1>" + _infos[1] + " deleted</h1>";
-	else if (errno != 2)
-		headerCode("403 Forbidden", 403, data);
-	else
-		headerCode("404 Not Found", 404, data);
-	sendpage(data);
+    if (!remove(("www" + _infos[1]).c_str()))
+        _content = "<h1>" + _infos[1] + " deleted</h1>";
+    else if (errno != 2)
+        headerCode("403 Forbidden", 403, data);
+    else
+        headerCode("404 Not Found", 404, data);
+    sendpage(data);
 }
 
-void Socket::Post(void) {
-	std::cout << "REQUEST" << _request << std::endl;
+void Socket::Post(void)
+{
+    std::cout << "REQUEST" << _request << std::endl;
 }
 
-void Socket::Get(t_serverData data) {
-	std::fstream f;
-	std::string file;
-	_code = "200 OK";
+void Socket::Get(t_serverData data)
+{
+    std::fstream f;
+    std::string file;
+    _code = "200 OK";
 
-	if (_infos[1] == "/" ||
-			(_directory && !_index.empty() && !data.autoindex)) // directory request
-		file = data.root + _infos[1] + _index;
-	else
-		file = data.root + _infos[1]; // classic path request
-	f.open(file.c_str(), std::ios::in);
-	if ((f.good() && !f.rdbuf()->in_avail()) ||
-			(!f.good() &&
-			 !access(file.c_str(), F_OK))) // if directory or file with no rights
-	{
-		if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
-			directoryListing(file, data);
-		else if (f.good() && !f.rdbuf()->in_avail() && !_index.empty())
-			headerCode("301 Moved Permanently", 301, data);
-		else
-			headerCode("403 Forbidden", 403, data);
-	} else if (f.good() && php_file()) // if .php
-		_content = Cgi(data);
-	else if (f.good())
-		_content = std::string((std::istreambuf_iterator<char>(f)),
-				std::istreambuf_iterator<char>());
-	else if (_directory && !_index.empty() && !data.autoindex)
-		headerCode("403 Forbidden", 403, data);
-	else
-		headerCode("404 Not Found", 404, data);
-	f.close();
-	sendpage(data);
+    if (_infos[1] == "/" || (_directory && !_index.empty() && !data.autoindex)) // directory request
+        file = data.root + _infos[1] + _index;
+    else
+        file = data.root + _infos[1]; // classic path request
+    f.open(file.c_str(), std::ios::in);
+    if ((f.good() && !f.rdbuf()->in_avail()) ||
+        (!f.good() && !access(file.c_str(), F_OK))) // if directory or file with no rights
+    {
+        if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
+            directoryListing(file, data);
+        else if (f.good() && !f.rdbuf()->in_avail() && !_index.empty())
+            headerCode("301 Moved Permanently", 301, data);
+        else
+            headerCode("403 Forbidden", 403, data);
+    }
+    else if (f.good() && php_file()) // if .php
+        _content = Cgi(data);
+    else if (f.good())
+        _content = std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >());
+    else if (_directory && !_index.empty() && !data.autoindex)
+        headerCode("403 Forbidden", 403, data);
+    else
+        headerCode("404 Not Found", 404, data);
+    f.close();
+    sendpage(data);
 }
 
 // set autoindex true if autoindex is activated in a parent's location
@@ -440,7 +444,7 @@ void Socket::locAutoindex(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<t_locationData>::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (it->autoindex && _infos[1].find(path1) != std::string::npos)
@@ -471,7 +475,7 @@ void Socket::locIndex(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<std::string>::iterator it = data.index.begin(); it != data.index.end(); ++it)
+    for (std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it)
     {
         if (!it->empty() && fileExists(data, *it))
         {
@@ -479,12 +483,12 @@ void Socket::locIndex(t_serverData data)
             break;
         }
     }
-    for (std::list<t_locationData>::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
+    for (std::list< t_locationData >::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
     {
         path1 = (it1->path[it1->path.size() - 1] == '/') ? it1->path.substr(0, it1->path.size() - 1) : it1->path;
         if (!it1->index.front().empty() && _infos[1].find(path1) != std::string::npos)
         {
-            for (std::list<std::string>::iterator it2 = it1->index.begin(); it2 != it1->index.end(); ++it2)
+            for (std::list< std::string >::iterator it2 = it1->index.begin(); it2 != it1->index.end(); ++it2)
             {
                 if (!it2->empty() && fileExists(data, *it2))
                 {
@@ -504,7 +508,7 @@ bool Socket::methodAllowed(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<t_locationData>::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (_infos[1].find(path1) != std::string::npos && contains(it->methods, _infos[0]))
