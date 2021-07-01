@@ -40,7 +40,7 @@ class cgi
         GATEWAY_INTERFACE, //
         SERVER_NAME,       // "webserv" or "localhost" -> in config
         SERVER_SOFTWARE,   //
-                         // variables provenant du client
+                           // variables provenant du client
         HTTP_ACCEPT,
         HTTP_ACCEPT_LANGUAGE,
         HTTP_USER_AGENT,
