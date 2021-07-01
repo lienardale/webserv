@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/30 12:05:11 by alienard         ###   ########.fr       */
+/*   Updated: 2021/06/30 19:04:58 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ Request::Request( void )
 
 Request::Request( const std::string content )
 {
-	std::cout << content << std::endl;
+	(void)content;
 }
 
 Request::Request( const Request &other )

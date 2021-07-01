@@ -34,6 +34,7 @@ class config
 	int getPort( void ) const;
 	void	config_check( std::list< t_serverData > *_content ) throw( ParsingException );
 	void	serverData_check(t_serverData &sD);
+	void	set(t_serverData* data);
 	int		sD_index_check(const char *dir, std::string &index);
 	void	server_name_check(std::string &server_name);
 	void	error_page_check(std::pair< const int, std::string > &error_page);
