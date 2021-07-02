@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/06/30 13:00:10 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 16:13:13 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void http::Server::listen(void)
  */
 void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException)
 {
-    std::map<int, std::pair<Socket, t_serverData>>::iterator found = _serverSet.find(fd);
+    std::map<int, std::pair<Socket, t_serverData> >::iterator found = _serverSet.find(fd);
 
     if (found != _serverSet.end())
     {
@@ -157,7 +157,7 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
     bzero(events, MAX_EVENTS);
     _epoll_fd = epoll_create1(EPOLL_CLOEXEC);
     _run = true;
-    for (std::map<int, std::pair<Socket, t_serverData>>::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
+    for (std::map<int, std::pair<Socket, t_serverData> >::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
         _add_fd_to_poll(_epoll_fd, it->first, EPOLLIN);
     while (_run)
     {
@@ -176,7 +176,7 @@ void http::Server::stop(void)
     if (_run)
     {
         _run = false;
-        for (std::map<int, std::pair<Socket, t_serverData>>::iterator it = _serverSet.begin(); it != _serverSet.end();
+        for (std::map<int, std::pair<Socket, t_serverData> >::iterator it = _serverSet.begin(); it != _serverSet.end();
              it++)
             it->second.first.close();
         close(_epoll_fd);

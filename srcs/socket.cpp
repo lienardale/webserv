@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 15:41:48 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/02 14:47:03 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,15 +228,11 @@ void Socket::readContent(void) throw(Socket::SocketException)
         _request.append(_buffer);
         bzero(_buffer, sizeof(_buffer));
     }
-
     // request parsing
     m_request = Request(_request);
-
     if (ret < 0)
         throw(Socket::SocketException());
-
     std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
-
     // transform result in words table (_infos)
     std::istringstream iss(_request);
     _infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
@@ -288,11 +284,14 @@ void Socket::sendpage(t_serverData data)
     oss << "Content-Length: " << _content.size() << "\r\n";
     if (_code == "301 Moved Permanently")
     {
-        oss << "Location: http://localhost:8000" + _infos[1] + "/";
+        oss << "Location: http://" + m_request.header("Host") + _infos[1] + "/";
         if (_isDir)
             oss << _index;
         oss << "\r\n";
     }
+	oss << "Connection: ";
+	std::string connect = (_code == "400 Bad Request") ? "close\r\n" : "keep-alive\r\n";
+	oss << connect;
     if (!php_file() || _code != "200 OK")
         oss << "\r\n";
     oss << _content;
@@ -372,16 +371,10 @@ std::string Socket::Cgi(t_serverData &data)
     return (std::string(content));
 }
 
-void Socket::badRequest(void)
+void Socket::badRequest(t_serverData data)
 {
-    std::string content = "<h1>400 Bad Request</h1>";
-    std::ostringstream oss;
-
-    oss << "HTTP/1.1 400 Bad Request\r\n";
-    oss << content;
-
-    send(_fd, oss.str().c_str(), oss.str().size(), 0);
-    std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
+	headerCode("400 Bad Request", 400, data);
+	sendpage(data);
 }
 
 void Socket::Delete(t_serverData data)
@@ -389,9 +382,15 @@ void Socket::Delete(t_serverData data)
     std::ostringstream oss;
     _code = "200 OK";
 
-    if (!remove(("www" + _infos[1]).c_str()))
+	std::ifstream f((data.root + _infos[1]).c_str());
+    bool isDir = (f.good() && !f.rdbuf()->in_avail()) ? true : false;
+    f.close();
+
+	if (isDir)
+		headerCode("409 Conflict", 409, data);
+    else if (!remove((data.root + _infos[1]).c_str()))
         _content = "<h1>" + _infos[1] + " deleted</h1>";
-    else if (errno != 2)
+	else if (errno != 2)
         headerCode("403 Forbidden", 403, data);
     else
         headerCode("404 Not Found", 404, data);
@@ -437,15 +436,15 @@ void Socket::Get(t_serverData data)
 }
 
 // set autoindex true if autoindex is activated in a parent's location
-void Socket::locAutoindex(t_serverData data)
+void Socket::locAutoindex(t_serverData *data)
 {
     std::string path1;
 
-    for (std::list<t_locationData>::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    for (std::list<t_locationData>::iterator it = data->locations.begin(); it != data->locations.end(); ++it)
     {
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (it->autoindex && _infos[1].find(path1) != std::string::npos)
-            data.autoindex = true;
+            data->autoindex = true;
     }
 }
 
@@ -459,7 +458,6 @@ bool Socket::fileExists(t_serverData data, const std::string &name)
 {
     bool exists;
 
-    // std::cout << data.root + _infos[1] + "/" + name;
     std::ifstream f((data.root + _infos[1] + "/" + name).c_str());
     exists = f.good();
     f.close();
@@ -518,8 +516,8 @@ void Socket::serverResponse(t_serverData data)
 {
     directory(_infos[1]);
     locIndex(data);
-    locAutoindex(data);
-    if (_infos.size() >= 3 && _infos[2] == "HTTP/1.1")
+    locAutoindex(&data);
+    if (_infos.size() >= 3 && _infos[2] == "HTTP/1.1" && !m_request.header("Host").empty())
     {
         if (_infos[0] == "GET" && methodAllowed(data))
             Get(data);
@@ -534,7 +532,7 @@ void Socket::serverResponse(t_serverData data)
         }
     }
     else
-        badRequest();
+        badRequest(data);
     _request.clear();
     _content.clear();
 }

@@ -9,6 +9,9 @@
             "500": "error_views/500.html",
             "404": "error_views/404.htm"
         },
+		"index": [
+			"index.html"
+		],
         "client_max_body_size": 1000,
         "root": "www/",
         "autoindex": "off",
@@ -16,11 +19,10 @@
             {
         		"autoindex": "off",
                 "methods": [
-                    "DELETE",
 					"POST"
                 ],
 				"index": [
-            		"dir",
+					"index.html",
 					"test.html",
             		"index.php"
         		],

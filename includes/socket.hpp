@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 14:29:15 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/01 16:30:36 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,14 +68,14 @@ class Socket
     void Get(t_serverData data);
     void Post(void);
     void Delete(t_serverData data);
-    void badRequest(void);
+    void badRequest(t_serverData data);
     void setCgiEnv(void);
     std::string Cgi(t_serverData &data);
     bool php_file(void);
     void directoryListing(std::string file, t_serverData data);
     void sendpage(t_serverData data);
     void headerCode(std::string content, int code, t_serverData data);
-    void locAutoindex(t_serverData data);
+    void locAutoindex(t_serverData *data);
     bool methodAllowed(t_serverData data);
     void directory(const std::string &name);
     void locIndex(t_serverData data);
