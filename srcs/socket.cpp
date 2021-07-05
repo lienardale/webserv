@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 19:20:22 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/05 14:30:38 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,29 +218,23 @@ Socket Socket::accept(void) throw(Socket::SocketException)
  *	Lis la totalité du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-void Socket::readContent(void) throw(Socket::SocketException)
+std::string Socket::readContent(void) throw(Socket::SocketException)
 {
     int ret = 0;
+    char buffer[30];
 
-    bzero(_buffer, sizeof(_buffer));
-    while ((ret = recv(_fd, _buffer, sizeof(_buffer), MSG_DONTWAIT) > 0))
-    {
-        _request.append(_buffer);
-        bzero(_buffer, sizeof(_buffer));
-    }
+    bzero(buffer, sizeof(buffer));
+    ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+    return std::string(buffer);
 
-    // request parsing
-    m_request = Request(_request);
+    /*    std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
 
-    if (ret < 0)
-        throw(Socket::SocketException());
-
-    std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
-
-    // transform result in words table (_infos)
-    std::istringstream iss(_request);
-    _infos =
-        std::vector< std::string >((std::istream_iterator< std::string >(iss)), std::istream_iterator< std::string >());
+        // transform result in words table (_infos)
+        std::istringstream iss(_request);
+        _infos =
+            std::vector< std::string >((std::istream_iterator< std::string >(iss)), std::istream_iterator< std::string
+        >());
+        return std::string(buffer);*/
 }
 
 /*
@@ -366,7 +360,7 @@ std::string Socket::Cgi(t_serverData &data)
         ::close(fd[1]);
         // execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
         execle("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL, cgi_data.getCgiEnv());
-		// execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
+        // execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));

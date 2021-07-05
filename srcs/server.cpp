@@ -6,12 +6,13 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 19:20:39 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/05 18:45:48 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "parsing/dataStructure.hpp"
+#include "request.hpp"
 #include "socket.hpp"
 #include <cstddef>
 #include <inttypes.h>
@@ -136,11 +137,22 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         try
         {
             _currentSock = Socket(fd, true);
-            _currentSock.readContent();
+            _requests[fd].parse(_currentSock.readContent());
+
+            std::cout << _requests[fd] << std::endl;
+            // if (_requests[fd].isFinished())
+            //  _currentSock.close();
+            /*if (_rawRequests[fd].find("\r\n\r\n") != std::string::npos)
+            {
+                // Request r(_rawRequests[fd]);
+                std::cout << r << std::endl;
+                _currentSock.close();
+            }*/
+
             // si chunk, retourner au listen du fd correspondant
-            _currentSock.serverResponse(_currentData);
+            // _currentSock.serverResponse(_currentData);
             // close si pas chunked et si time < keep_alive
-            close(fd);
+            // close(fd);
         }
         catch (Socket::SocketException &e)
         {

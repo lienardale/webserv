@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 18:04:03 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/05 17:57:17 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,18 @@ class Request
     std::string uri(void) const;
     std::string protocol(void) const;
     std::map< std::string, std::string > getHeader(void) const;
+    bool isFinished(void) const;
 
     /**************************************************************************
      *				Fonctions membres
      *************************************************************************/
     std::string header(const std::string key) const;
+    void parse(std::string content) throw(ParsingException);
 
   private:
+    bool _isBody;
+    bool _finish;
+    std::string _buffer;
     std::string _method;
     std::string _uri;
     std::string _protocol;

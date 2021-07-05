@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 19:22:42 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/05 16:23:40 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 #define SERVER_HPP
 
 #include "parsing/dataStructure.hpp"
+#include "request.hpp"
 #include "socket.hpp"
 #include <cstdlib>
 #include <inttypes.h>
+#include <map>
 #include <sys/epoll.h>
 #include <sys/select.h>
 #include <sys/time.h>
@@ -39,6 +41,7 @@ class Server
     void init(const std::list< t_serverData > &configs, uint32_t timeout);
 
   private:
+    std::map< int, Request > _requests;
     struct timeval _timeout;
     std::list< t_serverData > _configs;
     std::map< int, std::pair< Socket, t_serverData > > _serverSet;

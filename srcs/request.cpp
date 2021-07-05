@@ -6,14 +6,16 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 18:04:24 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/05 18:46:07 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "request.hpp"
 #include "parsing/parsingExceptions.hpp"
 #include "parsing/utils.hpp"
 #include "webserv.hpp"
 #include <cctype>
+#include <cstdlib>
 #include <iostream>
 #include <iterator>
 #include <list>
@@ -44,7 +46,6 @@ static std::list< std::string > ft_split(std::string str, std::string toFind)
 
 static void extractHeader(std::map< std::string, std::string > &headers, std::string content) throw(ParsingException)
 {
-
     std::string key, value;
     std::string::size_type pos;
 
@@ -63,10 +64,57 @@ static void extractHeader(std::map< std::string, std::string > &headers, std::st
         throw BadRequest("Wrong key value syntax");
 }
 
+static void extract(std::map< std::string, std::string > &headers, std::string content) throw(ParsingException)
+{
+    std::map< std::string, std::string >::iterator found = headers.find("Method");
+
+    if (found != headers.end())
+        extractHeader(headers, content);
+    else
+    {
+        std::list< std::string > splitted = ft_split(content, " ");
+        if (splitted.size() == 3)
+        {
+            headers["Method"] = splitted.front();
+            headers["Path"] = *++splitted.begin();
+            headers["Protocol"] = splitted.back();
+        }
+        else
+            throw BadRequest("No query informations");
+    }
+}
+
+static void extractBody(std::map< std::string, std::string > &headers, std::string &buffer,
+                        bool &finish) throw(ParsingException)
+{
+    std::map< std::string, std::string >::iterator found = headers.find("Body");
+
+    if (found != headers.end())
+    {
+        std::string body = found->second;
+        found = headers.find("Content-Length");
+        if (found != headers.end())
+        {
+            int len = std::atoi(found->second.c_str());
+            if (len <= 0)
+                throw BadRequest("Wrong content length value");
+            if (static_cast< int >(body.size() + buffer.size()) <= len)
+                headers["Body"] += buffer;
+            else
+            {
+                headers["Body"] += buffer.substr(0, std::abs(static_cast< int >(body.size()) - len));
+                finish = true;
+            }
+        }
+    }
+    else
+        headers["Body"] += buffer;
+    buffer.clear();
+}
 /******************************************************************************
  *               Constructeurs
  ******************************************************************************/
-Request::Request(void)
+Request::Request(void) : _isBody(false), _finish(false)
 {
 }
 
@@ -106,7 +154,8 @@ Request::Request(std::string content) throw(ParsingException)
 }
 
 Request::Request(const Request &other)
-    : _method(other._method), _uri(other._uri), _protocol(other._protocol), _host(other._host), _headers(other._headers)
+    : _isBody(other._isBody), _method(other._method), _uri(other._uri), _protocol(other._protocol), _host(other._host),
+      _headers(other._headers)
 {
 }
 
@@ -149,6 +198,11 @@ std::map< std::string, std::string > Request::getHeader() const
 {
     return _headers;
 }
+
+bool Request::isFinished() const
+{
+    return _finish;
+}
 /******************************************************************************
  *               Fonctions membres
  ******************************************************************************/
@@ -160,15 +214,33 @@ std::string Request::header(const std::string key) const
     return "";
 }
 
+void Request::parse(std::string content) throw(ParsingException)
+{
+    std::string::size_type pos;
+    std::string val;
+
+    _buffer += content;
+    if (!_isBody)
+    {
+        while ((pos = _buffer.find("\r\n")) != std::string::npos)
+        {
+            val = _buffer.substr(0, pos);
+            _buffer = _buffer.substr(pos + 2, _buffer.size() - (pos + 2));
+            if (val.size() && !_isBody)
+                extract(_headers, val);
+            else if (val.size() == 0 && !_isBody)
+                _isBody = true;
+        }
+    }
+    else if (_isBody && _buffer.size())
+        extractBody(_headers, _buffer, _finish);
+}
+
 /********************************************************************************
  *					Operator overloading
  *******************************************************************************/
 std::ostream &operator<<(std::ostream &os, const Request &r)
 {
-    os << "Method: " << r.method() << std::endl;
-    os << "Uri: " << r.uri() << std::endl;
-    os << "Protocol: " << r.protocol() << std::endl;
-
     std::map< std::string, std::string > headers = r.getHeader();
     for (std::map< std::string, std::string >::iterator it = headers.begin(); it != headers.end(); it++)
         os << it->first << ": " << it->second << std::endl;
