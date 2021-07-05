@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/02 14:47:03 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/02 17:10:42 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ t_locationData *Socket::get_locationData(void) const
     return _loc;
 }
 
-std::vector<std::string> Socket::get_infos(void) const
+std::vector< std::string > Socket::get_infos(void) const
 {
     return _infos;
 }
@@ -235,18 +235,19 @@ void Socket::readContent(void) throw(Socket::SocketException)
     std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
     // transform result in words table (_infos)
     std::istringstream iss(_request);
-    _infos = std::vector<std::string>((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    _infos =
+        std::vector< std::string >((std::istream_iterator< std::string >(iss)), std::istream_iterator< std::string >());
 }
 
 /*
  * Generic function to find if an element of any type exists in list
  */
-template <typename T>
+template < typename T >
 
-bool contains(std::list<T> &listOfElements, const T &element)
+bool contains(std::list< T > &listOfElements, const T &element)
 {
     // Find the iterator if element in li st
-    typename std::list<T>::iterator it = std::find(listOfElements.begin(), listOfElements.end(), element);
+    typename std::list< T >::iterator it = std::find(listOfElements.begin(), listOfElements.end(), element);
     // return if iterator points to end or not. It points to end then it means
     // element does not exists in list
     return it != listOfElements.end();
@@ -362,7 +363,9 @@ std::string Socket::Cgi(t_serverData &data)
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
-        execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
+        // execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
+        //execle("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL, cgi_data.getCgiEnv());
+		execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
@@ -397,9 +400,17 @@ void Socket::Delete(t_serverData data)
     sendpage(data);
 }
 
-void Socket::Post(void)
+void Socket::Post(t_serverData data)
 {
-    std::cout << "REQUEST" << _request << std::endl;
+	_code = "200 OK";
+	std::ofstream f("www/post"); 
+	(void)data;
+
+	f << m_request.header("Body"); 
+	_infos[1] = "/post";
+	//_content = Cgi(data);
+	f.close();
+	//sendpage(data);	
 }
 
 void Socket::Get(t_serverData data)
@@ -426,7 +437,7 @@ void Socket::Get(t_serverData data)
     else if (f.good() && php_file()) // if .php
         _content = Cgi(data);
     else if (f.good())
-        _content = std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        _content = std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >());
     else if (_directory && !_index.empty() && !data.autoindex)
         headerCode("403 Forbidden", 403, data);
     else
@@ -440,7 +451,7 @@ void Socket::locAutoindex(t_serverData *data)
 {
     std::string path1;
 
-    for (std::list<t_locationData>::iterator it = data->locations.begin(); it != data->locations.end(); ++it)
+    for (std::list< t_locationData >::iterator it = data->locations.begin(); it != data->locations.end(); ++it)
     {
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (it->autoindex && _infos[1].find(path1) != std::string::npos)
@@ -470,7 +481,7 @@ void Socket::locIndex(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<std::string>::iterator it = data.index.begin(); it != data.index.end(); ++it)
+    for (std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it)
     {
         if (!it->empty() && fileExists(data, *it))
         {
@@ -478,12 +489,12 @@ void Socket::locIndex(t_serverData data)
             break;
         }
     }
-    for (std::list<t_locationData>::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
+    for (std::list< t_locationData >::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
     {
         path1 = (it1->path[it1->path.size() - 1] == '/') ? it1->path.substr(0, it1->path.size() - 1) : it1->path;
         if (!it1->index.front().empty() && _infos[1].find(path1) != std::string::npos)
         {
-            for (std::list<std::string>::iterator it2 = it1->index.begin(); it2 != it1->index.end(); ++it2)
+            for (std::list< std::string >::iterator it2 = it1->index.begin(); it2 != it1->index.end(); ++it2)
             {
                 if (!it2->empty() && fileExists(data, *it2))
                 {
@@ -503,7 +514,7 @@ bool Socket::methodAllowed(t_serverData data)
 {
     std::string path1;
 
-    for (std::list<t_locationData>::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (_infos[1].find(path1) != std::string::npos && contains(it->methods, _infos[0]))
@@ -522,7 +533,7 @@ void Socket::serverResponse(t_serverData data)
         if (_infos[0] == "GET" && methodAllowed(data))
             Get(data);
         else if (_infos[0] == "POST" && methodAllowed(data))
-            Post();
+            Post(data);
         else if (_infos[0] == "DELETE" && methodAllowed(data))
             Delete(data);
         else

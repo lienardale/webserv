@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/01 15:13:17 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/02 16:42:57 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,31 +71,6 @@ char **cgi::getCgiEnv(void)
  *							Fonction membres
  *****************************************************************************/
 
-// std::fstream fs;
-// fs.open("test.txt", std::fstream::out);
-// fs << sock.get_request();
-// fs.close();
-// std::string request;
-// std::string found;
-// size_t pos;
-// // size_t npos;
-// size_t i;
-// pos = 0;
-// i = 0;
-// request = sock.get_request();
-
-// while (i < LEN_CGI_ENV - 1 && (pos = request.find(" ")) != std::string::npos)
-// {
-// 	std::cout << "\nPOS " << i << " : " << pos << std::endl;
-// 	// if (i == LEN_CGI_ENV)
-// 	// 	break ;
-// 	env[i] = const_cast<char*>(request.substr(0, pos).c_str());
-// 	request.erase(0, pos + 1);
-// 	std::cout << i << " | " << env[i] << std::endl;
-// 	i++;
-// }
-// env[LEN_CGI_ENV] = NULL;
-
 std::string cgi::parseURI(std::string uri)
 {
     size_t pos;
@@ -107,26 +82,26 @@ std::string cgi::parseURI(std::string uri)
 
 void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
 {
-    (void)data;
     //  char buffer [33];
-    // std::cout << "\nIN SET CGI META VAR\n" << std::endl;
-    // std::cout << "\nAUTH TYPE : "<< sock.get_m_request().header( "AuthType" ) << std::endl;
     s_env._auth_type = "AUTH_TYPE=" + sock.get_m_request().header("AuthType");                 // ok
     s_env._content_length = "CONTENT_LENGTH=" + sock.get_m_request().header("Content-Length"); // ok
     s_env._content_type = "CONTENT_TYPE=" + sock.get_m_request().header("Content-Type");       // ok
-    s_env._path_info = "PATH_INFO=" + sock.get_infos()[1];                                     // ok
-    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + sock.get_infos()[1];   // ok
+    s_env._path_info = "PATH_INFO=" + data.root + sock.get_infos()[1];                         // ok
+    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + data.root + sock.get_infos()[1];   // ok
     s_env._query_string = "QUERY_STRING=" + parseURI(sock.get_m_request().uri());              // ok
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                              // ok
     s_env._remote_host = "REMOTE_HOST=" + sock.get_m_request().header("Host");                 // ok
     s_env._remote_ident = "REMOTE_IDENT=user_id";                                              // ok
     s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
     s_env._request_method = "REQUEST_METHOD=" + sock.get_m_request().method();                 // ok
-    s_env._script_name = "SCRIPT_NAME=" + sock.get_m_request().header("                                            ");
-    s_env._server_port = "SERVER_PORT=" /* + itoa(data.listen,buffer,10)*/;
+    s_env._request_uri = "REQUEST_URI=" + sock.get_m_request().uri();
+    s_env._script_name = "SCRIPT_NAME=php-cgi"; // FAST_CGI_CONF
+    s_env._script_file_name = "SCRIPT_FILENAME=php-cgi";
+    s_env._server_port = "SERVER_PORT=8000" /* + itoa(data.listen,buffer,10)*/;
     s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request().protocol();                          // ok
+    s_env._redirect_status = "REDIRECT_STATUS=200";
     s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                                 // ok
-    s_env._server_name = "SERVER_NAME=" + data.addr_ip;                                                     // ok
+    s_env._server_name = "SERVER_NAME=WEBSERV";                                                     // ok
     s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";                                                   // ok
     s_env._http_accept = "HTTP_ACCEPT=" + sock.get_m_request().header("Accept");                            // ok
     s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + sock.get_m_request().header("Accept-Language"); // ok
@@ -147,9 +122,12 @@ void cgi::setCgiEnv(void)
     env[REMOTE_IDENT] = const_cast<char *>(s_env._remote_ident.c_str());
     env[REMOTE_USER] = const_cast<char *>(s_env._remote_user.c_str());
     env[REQUEST_METHOD] = const_cast<char *>(s_env._request_method.c_str());
+    env[REQUEST_URI] = const_cast<char *>(s_env._request_uri.c_str());
     env[SCRIPT_NAME] = const_cast<char *>(s_env._script_name.c_str());
+    env[SCRIPT_FILENAME] = const_cast<char *>(s_env._script_file_name.c_str());
     env[SERVER_PORT] = const_cast<char *>(s_env._server_port.c_str());
     env[SERVER_PROTOCOL] = const_cast<char *>(s_env._server_protocol.c_str());
+    env[REDIRECT_STATUS] = const_cast<char *>(s_env._redirect_status.c_str()); 
     env[GATEWAY_INTERFACE] = const_cast<char *>(s_env._gateway_interface.c_str());
     env[SERVER_NAME] = const_cast<char *>(s_env._server_name.c_str());
     env[SERVER_SOFTWARE] = const_cast<char *>(s_env._server_software.c_str());
