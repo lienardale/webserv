@@ -6,7 +6,7 @@
 #    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/06/29 19:17:12 by alienard         ###   ########.fr        #
+#    Updated: 2021/07/05 12:43:46 by alienard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRCS    			=	socket\
 					parsing/serverKeys\
 					parsing/parsingExceptions\
 					parsing/utils\
+					utils/ft_itoa\
 					cgi \
 					request
 

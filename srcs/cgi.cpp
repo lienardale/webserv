@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/02 16:42:57 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/05 18:08:42 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,8 @@ std::string cgi::parseURI(std::string uri)
 
 void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
 {
-    //  char buffer [33];
+     char buffer [33];
+     bzero(buffer, sizeof(buffer));
     s_env._auth_type = "AUTH_TYPE=" + sock.get_m_request().header("AuthType");                 // ok
     s_env._content_length = "CONTENT_LENGTH=" + sock.get_m_request().header("Content-Length"); // ok
     s_env._content_type = "CONTENT_TYPE=" + sock.get_m_request().header("Content-Type");       // ok
@@ -94,10 +95,10 @@ void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
     s_env._remote_ident = "REMOTE_IDENT=user_id";                                              // ok
     s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
     s_env._request_method = "REQUEST_METHOD=" + sock.get_m_request().method();                 // ok
-    s_env._request_uri = "REQUEST_URI=" + sock.get_m_request().uri();
-    s_env._script_name = "SCRIPT_NAME=php-cgi"; // FAST_CGI_CONF
-    s_env._script_file_name = "SCRIPT_FILENAME=php-cgi";
-    s_env._server_port = "SERVER_PORT=8000" /* + itoa(data.listen,buffer,10)*/;
+    s_env._request_uri = "REQUEST_URI=" + sock.get_m_request().uri();                          // ok
+    s_env._script_name = "SCRIPT_NAME=php-cgi7.0"; // FAST_CGI_CONF
+    s_env._script_file_name = "SCRIPT_FILENAME=cgi-bin/php-cgi7.0";
+    s_env._server_port = "SERVER_PORT=" + SSTR(itoa(data.listen,buffer,10));
     s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request().protocol();                          // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
     s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                                 // ok
