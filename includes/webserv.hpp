@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 18:04:16 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/05 13:04:27 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
+#include "utils/ft_itoa.hpp"
 
 #define SSTR(x) static_cast< std::ostringstream & >((std::ostringstream() << std::dec << x)).str()
 
