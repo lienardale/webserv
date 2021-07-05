@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/01 19:20:22 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/05 14:15:53 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,8 +364,8 @@ std::string Socket::Cgi(t_serverData &data)
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
-        // execl("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL);
-        execle("cgi-bin/php-cgi", "cgi-bin/php-cgi", ("www" + _infos[1]).c_str(), NULL, cgi_data.getCgiEnv());
+        // execl("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", ("www" + _infos[1]).c_str(), NULL);
+        execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", ("www" + _infos[1]).c_str(), cgi_data.getCgiEnv(), NULL);
 		// execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
     }
     ::close(fd[1]);
