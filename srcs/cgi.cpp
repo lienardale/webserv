@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/05 14:11:09 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/05 18:08:42 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,8 @@ void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
     s_env._auth_type = "AUTH_TYPE=" + sock.get_m_request().header("AuthType");                 // ok
     s_env._content_length = "CONTENT_LENGTH=" + sock.get_m_request().header("Content-Length"); // ok
     s_env._content_type = "CONTENT_TYPE=" + sock.get_m_request().header("Content-Type");       // ok
-    s_env._path_info = "PATH_INFO=" + sock.get_infos()[1];                                     // ok
-    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + sock.get_infos()[1];   // ok
+    s_env._path_info = "PATH_INFO=" + data.root + sock.get_infos()[1];                         // ok
+    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + data.root + sock.get_infos()[1];   // ok
     s_env._query_string = "QUERY_STRING=" + parseURI(sock.get_m_request().uri());              // ok
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                              // ok
     s_env._remote_host = "REMOTE_HOST=" + sock.get_m_request().header("Host");                 // ok
@@ -102,7 +102,7 @@ void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
     s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request().protocol();                          // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
     s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                                 // ok
-    s_env._server_name = "SERVER_NAME=" + data.addr_ip;                                                     // ok
+    s_env._server_name = "SERVER_NAME=WEBSERV";                                                     // ok
     s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";                                                   // ok
     s_env._http_accept = "HTTP_ACCEPT=" + sock.get_m_request().header("Accept");                            // ok
     s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + sock.get_m_request().header("Accept-Language"); // ok

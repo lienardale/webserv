@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 19:20:39 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/02 14:55:45 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ void http::Server::stop(void)
     {
         _run = false;
         for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin();
-             it != _serverSet.end(); it++)
+			it != _serverSet.end(); it++)
             it->second.first.close();
         close(_epoll_fd);
     }
