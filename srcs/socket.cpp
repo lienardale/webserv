@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/05 14:30:38 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 14:51:20 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,16 +225,7 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
 
     bzero(buffer, sizeof(buffer));
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-    return std::string(buffer);
-
-    /*    std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
-
-        // transform result in words table (_infos)
-        std::istringstream iss(_request);
-        _infos =
-            std::vector< std::string >((std::istream_iterator< std::string >(iss)), std::istream_iterator< std::string
-        >());
-        return std::string(buffer);*/
+    return std::string(static_cast< char * >(buffer), ret);
 }
 
 /*

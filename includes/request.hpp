@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/05 17:57:17 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 16:32:10 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@
 class Request
 {
   public:
-    Request(void); // Private default constructor
-    Request(std::string content) throw(ParsingException);
+    Request(void);
     Request(const Request &other);
     Request &operator=(const Request &other);
     ~Request(void);

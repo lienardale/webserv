@@ -6,12 +6,13 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/05 18:45:48 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 16:01:33 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "parsing/dataStructure.hpp"
+#include "parsing/parsingExceptions.hpp"
 #include "request.hpp"
 #include "socket.hpp"
 #include <cstddef>
@@ -139,23 +140,21 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             _currentSock = Socket(fd, true);
             _requests[fd].parse(_currentSock.readContent());
 
-            std::cout << _requests[fd] << std::endl;
-            // if (_requests[fd].isFinished())
-            //  _currentSock.close();
-            /*if (_rawRequests[fd].find("\r\n\r\n") != std::string::npos)
+            if (_requests[fd].isFinished())
             {
-                // Request r(_rawRequests[fd]);
-                std::cout << r << std::endl;
+                std::cout << _requests[fd] << std::endl;
                 _currentSock.close();
-            }*/
-
-            // si chunk, retourner au listen du fd correspondant
-            // _currentSock.serverResponse(_currentData);
-            // close si pas chunked et si time < keep_alive
-            // close(fd);
+                _requests.erase(fd);
+            }
         }
         catch (Socket::SocketException &e)
         {
+            std::cerr << e.what() << std::endl;
+        }
+        catch (ParsingException &e)
+        {
+            _currentSock.close();
+            _requests.erase(fd);
             std::cerr << e.what() << std::endl;
         }
     }
