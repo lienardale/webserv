@@ -6,22 +6,11 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 17:09:37 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 19:34:00 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
-#include "parsing/dataStructure.hpp"
-#include "parsing/parsingExceptions.hpp"
-#include "request.hpp"
-#include "socket.hpp"
-#include <cstddef>
-#include <inttypes.h>
-#include <iostream>
-#include <list>
-#include <map>
-#include <sys/epoll.h>
-#include <utility>
+#include "webserv.hpp"
 
 #define MAX_EVENTS 10
 
@@ -143,6 +132,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             if (_requests[fd].isFinished())
             {
                 std::cout << _requests[fd] << std::endl;
+                std::cout << http::statusToReason(http::OK) << std::endl;
                 _currentSock.send("okok", 4);
                 _currentSock.close();
                 _requests.erase(fd);

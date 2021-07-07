@@ -6,11 +6,14 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:56:28 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 18:31:45 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 19:32:45 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef STATUSCODE_HPP
+#define STATUSCODE_HPP
+
+#include <iostream>
 
 namespace http
 {
@@ -20,6 +23,8 @@ namespace http
  */
 enum Status
 {
+    CONTINUE = 100,
+    SWITCHING_PROTOL = 101,
     OK = 200,
     CREATED = 201,
     ACCEPTED = 202,
@@ -69,4 +74,9 @@ enum Status
     NOT_EXTENDED = 510,
     NETWORK_AUTHENTICATION_REQUIRED = 511
 };
+
+std::string statusToReason(http::Status code);
+
 } // namespace http
+
+#endif

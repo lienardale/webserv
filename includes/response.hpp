@@ -6,11 +6,12 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:13:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 18:37:56 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 19:39:48 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef RESPONSE_HPP
+#define RESPONSE_HPP
 
 #include "socket.hpp"
 #include "statusCode.hpp"
@@ -43,3 +44,4 @@ class Response
     std::map< std::string, std::string > _headers;
     std::pair< std::string, std::string > _body;
 };
+#endif

@@ -6,7 +6,7 @@
 #    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/07/07 18:48:26 by dboyer           ###   ########.fr        #
+#    Updated: 2021/07/07 19:36:20 by dboyer           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,11 +29,13 @@ SRCS    			=	socket\
 					parsing/utils\
 					cgi \
 					request\
-					response
+					response\
+					statusCode
 
 INCLUDES			=	-I ./includes
 
-HEADERS				=	./includes/webserv.hpp
+HEADERS				=	./includes/webserv.hpp\
+					./includes/statusCode.hpp
 
 OBJS_MAIN			= 	$(MAIN:.cpp=.o)
 OBJS				= 	$(FIL:.cpp=.o)
