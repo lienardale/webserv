@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/05 14:31:00 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 18:39:31 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Socket
     // Getters
     int Fd(void) const;
     std::string get_request(void) const;
-    Request get_m_request(void) const;
+    http::Request get_m_request(void) const;
     struct sockaddr_in infos(void) const;
     t_locationData *get_locationData(void) const;
     std::vector< std::string > get_infos(void) const;
@@ -63,6 +63,8 @@ class Socket
     void close(void);
     Socket accept(void) throw(Socket::SocketException);
     std::string readContent(void) throw(Socket::SocketException);
+    void send(const char *content, std::string::size_type size) throw(SocketException);
+
     void parseRequest(void);
     void serverResponse(t_serverData data);
     void Get(t_serverData data);
@@ -106,7 +108,7 @@ class Socket
     bool _isDir;
     std::string _index;
     t_locationData *_loc;
-    Request m_request;
+    http::Request m_request;
 };
 
 #endif

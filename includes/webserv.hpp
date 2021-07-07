@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 18:04:16 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 18:38:11 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@
 #include "config.hpp"
 #include "parsing/parser.hpp"
 #include "request.hpp"
+#include "response.hpp"
 #include "server.hpp"
 #include "socket.hpp"
+#include "statusCode.hpp"
 
 #include <errno.h>
 #include <fcntl.h>

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 16:32:10 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 18:39:13 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <iostream>
 #include <map>
 
+namespace http
+{
 class Request
 {
   public:
@@ -51,6 +53,8 @@ class Request
     std::map< std::string, std::string > _headers;
 };
 
-std::ostream &operator<<(std::ostream &os, const Request &r);
+} // namespace http
+
+std::ostream &operator<<(std::ostream &os, const http::Request &r);
 
 #endif

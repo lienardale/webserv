@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/07 14:51:20 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 18:39:59 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ std::string Socket::get_request() const
 /*
  *	Retourne la request parsée de la socket
  */
-Request Socket::get_m_request(void) const
+http::Request Socket::get_m_request(void) const
 {
     return m_request;
 }
@@ -215,7 +215,7 @@ Socket Socket::accept(void) throw(Socket::SocketException)
 }
 
 /*
- *	Lis la totalité du contenu reçu par la socket
+ *	Lit une partie du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
 std::string Socket::readContent(void) throw(Socket::SocketException)
@@ -226,6 +226,16 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
     bzero(buffer, sizeof(buffer));
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
     return std::string(static_cast< char * >(buffer), ret);
+}
+
+/*
+ *	Envoie un contenu via la socket
+ *	@Infos: La fonction lève une SocketException si erreur
+ */
+void Socket::send(const char *content, std::string::size_type size) throw(SocketException)
+{
+    if (::send(_fd, content, size, 0) == -1)
+        throw Socket::SocketException();
 }
 
 /*
@@ -282,7 +292,7 @@ void Socket::sendpage(t_serverData data)
     if (!php_file() || _code != "200 OK")
         oss << "\r\n";
     oss << _content;
-    send(_fd, oss.str().c_str(), oss.str().size(), 0);
+    ::send(_fd, oss.str().c_str(), oss.str().size(), 0);
     std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str();
 }
 
@@ -368,7 +378,7 @@ void Socket::badRequest(void)
     oss << "HTTP/1.1 400 Bad Request\r\n";
     oss << content;
 
-    send(_fd, oss.str().c_str(), oss.str().size(), 0);
+    ::send(_fd, oss.str().c_str(), oss.str().size(), 0);
     std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str() << "\n" << std::endl;
 }
 

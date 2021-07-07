@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 16:31:05 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/07 18:42:07 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,11 +109,13 @@ static void extractBody(std::map< std::string, std::string > &headers, std::stri
 
         if (static_cast< int >(body.size() + buffer.size()) > len)
             throw BadRequest("Wrong body size");
+
         headers["Body"] += buffer;
         finish = static_cast< int >(headers["Body"].size()) == len;
-        buffer.clear();
         if (finish && headers.find("Host") == headers.end())
             throw BadRequest("No Host in header");
+
+        buffer.clear();
     }
     else
         throw BadRequest("No Content-Length");
@@ -121,17 +123,17 @@ static void extractBody(std::map< std::string, std::string > &headers, std::stri
 /******************************************************************************
  *               Constructeurs
  ******************************************************************************/
-Request::Request(void) : _isBody(false), _finish(false)
+http::Request::Request(void) : _isBody(false), _finish(false)
 {
 }
 
-Request::Request(const Request &other)
+http::Request::Request(const Request &other)
     : _isBody(other._isBody), _finish(other._finish), _method(other._method), _uri(other._uri),
       _protocol(other._protocol), _host(other._host), _headers(other._headers)
 {
 }
 
-Request &Request::operator=(const Request &other)
+http::Request &http::Request::operator=(const http::Request &other)
 {
     (void)other;
 
@@ -144,7 +146,7 @@ Request &Request::operator=(const Request &other)
     return *this;
 }
 
-Request::~Request(void)
+http::Request::~Request(void)
 {
 }
 
@@ -152,34 +154,34 @@ Request::~Request(void)
  *               Getters
  ******************************************************************************/
 
-std::string Request::method(void) const
+std::string http::Request::method(void) const
 {
     return _method;
 }
 
-std::string Request::uri(void) const
+std::string http::Request::uri(void) const
 {
     return _uri;
 }
 
-std::string Request::protocol(void) const
+std::string http::Request::protocol(void) const
 {
     return _protocol;
 }
 
-std::map< std::string, std::string > Request::getHeader() const
+std::map< std::string, std::string > http::Request::getHeader() const
 {
     return _headers;
 }
 
-bool Request::isFinished() const
+bool http::Request::isFinished() const
 {
     return _finish;
 }
 /******************************************************************************
  *               Fonctions membres
  ******************************************************************************/
-std::string Request::header(const std::string key) const
+std::string http::Request::header(const std::string key) const
 {
     std::map< std::string, std::string >::const_iterator found = _headers.find(key);
     if (found != _headers.end())
@@ -187,7 +189,7 @@ std::string Request::header(const std::string key) const
     return "";
 }
 
-void Request::parse(std::string content) throw(ParsingException)
+void http::Request::parse(std::string content) throw(ParsingException)
 {
     std::string::size_type pos;
     std::string val;
@@ -213,7 +215,7 @@ void Request::parse(std::string content) throw(ParsingException)
 /********************************************************************************
  *					Operator overloading
  *******************************************************************************/
-std::ostream &operator<<(std::ostream &os, const Request &r)
+std::ostream &operator<<(std::ostream &os, const http::Request &r)
 {
     std::map< std::string, std::string > headers = r.getHeader();
     for (std::map< std::string, std::string >::iterator it = headers.begin(); it != headers.end(); it++)
