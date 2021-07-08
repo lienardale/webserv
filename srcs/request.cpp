@@ -178,6 +178,14 @@ bool http::Request::isFinished() const
 {
     return _finish;
 }
+
+bool http::Request::keepAlive() const
+{
+    std::map< std::string, std::string >::const_iterator found = _headers.find("Connection");
+    if (found != _headers.end())
+        return found->second != "close";
+    return true;
+}
 /******************************************************************************
  *               Fonctions membres
  ******************************************************************************/
@@ -210,6 +218,14 @@ void http::Request::parse(std::string content) throw(ParsingException)
         if (_headers.find("Host") == _headers.end())
             throw BadRequest("No Host in header");
     }
+}
+
+void http::Request::clear(void)
+{
+    _headers.clear();
+    _buffer.clear();
+    _finish = false;
+    _isBody = false;
 }
 
 /********************************************************************************

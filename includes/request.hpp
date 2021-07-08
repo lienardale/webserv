@@ -34,6 +34,7 @@ class Request
     std::string uri(void) const;
     std::string protocol(void) const;
     std::map< std::string, std::string > getHeader(void) const;
+    bool keepAlive(void) const;
     bool isFinished(void) const;
 
     /**************************************************************************
@@ -41,6 +42,7 @@ class Request
      *************************************************************************/
     std::string header(const std::string key) const;
     void parse(std::string content) throw(ParsingException);
+    void clear(void);
 
   private:
     bool _isBody;

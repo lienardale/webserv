@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "response.hpp"
+#include "statusCode.hpp"
 #include "webserv.hpp"
 
 #define MAX_EVENTS 10
@@ -141,10 +143,12 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         }
         catch (Socket::SocketException &e)
         {
+            _currentSock.send(http::Response(http::INTERNAL_SERVER_ERROR).toString());
             std::cerr << e.what() << std::endl;
         }
         catch (ParsingException &e)
         {
+            _currentSock.send(http::Response(http::BAD_REQUEST).toString());
             _currentSock.close();
             _requests.erase(fd);
             std::cerr << e.what() << std::endl;
@@ -159,10 +163,12 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 
     bzero(events, MAX_EVENTS);
     _epoll_fd = epoll_create1(EPOLL_CLOEXEC);
-    _run = true;
+
     for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
          it++)
         _add_fd_to_poll(_epoll_fd, it->first, EPOLLIN);
+
+    _run = true;
     while (_run)
     {
         event_count = epoll_wait(_epoll_fd, events, MAX_EVENTS, -1);
