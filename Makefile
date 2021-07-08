@@ -27,6 +27,7 @@ SRCS    			=	socket\
 					parsing/serverKeys\
 					parsing/parsingExceptions\
 					parsing/utils\
+					utils/ft_itoa\
 					cgi \
 					request\
 					response\

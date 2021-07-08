@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
 /*   Updated: 2021/07/07 18:38:11 by dboyer           ###   ########.fr       */
@@ -34,6 +34,7 @@
 #include <string.h>
 //#include <sys/socket.h>
 //#include <sys/stat.h>
+#include "utils/ft_itoa.hpp"
 #include <csignal>
 #include <dirent.h>
 #include <map>
