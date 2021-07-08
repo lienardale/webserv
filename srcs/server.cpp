@@ -6,20 +6,13 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/02 14:55:45 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/08 12:14:55 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
-#include "parsing/dataStructure.hpp"
-#include "socket.hpp"
-#include <cstddef>
-#include <inttypes.h>
-#include <iostream>
-#include <list>
-#include <map>
-#include <sys/epoll.h>
-#include <utility>
+#include "response.hpp"
+#include "statusCode.hpp"
+#include "webserv.hpp"
 
 #define MAX_EVENTS 10
 
@@ -136,14 +129,28 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         try
         {
             _currentSock = Socket(fd, true);
-            _currentSock.readContent();
-            // si chunk, retourner au listen du fd correspondant
-            _currentSock.serverResponse(_currentData);
-            // close si pas chunked et si time < keep_alive
-            close(fd);
+            _requests[fd].parse(_currentSock.readContent());
+
+            if (_requests[fd].isFinished())
+            {
+                std::cout << _requests[fd] << std::endl;
+                Response resp = http::Response(http::OK);
+                resp.setBody("<h1>Hello world</h1>", "text/html; charset=utf-8");
+                _currentSock.send(resp.toString());
+                _currentSock.close();
+                _requests.erase(fd);
+            }
         }
         catch (Socket::SocketException &e)
         {
+            _currentSock.send(http::Response(http::INTERNAL_SERVER_ERROR).toString());
+            std::cerr << e.what() << std::endl;
+        }
+        catch (ParsingException &e)
+        {
+            _currentSock.send(http::Response(http::BAD_REQUEST).toString());
+            _currentSock.close();
+            _requests.erase(fd);
             std::cerr << e.what() << std::endl;
         }
     }
@@ -156,10 +163,12 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 
     bzero(events, MAX_EVENTS);
     _epoll_fd = epoll_create1(EPOLL_CLOEXEC);
-    _run = true;
+
     for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
          it++)
         _add_fd_to_poll(_epoll_fd, it->first, EPOLLIN);
+
+    _run = true;
     while (_run)
     {
         event_count = epoll_wait(_epoll_fd, events, MAX_EVENTS, -1);
@@ -178,7 +187,7 @@ void http::Server::stop(void)
     {
         _run = false;
         for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin();
-			it != _serverSet.end(); it++)
+             it != _serverSet.end(); it++)
             it->second.first.close();
         close(_epoll_fd);
     }

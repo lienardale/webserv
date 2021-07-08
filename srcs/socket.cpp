@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/05 18:07:46 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/07 18:39:59 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ std::string Socket::get_request() const
 /*
  *	Retourne la request parsée de la socket
  */
-Request Socket::get_m_request(void) const
+http::Request Socket::get_m_request(void) const
 {
     return m_request;
 }
@@ -215,28 +215,27 @@ Socket Socket::accept(void) throw(Socket::SocketException)
 }
 
 /*
- *	Lis la totalité du contenu reçu par la socket
+ *	Lit une partie du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-void Socket::readContent(void) throw(Socket::SocketException)
+std::string Socket::readContent(void) throw(Socket::SocketException)
 {
     int ret = 0;
+    char buffer[30];
 
-    bzero(_buffer, sizeof(_buffer));
-    while ((ret = recv(_fd, _buffer, sizeof(_buffer), MSG_DONTWAIT) > 0))
-    {
-        _request.append(_buffer);
-        bzero(_buffer, sizeof(_buffer));
-    }
-    // request parsing
-    m_request = Request(_request);
-    if (ret < 0)
-        throw(Socket::SocketException());
-    std::cout << "		-- CLIENT REQUEST --\n\n" << _request << "\n" << std::endl;
-    // transform result in words table (_infos)
-    std::istringstream iss(_request);
-    _infos =
-        std::vector< std::string >((std::istream_iterator< std::string >(iss)), std::istream_iterator< std::string >());
+    bzero(buffer, sizeof(buffer));
+    ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+    return std::string(static_cast< char * >(buffer), ret);
+}
+
+/*
+ *	Envoie un contenu via la socket
+ *	@Infos: La fonction lève une SocketException si erreur
+ */
+void Socket::send(const std::string content) throw(SocketException)
+{
+    if (::send(_fd, content.c_str(), content.size(), 0) == -1)
+        throw Socket::SocketException();
 }
 
 /*
@@ -290,13 +289,13 @@ void Socket::sendpage(t_serverData data)
             oss << _index;
         oss << "\r\n";
     }
-	oss << "Connection: ";
-	std::string connect = (_code == "400 Bad Request") ? "close\r\n" : "keep-alive\r\n";
-	oss << connect;
+    oss << "Connection: ";
+    std::string connect = (_code == "400 Bad Request") ? "close\r\n" : "keep-alive\r\n";
+    oss << connect;
     if (!php_file() || _code != "200 OK")
         oss << "\r\n";
     oss << _content;
-    send(_fd, oss.str().c_str(), oss.str().size(), 0);
+    ::send(_fd, oss.str().c_str(), oss.str().size(), 0);
     std::cout << "		-- SERVER RESPONSE --\n\n" << oss.str().c_str();
 }
 
@@ -365,7 +364,7 @@ std::string Socket::Cgi(t_serverData &data)
         ::close(fd[1]);
         // execl("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", ("www" + _infos[1]).c_str(), NULL);
         execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", ("www" + _infos[1]).c_str(), cgi_data.getCgiEnv(), NULL);
-		// execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
+        // execl("php-cgi", "php-cgi", ("www" + _infos[1]).c_str(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
@@ -376,8 +375,8 @@ std::string Socket::Cgi(t_serverData &data)
 
 void Socket::badRequest(t_serverData data)
 {
-	headerCode("400 Bad Request", 400, data);
-	sendpage(data);
+    headerCode("400 Bad Request", 400, data);
+    sendpage(data);
 }
 
 void Socket::Delete(t_serverData data)
@@ -385,15 +384,15 @@ void Socket::Delete(t_serverData data)
     std::ostringstream oss;
     _code = "200 OK";
 
-	std::ifstream f((data.root + _infos[1]).c_str());
+    std::ifstream f((data.root + _infos[1]).c_str());
     bool isDir = (f.good() && !f.rdbuf()->in_avail()) ? true : false;
     f.close();
 
-	if (isDir)
-		headerCode("409 Conflict", 409, data);
+    if (isDir)
+        headerCode("409 Conflict", 409, data);
     else if (!remove((data.root + _infos[1]).c_str()))
         _content = "<h1>" + _infos[1] + " deleted</h1>";
-	else if (errno != 2)
+    else if (errno != 2)
         headerCode("403 Forbidden", 403, data);
     else
         headerCode("404 Not Found", 404, data);
@@ -402,15 +401,15 @@ void Socket::Delete(t_serverData data)
 
 void Socket::Post(t_serverData data)
 {
-	_code = "200 OK";
-	std::ofstream f("www/post"); 
-	(void)data;
+    _code = "200 OK";
+    std::ofstream f("www/post");
+    (void)data;
 
-	f << m_request.header("Body"); 
-	_infos[1] = "/post";
-	//_content = Cgi(data);
-	f.close();
-	//sendpage(data);	
+    f << m_request.header("Body");
+    _infos[1] = "/post";
+    //_content = Cgi(data);
+    f.close();
+    // sendpage(data);
 }
 
 void Socket::Get(t_serverData data)

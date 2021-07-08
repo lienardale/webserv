@@ -6,7 +6,7 @@
 #    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/07/05 12:43:46 by alienard         ###   ########.fr        #
+#    Updated: 2021/07/07 19:36:20 by dboyer           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,11 +29,25 @@ SRCS    			=	socket\
 					parsing/utils\
 					utils/ft_itoa\
 					cgi \
-					request
+					request\
+					response\
+					statusCode
 
 INCLUDES			=	-I ./includes
 
-HEADERS				=	./includes/webserv.hpp
+HEADERS				=	./includes/webserv.hpp\
+					./includes/statusCode.hpp\
+					./includes/socket.hpp\
+					./includes/server.hpp\
+					./includes/response.hpp\
+					./includes/request.hpp\
+					./includes/config.hpp\
+					./includes/cgi.hpp\
+					./includes/utils/utils.hpp\
+					./includes/parsing/dataStructure.hpp\
+					./includes/parsing/parser.hpp\
+					./includes/parsing/parsingExceptions.hpp\
+					./includes/parsing/utils.hpp
 
 OBJS_MAIN			= 	$(MAIN:.cpp=.o)
 OBJS				= 	$(FIL:.cpp=.o)

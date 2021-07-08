@@ -1,62 +1,51 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   request.hpp                                        :+:      :+:    :+:   */
+/*   response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 18:39:13 by dboyer           ###   ########.fr       */
+/*   Created: 2021/07/07 17:13:23 by dboyer            #+#    #+#             */
+/*   Updated: 2021/07/07 19:39:48 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef REQUEST_HPP
-#define REQUEST_HPP
+#ifndef RESPONSE_HPP
+#define RESPONSE_HPP
 
-#include "parsing/parsingExceptions.hpp"
+#include "socket.hpp"
+#include "statusCode.hpp"
 #include <iostream>
 #include <map>
 
 namespace http
 {
-class Request
+class Response
 {
   public:
-    Request(void);
-    Request(const Request &other);
-    Request &operator=(const Request &other);
-    ~Request(void);
+    Response(http::Status code);
+    Response(const Response &other);
+    Response &operator=(const Response &other);
+    ~Response(void);
 
     /**************************************************************************
-     *				Getters
+     *			Setters
      *************************************************************************/
-    std::string method(void) const;
-    std::string uri(void) const;
-    std::string protocol(void) const;
-    std::map< std::string, std::string > getHeader(void) const;
-    bool keepAlive(void) const;
-    bool isFinished(void) const;
+    void setHeader(const std::string key, const std::string value);
+    void setBody(const std::string &content, const std::string mimetype);
+    void setCode(const http::Status code);
 
     /**************************************************************************
-     *				Fonctions membres
+     *			Fonctions membres
      *************************************************************************/
-    std::string header(const std::string key) const;
-    void parse(std::string content) throw(ParsingException);
-    void clear(void);
+    std::string toString(void) const;
 
   private:
-    bool _isBody;
-    bool _finish;
-    std::string _buffer;
-    std::string _method;
-    std::string _uri;
-    std::string _protocol;
-    std::string _host;
+    http::Status _code;
+    std::string _status;
     std::map< std::string, std::string > _headers;
+    std::pair< std::string, std::string > _body;
 };
-
 } // namespace http
-
-std::ostream &operator<<(std::ostream &os, const http::Request &r);
 
 #endif
