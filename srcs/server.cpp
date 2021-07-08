@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 19:34:00 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/08 12:14:55 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,8 +132,9 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             if (_requests[fd].isFinished())
             {
                 std::cout << _requests[fd] << std::endl;
-                std::cout << http::statusToReason(http::OK) << std::endl;
-                _currentSock.send("okok", 4);
+                Response resp = http::Response(http::OK);
+                resp.setBody("<h1>Hello world</h1>", "text/html; charset=utf-8");
+                _currentSock.send(resp.toString());
                 _currentSock.close();
                 _requests.erase(fd);
             }

@@ -232,9 +232,9 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
  *	Envoie un contenu via la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-void Socket::send(const char *content, std::string::size_type size) throw(SocketException)
+void Socket::send(const std::string content) throw(SocketException)
 {
-    if (::send(_fd, content, size, 0) == -1)
+    if (::send(_fd, content.c_str(), content.size(), 0) == -1)
         throw Socket::SocketException();
 }
 

@@ -6,15 +6,15 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 19:26:07 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 19:32:34 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/08 12:11:06 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-std::string statusToReason(http::Status code)
+std::string http::statusToReason(http::Status status)
 {
-    switch (static_cast< int >(code))
+    switch (static_cast< int >(status))
     {
 
     // Informational
@@ -132,4 +132,9 @@ std::string statusToReason(http::Status code)
     default:
         return std::string();
     }
+}
+
+int http::statusToCode(http::Status status)
+{
+    return static_cast< int >(status);
 }

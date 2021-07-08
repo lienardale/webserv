@@ -10,21 +10,39 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "statusCode.hpp"
 #include "webserv.hpp"
+#include <cstdlib>
+#include <map>
+#include <string>
 
+/******************************************************************************
+ *              Outils
+ ******************************************************************************/
+static std::string statusLine(http::Status status)
+{
+    std::string ret = "HTTP/1.1 ";
+    std::string s = http::statusToReason(status);
+
+    if (s.size())
+        return ret + SSTR(status) + " " + s + "\r\n";
+    else
+        return ret + SSTR(http::INTERNAL_SERVER_ERROR) + " " + http::statusToReason(http::INTERNAL_SERVER_ERROR) +
+               "\r\n";
+}
 /******************************************************************************
  *			Constructeurs
  *******************************************************************************/
-Response::Response(http::Status code) : _code(code)
+http::Response::Response(http::Status code) : _code(code)
 {
 }
 
-Response::Response(const Response &other)
+http::Response::Response(const Response &other)
     : _code(other._code), _status(other._status), _headers(other._headers), _body(other._body)
 {
 }
 
-Response &Response::operator=(const Response &other)
+http::Response &http::Response::operator=(const Response &other)
 {
     _code = other._code;
     _body = other._body;
@@ -33,7 +51,7 @@ Response &Response::operator=(const Response &other)
     return *this;
 }
 
-Response::~Response()
+http::Response::~Response()
 {
 }
 
@@ -41,18 +59,18 @@ Response::~Response()
  *			Setters
  ********************************************************************************/
 
-void Response::setHeader(const std::string key, const std::string value)
+void http::Response::setHeader(const std::string key, const std::string value)
 {
     _headers[key] += value;
 }
 
-void Response::setBody(const std::string &content, const std::string mimetype)
+void http::Response::setBody(const std::string &content, const std::string mimetype)
 {
     _body.first = content;
     _body.second = mimetype;
 }
 
-void Response::setCode(const http::Status code)
+void http::Response::setCode(const http::Status code)
 {
     _code = code;
 }
@@ -61,7 +79,20 @@ void Response::setCode(const http::Status code)
  *			Fonctions membres
  *******************************************************************************/
 
-std::string Response::toString() const
+std::string http::Response::toString() const
 {
-    return "";
+    std::string ret = statusLine(_code);
+    ret += "Accept-ranges: bytes\r\n";
+
+    for (std::map< std::string, std::string >::const_iterator it = _headers.begin(); it != _headers.end(); it++)
+        ret += it->first + ": " + it->second + "\r\n";
+
+    if (_body.first.size())
+    {
+        ret += "Content-length: " + SSTR(_body.first.size()) + "\r\n";
+        ret += "Content-type: " + _body.second + "\r\n";
+        ret += "\r\n\r\n" + _body.first;
+    }
+    ret += "\r\n\r\n";
+    return ret;
 }

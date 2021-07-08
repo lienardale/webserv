@@ -63,7 +63,7 @@ class Socket
     void close(void);
     Socket accept(void) throw(Socket::SocketException);
     std::string readContent(void) throw(Socket::SocketException);
-    void send(const char *content, std::string::size_type size) throw(SocketException);
+    void send(const std::string content) throw(SocketException);
 
     void parseRequest(void);
     void serverResponse(t_serverData data);

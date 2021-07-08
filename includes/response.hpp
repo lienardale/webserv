@@ -18,6 +18,8 @@
 #include <iostream>
 #include <map>
 
+namespace http
+{
 class Response
 {
   public:
@@ -44,4 +46,6 @@ class Response
     std::map< std::string, std::string > _headers;
     std::pair< std::string, std::string > _body;
 };
+} // namespace http
+
 #endif

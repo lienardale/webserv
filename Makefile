@@ -35,7 +35,18 @@ SRCS    			=	socket\
 INCLUDES			=	-I ./includes
 
 HEADERS				=	./includes/webserv.hpp\
-					./includes/statusCode.hpp
+					./includes/statusCode.hpp\
+					./includes/socket.hpp\
+					./includes/server.hpp\
+					./includes/response.hpp\
+					./includes/request.hpp\
+					./includes/config.hpp\
+					./includes/cgi.hpp\
+					./includes/utils/utils.hpp\
+					./includes/parsing/dataStructure.hpp\
+					./includes/parsing/parser.hpp\
+					./includes/parsing/parsingExceptions.hpp\
+					./includes/parsing/utils.hpp
 
 OBJS_MAIN			= 	$(MAIN:.cpp=.o)
 OBJS				= 	$(FIL:.cpp=.o)

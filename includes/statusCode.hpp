@@ -75,7 +75,8 @@ enum Status
     NETWORK_AUTHENTICATION_REQUIRED = 511
 };
 
-std::string statusToReason(http::Status code);
+std::string statusToReason(http::Status status);
+int statusToCode(http::Status status);
 
 } // namespace http
 
