@@ -81,18 +81,24 @@ void http::Response::setCode(const http::Status code)
 
 std::string http::Response::toString() const
 {
-    std::string ret = statusLine(_code);
-    ret += "Accept-ranges: bytes\r\n";
+    std::ostringstream oss;
+    time_t now = time(0);
+    char *dt = ctime(&now);
+
+    oss << statusLine(_code) << ""
+        << "Accept-ranges: bytes\r\n";
+
+    oss << "Server: NGINX -2.0\r\n";
+    oss << "Date: " << dt;
 
     for (std::map< std::string, std::string >::const_iterator it = _headers.begin(); it != _headers.end(); it++)
-        ret += it->first + ": " + it->second + "\r\n";
+        oss << it->first << ": " << it->second << "\r\n";
 
     if (_body.first.size())
     {
-        ret += "Content-length: " + SSTR(_body.first.size()) + "\r\n";
-        ret += "Content-type: " + _body.second + "\r\n";
-        ret += "\r\n\r\n" + _body.first;
+        oss << "Content-length: " << _body.first.size() << "\r\n";
+        oss << "Content-type: " << _body.second << "\r\n";
+        oss << std::endl << _body.first;
     }
-    ret += "\r\n\r\n";
-    return ret;
+    return oss.str();
 }
