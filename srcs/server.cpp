@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 11:59:05 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 16:40:52 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,13 +130,12 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         try
         {
             _currentSock = Socket(fd, true);
-            _requests[fd].parse(_currentSock.readContent());
+            const std::string content = _currentSock.readContent();
+            _requests[fd].parse(content);
             std::cout << _requests[fd] << std::endl;
-            if (_requests[fd].isFinished())
+            if (_requests[fd].isFinished() || content.size() == 0)
             {
-                // Response resp = http::Response(http::OK);
-                // resp.setBody("<h1>Hello world</h1>", "text/html; charset=utf-8");
-                _currentSock.send(handleRequest(_requests[fd], _serverSet[0].second).toString());
+                _currentSock.send(handleRequest(_requests[fd], _serverSet[9].second).toString());
                 _currentSock.close();
                 _requests.erase(fd);
             }
