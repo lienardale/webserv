@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 16:51:09 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 16:59:59 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,8 +161,6 @@ void http::Request::_extractBody(void) throw(ParsingException)
     std::string host = header("host");
     int contentLength = std::atoi(header("content-length").c_str());
 
-    std::cout << "BUFFER =" << _buffer << std::endl;
-    std::cout << "BODY SIZE = " << body.size() + _buffer.size() << " Len = " << contentLength << std::endl;
     if (static_cast< int >(body.size() + _buffer.size()) > contentLength)
         throw BadRequest("Wrong body size");
     if (host.size() == 0)
@@ -197,9 +195,7 @@ void http::Request::parse(const std::string &content) throw(ParsingException)
     _buffer += content;
     while (!_isBody && (pos = _buffer.find("\n")) != std::string::npos)
     {
-        std::cout << "Buffer = " << _buffer << std::endl;
         val = _buffer.substr(0, pos);
-        std::cout << "Val = " << val.size() << " -- " << val << std::endl;
         if (!(_isBody = (val.size() == 1 && val[0] == '\r') || val.size() == 0))
             _extract(val);
         _buffer = _buffer.substr(pos + 1, _buffer.size() - (pos + 1));
