@@ -117,7 +117,7 @@ static void extractBody(std::map< std::string, std::string > &headers, std::stri
 
         buffer.clear();
     }
-    else
+    else if (!finish && found == headers.end())
         throw BadRequest("No Content-Length");
 }
 /******************************************************************************

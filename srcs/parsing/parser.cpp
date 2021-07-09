@@ -6,13 +6,15 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:42:33 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 17:03:15 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 10:52:03 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing/dataStructure.hpp"
 #include "parsing/parsingExceptions.hpp"
 #include "webserv.hpp"
+#include <algorithm>
+#include <list>
 
 /****************************************************************************************
  *               	Nettoyage et lecture de fichier
@@ -70,7 +72,7 @@ Parser::~Parser(void)
  *              Member functions
  ******************************************************************************/
 
-std::list<t_serverData> Parser::parse(void) throw(ParsingException)
+std::list< t_serverData > Parser::parse(void) throw(ParsingException)
 {
-    return parseStructList<t_serverData>(castServerMap(), _content);
+    return parseStructList< t_serverData >(castServerMap(), _content);
 }

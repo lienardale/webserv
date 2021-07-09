@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: alienard <alienard@student.42.fr>          +#+  +:+       +#+         #
+#    By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/07/07 19:36:20 by dboyer           ###   ########.fr        #
+#    Updated: 2021/07/09 11:13:40 by dboyer           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,11 @@ SRCS    			=	socket\
 					cgi \
 					request\
 					response\
-					statusCode
+					statusCode\
+					handleGET\
+					handleRequest\
+					handlePOST\
+					handleDELETE
 
 INCLUDES			=	-I ./includes
 
@@ -47,7 +51,8 @@ HEADERS				=	./includes/webserv.hpp\
 					./includes/parsing/dataStructure.hpp\
 					./includes/parsing/parser.hpp\
 					./includes/parsing/parsingExceptions.hpp\
-					./includes/parsing/utils.hpp
+					./includes/parsing/utils.hpp\
+					./includes/handleRequest.hpp
 
 OBJS_MAIN			= 	$(MAIN:.cpp=.o)
 OBJS				= 	$(FIL:.cpp=.o)

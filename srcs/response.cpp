@@ -14,6 +14,7 @@
 #include "webserv.hpp"
 #include <cstdlib>
 #include <map>
+#include <sstream>
 #include <string>
 
 /******************************************************************************
@@ -21,14 +22,17 @@
  ******************************************************************************/
 static std::string statusLine(http::Status status)
 {
-    std::string ret = "HTTP/1.1 ";
+    std::ostringstream oss;
+
+    oss << "HTTP/1.1 ";
+
     std::string s = http::statusToReason(status);
 
     if (s.size())
-        return ret + SSTR(status) + " " + s + "\r\n";
+        oss << status << " " << s << "\r\n";
     else
-        return ret + SSTR(http::INTERNAL_SERVER_ERROR) + " " + http::statusToReason(http::INTERNAL_SERVER_ERROR) +
-               "\r\n";
+        oss << http::INTERNAL_SERVER_ERROR << " " << http::statusToReason(http::INTERNAL_SERVER_ERROR) << "\r\n";
+    return oss.str();
 }
 /******************************************************************************
  *			Constructeurs
