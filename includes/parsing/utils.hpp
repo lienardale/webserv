@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:48:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 17:01:05 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 10:37:01 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
  *			Extraction des éléments
  ****************************************************************************************/
 
-template <typename iterator>
+template < typename iterator >
 std::string extract(const std::string envel, iterator begin, iterator end) throw(ParsingException)
 {
     if (envel.size() != 2)
@@ -41,7 +41,6 @@ std::string extract(const std::string envel, iterator begin, iterator end) throw
         throw ValueError(error_msg);
     }
 
-    // std::cout << std::endl << "Before: " << envel << " " << begin.base() << std::endl;
     std::string ret;
     int first_count = 1;
     int end_count = 0;
@@ -56,8 +55,6 @@ std::string extract(const std::string envel, iterator begin, iterator end) throw
              (*envel.begin() == *++envel.begin() && first_count != 2)))
             ret.push_back(*begin);
     }
-    // std::cout << std::endl << "After: " << envel << " " << ret << " " << first_count << " " << end_count <<
-    // std::endl;
     if (((first_count != end_count && *envel.begin() != *++envel.begin()) ||
          (*envel.begin() == *++envel.begin() && first_count != 2)))
     {
@@ -69,12 +66,12 @@ std::string extract(const std::string envel, iterator begin, iterator end) throw
     return ret;
 }
 
-template <typename iterator>
-void extractStructList(std::list<std::string> &store, iterator begin, iterator end) throw(ParsingException)
+template < typename iterator >
+void extractStructList(std::list< std::string > &store, iterator begin, iterator end) throw(ParsingException)
 {
     if (begin != end)
     {
-        std::string ret = extract<iterator>("{}", begin, end);
+        std::string ret = extract< iterator >("{}", begin, end);
         if (ret.size())
         {
             store.push_back(ret);
@@ -85,7 +82,7 @@ void extractStructList(std::list<std::string> &store, iterator begin, iterator e
                 throw SyntaxError(error_msg);
             }
             else if (*begin == ',')
-                extractStructList<iterator>(store, ++begin, end);
+                extractStructList< iterator >(store, ++begin, end);
         }
     }
 }
@@ -94,14 +91,14 @@ void extractStructList(std::list<std::string> &store, iterator begin, iterator e
  *			Dynamique principale du parser
  ****************************************************************************************/
 
-template <typename dataStore> void parseStringList(dataStore &store, const std::string value) throw(ParsingException)
+template < typename dataStore > void parseStringList(dataStore &store, const std::string value) throw(ParsingException)
 {
     std::string::const_iterator begin = value.begin();
     std::string::const_iterator end = value.end();
 
     if (begin != end)
     {
-        store.push_back(extract<std::string::const_iterator &>("\"\"", begin, end));
+        store.push_back(extract< std::string::const_iterator & >("\"\"", begin, end));
         if (*begin == ',' && *(begin + 1) != '"')
         {
             std::string error_msg = "expected value: \" -- Actual value ";
@@ -109,16 +106,16 @@ template <typename dataStore> void parseStringList(dataStore &store, const std::
             throw SyntaxError(error_msg);
         }
         else if (*begin == ',')
-            parseStringList<dataStore>(store, (++begin).base());
+            parseStringList< dataStore >(store, (++begin).base());
     }
 }
 
-template <typename dataStore, typename conversion>
-void parseStructFields(dataStore &store, const std::map<std::string, conversion> keyMap, std::string::iterator begin,
+template < typename dataStore, typename conversion >
+void parseStructFields(dataStore &store, const std::map< std::string, conversion > keyMap, std::string::iterator begin,
                        std::string::iterator end) throw(ParsingException)
 {
     std::string key, value;
-    typename std::map<std::string, conversion>::const_iterator found;
+    typename std::map< std::string, conversion >::const_iterator found;
 
     if (begin != end)
     {
@@ -129,57 +126,57 @@ void parseStructFields(dataStore &store, const std::map<std::string, conversion>
             throw SyntaxError(error_msg);
         }
         else if (*begin == ',')
-            parseStructFields<dataStore, conversion>(store, keyMap, ++begin, end);
+            parseStructFields< dataStore, conversion >(store, keyMap, ++begin, end);
         else
         {
-            key = extract<std::string::iterator &>("\"\"", begin, end);
+            key = extract< std::string::iterator & >("\"\"", begin, end);
             found = keyMap.find(key);
             if (found == keyMap.end())
                 throw ValueError("Key " + key + " is not valid");
             if (*(begin + 1) == '{')
-                value = extract<std::string::iterator &>("{}", ++begin, end);
+                value = extract< std::string::iterator & >("{}", ++begin, end);
             else if (*(begin + 1) == '[')
-                value = extract<std::string::iterator &>("[]", ++begin, end);
+                value = extract< std::string::iterator & >("[]", ++begin, end);
             else if (*(begin + 1) == '"')
-                value = extract<std::string::iterator &>("\"\"", ++begin, end);
+                value = extract< std::string::iterator & >("\"\"", ++begin, end);
             else if (*begin == ':')
-                value = extract<std::string::iterator &>(":,", begin, end);
+                value = extract< std::string::iterator & >(":,", begin, end);
             else
                 throw SyntaxError("There must be a ':' after the key " + key);
             found->second(store, value);
-            parseStructFields<dataStore, conversion>(store, keyMap, begin, end);
+            parseStructFields< dataStore, conversion >(store, keyMap, begin, end);
         }
     }
 }
 
-template <typename dataStore, typename conversion>
-dataStore parseStruct(std::map<std::string, conversion> conv, std::string::iterator begin,
+template < typename dataStore, typename conversion >
+dataStore parseStruct(std::map< std::string, conversion > conv, std::string::iterator begin,
                       std::string::iterator end) throw(ParsingException)
 {
     dataStore data;
 
     if (begin == end)
         throw SyntaxError("Unexpected EOF");
-    parseStructFields<dataStore &, conversion>(data, conv, begin, end);
+    parseStructFields< dataStore &, conversion >(data, conv, begin, end);
     return data;
 }
 
-template <typename dataStore, typename conversion>
-std::list<dataStore> parseStructList(std::map<std::string, conversion> conv,
-                                     const std::string value) throw(ParsingException)
+template < typename dataStore, typename conversion >
+std::list< dataStore > parseStructList(std::map< std::string, conversion > conv,
+                                       const std::string value) throw(ParsingException)
 {
-    std::list<dataStore> ret;
-    std::list<std::string> tmp;
+    std::list< dataStore > ret;
+    std::list< std::string > tmp;
     std::string::const_iterator begin = value.begin();
     std::string::const_iterator end = value.end();
 
-    extractStructList<std::string::const_iterator &>(tmp, begin, end);
+    extractStructList< std::string::const_iterator & >(tmp, begin, end);
 
     if (tmp.size() == 0)
         throw ValueError("Empty list of struct");
 
-    for (std::list<std::string>::iterator it = tmp.begin(); it != tmp.end(); it++)
-        ret.push_back(parseStruct<dataStore, conversion>(conv, it->begin(), it->end()));
+    for (std::list< std::string >::iterator it = tmp.begin(); it != tmp.end(); it++)
+        ret.push_back(parseStruct< dataStore, conversion >(conv, it->begin(), it->end()));
 
     return ret;
 }
@@ -191,7 +188,7 @@ typedef void (*castLocation)(t_locationData &, const std::string);
 typedef void (*castServer)(t_serverData &, const std::string);
 
 int strToInt(const std::string &value) throw(ValueError);
-std::map<std::string, castLocation> castLocationMap(void);
-std::map<std::string, castServer> castServerMap(void);
+std::map< std::string, castLocation > castLocationMap(void);
+std::map< std::string, castServer > castServerMap(void);
 
 #endif

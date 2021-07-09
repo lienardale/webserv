@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/08 12:14:55 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 17:00:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "handleRequest.hpp"
 #include "response.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
@@ -129,14 +130,13 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         try
         {
             _currentSock = Socket(fd, true);
-            _requests[fd].parse(_currentSock.readContent());
+            const std::string content = _currentSock.readContent();
+            _requests[fd].parse(content);
 
-            if (_requests[fd].isFinished())
+            if (_requests[fd].isFinished() || content.size() == 0)
             {
                 std::cout << _requests[fd] << std::endl;
-                Response resp = http::Response(http::OK);
-                resp.setBody("<h1>Hello world</h1>", "text/html; charset=utf-8");
-                _currentSock.send(resp.toString());
+                _currentSock.send(handleRequest(_requests[fd], _serverSet[9].second).toString());
                 _currentSock.close();
                 _requests.erase(fd);
             }
