@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 18:47:58 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 20:58:20 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,5 +104,7 @@ std::string http::Response::toString() const
         oss << "Content-type: " << _body.second << "\r\n";
         oss << std::endl << _body.first;
     }
+    else
+        oss << std::endl;
     return oss.str();
 }

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 16:59:59 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 20:10:01 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void http::Request::_extract(std::string &content) throw(ParsingException)
         if (splitted.size() == 3)
         {
             _headers["method"] = splitted.front();
-            _headers["path"] = splitted[2];
+            _headers["path"] = splitted[1];
             _headers["protocol"] = ft_split(splitted.back(), "\r").front();
             if (!checkQuery(_headers))
                 throw BadRequest("Wrong query format");
