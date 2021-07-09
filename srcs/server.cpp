@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 11:59:05 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 15:40:13 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,11 +89,16 @@ void http::Server::listen(void)
 {
     try
     {
+        // int i = 0;
         for (std::list< t_serverData >::iterator it = _configs.begin(); it != _configs.end(); it++)
         {
             Socket s;
             s.listen(it->listen, it->addr_ip);
-            _serverSet[s.Fd()] = std::make_pair(s, *it);
+            _serverSet[s.Fd()].first = s;
+            _serverSet[s.Fd()].second = *it;
+            // std::cout << "Data["<<i<<"]:\n" << *it<< std::endl;
+            // std::cout << "serverSet["<<s.Fd()<<"]:\n" << _serverSet[s.Fd()].second << std::endl;
+            // i++;
         }
         _watchFds();
     }
@@ -136,7 +141,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             {
                 // Response resp = http::Response(http::OK);
                 // resp.setBody("<h1>Hello world</h1>", "text/html; charset=utf-8");
-                _currentSock.send(handleRequest(_requests[fd], _serverSet[0].second).toString());
+                _currentSock.send(handleRequest(_requests[fd], _serverSet[4].second).toString());
                 _currentSock.close();
                 _requests.erase(fd);
             }
