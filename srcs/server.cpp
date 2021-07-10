@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 18:04:26 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 18:06:50 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,16 +200,17 @@ void http::Server::stop(void)
 /*
  *  Fonction qui affiche les logs sur la sortie standard
  */
-
 void http::Server::_log(const http::Request &request, const http::Response &response) const
 {
     time_t now = time(0);
-    int code = response.code();
     std::cout << ctime(&now) << "\t";
+    int code = response.code();
+
     if (code >= 400)
         std::cout << RED;
     else if (code >= 200 && code < 300)
         std::cout << GREEN;
+
     std::cout << response.code() << WHITE << "\t|\t";
     std::cout << request.header("host") << "\t|\t";
     std::cout << request.header("method") << "\t|\t";
