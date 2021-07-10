@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 18:53:07 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 18:57:04 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             _requests[fd].first.parse(content);
             std::pair< http::Request, t_serverData > data = _requests[fd];
 
-            if (data.first.isFinished() || content.size() == 0)
+            if (data.first.isFinished() || content.empty())
             {
                 http::Response response;
                 if ((int)data.first.header("body").size() > data.second.client_max_body_size)
