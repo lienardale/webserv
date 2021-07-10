@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 10:51:46 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 12:08:09 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 #include "parsing/parsingExceptions.hpp"
 #include "parsing/utils.hpp"
 #include "webserv.hpp"
+#include <algorithm>
 #include <cstddef>
+#include <list>
 
 static void handleListen(t_serverData &server, const std::string value) throw(ParsingException)
 {
@@ -113,6 +115,8 @@ static void handleLocation(t_serverData &server, const std::string value) throw(
         throw ValueError("Duplicate key: location");
     server.locations = parseStructList< t_locationData, castLocation >(castLocationMap(), value);
     server.locations.sort(compPath);
+    for (std::list< t_locationData >::iterator it = server.locations.begin(); it != server.locations.end(); it++)
+        it->root = server.root;
 }
 
 static std::pair< std::string, castServer > KEY_FUNCTIONS[] = {
