@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 12:08:09 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 16:21:31 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,10 @@ static void handleRoot(t_serverData &server, const std::string value) throw(Pars
 {
     if (server.root.size())
         throw ValueError("Duplicate key: root");
-    server.root = value;
+    if (value[value.size() - 1] != '/')
+        server.root = value + "/";
+    else
+        server.root = value;
 }
 
 static void handleClientMaxBody(t_serverData &server, const std::string value) throw(ParsingException)

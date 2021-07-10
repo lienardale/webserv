@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:13:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/07 19:39:48 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 16:28:30 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Response
      *			Fonctions membres
      *************************************************************************/
     std::string toString(void) const;
+    std::string toString(const std::map< int, std::string > &errorPages);
 
   private:
     http::Status _code;

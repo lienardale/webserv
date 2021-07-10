@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 11:21:45 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 16:51:23 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,9 +152,9 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             {
                 std::cout << data.first << std::endl;
                 if ((int)data.first.header("body").size() > data.second.client_max_body_size)
-                    sock.send(http::Response(http::PAYLOAD_TOO_LARGE).toString());
+                    sock.send(http::Response(http::PAYLOAD_TOO_LARGE).toString(_requests[fd].second.error_page));
                 else
-                    sock.send(handleRequest(data.first, data.second).toString());
+                    sock.send(handleRequest(data.first, data.second).toString(_requests[fd].second.error_page));
                 sock.close();
                 _requests.erase(fd);
             }
@@ -162,12 +162,12 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
     }
     catch (Socket::SocketException &e)
     {
-        sock.send(http::Response(http::INTERNAL_SERVER_ERROR).toString());
+        sock.send(http::Response(http::INTERNAL_SERVER_ERROR).toString(_requests[fd].second.error_page));
         std::cerr << e.what() << std::endl;
     }
     catch (ParsingException &e)
     {
-        sock.send(http::Response(http::BAD_REQUEST).toString());
+        sock.send(http::Response(http::BAD_REQUEST).toString(_requests[fd].second.error_page));
         sock.close();
         _requests.erase(fd);
         std::cerr << e.what() << std::endl;
