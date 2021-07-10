@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 17:15:53 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/10 12:33:01 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ std::string http::Response::toString() const
     char *dt = ctime(&now);
 
     oss << statusLine(_code) << ""
-        << "Accept-ranges: bytes\r\n";
+        << "Accept-Ranges: bytes\r\n";
 
     oss << "Server: NGINX -2.0\r\n";
     oss << "Date: " << dt;
@@ -100,9 +100,11 @@ std::string http::Response::toString() const
 
     if (_body.first.size())
     {
-        oss << "Content-length: " << _body.first.size() << "\r\n";
-        oss << "Content-type: " << _body.second << "\r\n";
+        oss << "Content-Length: " << _body.first.size() << "\r\n";
+        oss << "Content-Type: " << _body.second << "\r\n";
         oss << std::endl << _body.first;
     }
+    else
+        oss << std::endl;
     return oss.str();
 }

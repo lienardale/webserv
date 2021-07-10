@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handleDelete.cpp                                   :+:      :+:    :+:   */
+/*   handleDELETE.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 11:11:51 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 11:02:20 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "response.hpp"
 #include "webserv.hpp"
 
-http::Response handleDELETE(const http::Request &request, const t_serverData &data)
+http::Response handleDELETE(const http::Request &request, const t_locationData &data)
 {
     (void)request;
     (void)data;

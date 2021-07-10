@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:47:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 16:58:25 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/10 12:14:56 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 
 http::Response handleRequest(const http::Request &request, const t_serverData &data);
 
-http::Response handleGET(const http::Request &request, const t_serverData &data);
+http::Response handleGET(const http::Request &request, const t_locationData &data);
 
-http::Response handlePOST(const http::Request &request, const t_serverData &data);
+http::Response handlePOST(const http::Request &request, const t_locationData &data);
 
-http::Response handleDELETE(const http::Request &request, const t_serverData &data);
+http::Response handleDELETE(const http::Request &request, const t_locationData &data);
 
 #endif

@@ -6,7 +6,11 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/07/09 20:19:39 by alienard         ###   ########.fr       */
+=======
+/*   Updated: 2021/07/10 11:02:31 by dboyer           ###   ########.fr       */
+>>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +85,7 @@ bool php_file(std::string file)
     return false;
 }
 
-http::Response handleGET(const http::Request &request, const t_serverData &data)
+http::Response handleGET(const http::Request &request, const t_locationData &data)
 {
     // (void)request;
     // (void)data;
@@ -117,5 +121,7 @@ http::Response handleGET(const http::Request &request, const t_serverData &data)
     else
         ret.setCode(http::NOT_FOUND);
     f.close();
+    // ret.setBody(request.header("method") + " " + request.header("path") + " " + request.header("protocol"),
+    //             "text/html; charset=utf-8");
     return ret;
 }

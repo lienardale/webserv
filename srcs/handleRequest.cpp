@@ -6,35 +6,42 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 16:58:47 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/10 12:32:55 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
-#include <map>
 
-/*static bool methodAllowed(const std::string method, const t_serverData &data)
+static std::list< t_locationData >::const_iterator findData(const http::Request &request, const t_serverData &data)
 {
-    std::string path1;
+    std::string path = request.header("path");
+    for (std::list< t_locationData >::const_iterator it = data.locations.begin(); it != data.locations.end(); it++)
+        if (it->path == path)
+            return it;
+    return data.locations.end();
+}
 
-    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
-    {
-        path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
-        if (_infos[1].find(path1) != std::string::npos && contains(it->methods, _infos[0]))
-            return false;
-    }
-    return true;
-}*/
+static bool isMethodAllowed(const std::string &method, const t_locationData &data)
+{
+    return std::binary_search(data.methods.begin(), data.methods.end(), method);
+}
 
 http::Response handleRequest(const http::Request &request, const t_serverData &data)
 {
     std::string method = request.header("Method");
+    if (method != "GET" && method != "POST" && method != "DELETE")
+        return http::Response(http::METHOD_NOT_ALLOWED);
 
-    if (method == "GET")
-        return handleGET(request, data);
-    if (method == "POST")
-        return handlePOST(request, data);
-    if (method == "DELETE")
-        return handleDELETE(request, data);
+    std::list< t_locationData >::const_iterator found = findData(request, data);
+    if (found == data.locations.end())
+        return http::Response(http::NOT_FOUND);
+
+    bool isAllowed = isMethodAllowed(method, *found);
+    if (method == "GET" && isAllowed)
+        return handleGET(request, *found);
+    if (method == "POST" && isAllowed)
+        return handlePOST(request, *found);
+    if (method == "DELETE" && isAllowed)
+        return handleDELETE(request, *found);
     return http::Response(http::METHOD_NOT_ALLOWED);
 }

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 16:59:59 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 10:55:21 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,6 @@ static std::vector< std::string > ft_split(std::string str, std::string toFind)
     }
     v[i] = str.substr(0, pos);
     return v;
-}
-
-static bool checkQuery(std::map< std::string, std::string > &headers)
-{
-    std::string method = headers["method"];
-    std::string protocol = headers["protocol"];
-
-    return (method == "GET" || method == "POST" || method == "DELETE") && protocol == "HTTP/1.1";
 }
 
 /******************************************************************************
@@ -145,10 +137,12 @@ void http::Request::_extract(std::string &content) throw(ParsingException)
         if (splitted.size() == 3)
         {
             _headers["method"] = splitted.front();
-            _headers["path"] = splitted[2];
+            _headers["path"] = splitted[1];
             _headers["protocol"] = ft_split(splitted.back(), "\r").front();
-            if (!checkQuery(_headers))
-                throw BadRequest("Wrong query format");
+            if (_headers["protocol"] != "HTTP/1.1")
+                throw BadRequest("Wrong query protocol");
+            if (splitted.front() != "GET" && splitted.front() != "DELETE" && splitted.front() != "POST")
+                throw BadRequest("Wrong http method");
         }
         else
             throw BadRequest("Wrong query format");

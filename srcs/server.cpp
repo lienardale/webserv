@@ -6,14 +6,21 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/07/09 20:22:15 by alienard         ###   ########.fr       */
+=======
+/*   Updated: 2021/07/10 11:21:45 by dboyer           ###   ########.fr       */
+>>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "handleRequest.hpp"
 #include "response.hpp"
+#include "socket.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
+#include <sys/epoll.h>
+#include <utility>
 
 #define MAX_EVENTS 10
 
@@ -50,8 +57,7 @@ http::Server::Server() : _run(false)
  *	Constructeur par copie
  */
 http::Server::Server(const Server &other)
-    : _timeout(other._timeout), _configs(other._configs), _serverSet(other._serverSet), _run(other._run),
-      _epoll_fd(other._epoll_fd)
+    : _timeout(other._timeout), _serverSet(other._serverSet), _run(other._run), _epoll_fd(other._epoll_fd)
 {
 }
 
@@ -60,9 +66,11 @@ http::Server::Server(const Server &other)
  */
 http::Server &http::Server::operator=(const Server &other)
 {
-    _configs = other._configs;
     _serverSet = other._serverSet;
     _run = other._run;
+    _timeout = other._timeout;
+    _run = other._run;
+    _epoll_fd = other._epoll_fd;
     return *this;
 }
 
@@ -78,29 +86,15 @@ void http::Server::init(const std::list< t_serverData > &configs, uint32_t timeo
 {
     _timeout.tv_sec = timeout;
     _timeout.tv_usec = 0;
-    _configs = configs;
-}
 
-/*
- *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le constructeur
- *	@Infos: la fonction arrête le programme si une SocketException est levé
- */
-void http::Server::listen(void)
-{
     try
     {
-        // int i = 0;
-        for (std::list< t_serverData >::iterator it = _configs.begin(); it != _configs.end(); it++)
+        for (std::list< t_serverData >::const_iterator it = configs.begin(); it != configs.end(); it++)
         {
             Socket s;
             s.listen(it->listen, it->addr_ip);
-            _serverSet[s.Fd()].first = s;
-            _serverSet[s.Fd()].second = *it;
-            // std::cout << "Data["<<i<<"]:\n" << *it<< std::endl;
-            // std::cout << "serverSet["<<s.Fd()<<"]:\n" << _serverSet[s.Fd()].second << std::endl;
-            // i++;
+            _serverSet[s.Fd()] = *it;
         }
-        _watchFds();
     }
     catch (Socket::SocketException &e)
     {
@@ -110,61 +104,10 @@ void http::Server::listen(void)
 }
 
 /*
- *	Fonction qui se charge de la lecture des données reçues par le serveur via la socket client
- *	@Parametres: Le fd sur lequel la lecture doit se faire
- *	@Infos La fonction lève une SocketException si erreur
+ *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le constructeur
+ *	@Infos: la fonction arrête le programme si une SocketException est levé
  */
-void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException)
-{
-    std::map< int, std::pair< Socket, t_serverData > >::iterator found = _serverSet.find(fd);
-
-    if (found != _serverSet.end())
-    {
-        try
-        {
-            _add_fd_to_poll(epoll_fd, found->second.first.accept().Fd(), EPOLLIN);
-            _currentData = found->second.second;
-        }
-        catch (Socket::SocketException &e)
-        {
-            std::cerr << e.what() << std::endl;
-        }
-    }
-    else if (event->events & EPOLLIN)
-    {
-        try
-        {
-            _currentSock = Socket(fd, true);
-            const std::string content = _currentSock.readContent();
-            _requests[fd].parse(content);
-
-            if (_requests[fd].isFinished() || content.size() == 0)
-            {
-                // Response resp = http::Response(http::OK);
-                // resp.setBody("<h1>Hello world</h1>", "text/html; charset=utf-8");
-                _currentSock.send(handleRequest(_requests[fd], _serverSet[4].second).toString());
-                // _currentSock.send(handleRequest(_requests[fd], _serverSet[9].second).toString());
-                std::cout << _requests[fd] << std::endl;
-                _currentSock.close();
-                _requests.erase(fd);
-            }
-        }
-        catch (Socket::SocketException &e)
-        {
-            _currentSock.send(http::Response(http::INTERNAL_SERVER_ERROR).toString());
-            std::cerr << e.what() << std::endl;
-        }
-        catch (ParsingException &e)
-        {
-            _currentSock.send(http::Response(http::BAD_REQUEST).toString());
-            _currentSock.close();
-            _requests.erase(fd);
-            std::cerr << e.what() << std::endl;
-        }
-    }
-}
-
-void http::Server::_watchFds(void) throw(Socket::SocketException)
+void http::Server::listen(void)
 {
     struct epoll_event events[MAX_EVENTS];
     int event_count = 0;
@@ -172,8 +115,7 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
     bzero(events, MAX_EVENTS);
     _epoll_fd = epoll_create1(EPOLL_CLOEXEC);
 
-    for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin(); it != _serverSet.end();
-         it++)
+    for (std::map< int, t_serverData >::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
         _add_fd_to_poll(_epoll_fd, it->first, EPOLLIN);
 
     _run = true;
@@ -186,6 +128,57 @@ void http::Server::_watchFds(void) throw(Socket::SocketException)
 }
 
 /*
+ *	Fonction qui se charge de la lecture des données reçues par le serveur via la socket client
+ *	@Parametres: Le fd sur lequel la lecture doit se faire
+ *	@Infos La fonction lève une SocketException si erreur
+ */
+void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException)
+{
+    std::map< int, t_serverData >::iterator found = _serverSet.find(fd);
+    Socket sock(fd, true);
+
+    try
+    {
+        if (found != _serverSet.end())
+        {
+
+            int accepted = sock.accept().Fd();
+            _add_fd_to_poll(epoll_fd, accepted, EPOLLIN);
+            _requests[accepted] = std::make_pair(http::Request(), found->second);
+        }
+        else if (event->events & EPOLLIN)
+        {
+            const std::string content = sock.readContent();
+            _requests[fd].first.parse(content);
+            std::pair< http::Request, t_serverData > data = _requests[fd];
+
+            if (data.first.isFinished() || content.size() == 0)
+            {
+                std::cout << data.first << std::endl;
+                if ((int)data.first.header("body").size() > data.second.client_max_body_size)
+                    sock.send(http::Response(http::PAYLOAD_TOO_LARGE).toString());
+                else
+                    sock.send(handleRequest(data.first, data.second).toString());
+                sock.close();
+                _requests.erase(fd);
+            }
+        }
+    }
+    catch (Socket::SocketException &e)
+    {
+        sock.send(http::Response(http::INTERNAL_SERVER_ERROR).toString());
+        std::cerr << e.what() << std::endl;
+    }
+    catch (ParsingException &e)
+    {
+        sock.send(http::Response(http::BAD_REQUEST).toString());
+        sock.close();
+        _requests.erase(fd);
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+/*
  *	Fonction qui stop le serveur et ferme tous les fd ouverts
  */
 void http::Server::stop(void)
@@ -194,9 +187,11 @@ void http::Server::stop(void)
     if (_run)
     {
         _run = false;
-        for (std::map< int, std::pair< Socket, t_serverData > >::iterator it = _serverSet.begin();
-             it != _serverSet.end(); it++)
-            it->second.first.close();
+        for (std::map< int, std::pair< http::Request, t_serverData > >::iterator it = _requests.begin();
+             it != _requests.end(); it++)
+            Socket(it->first, true).close();
+        for (std::map< int, t_serverData >::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
+            Socket(it->first, true).close();
         close(_epoll_fd);
     }
 }
