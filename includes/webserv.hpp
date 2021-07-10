@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/08 18:52:49 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 10:52:16 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 //#include <sys/socket.h>
 //#include <sys/stat.h>
 #include "utils/ft_itoa.hpp"
+#include <algorithm>
 #include <csignal>
 #include <dirent.h>
 #include <map>
