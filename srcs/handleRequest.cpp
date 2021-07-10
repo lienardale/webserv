@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 10:52:22 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 11:03:12 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ http::Response handleRequest(const http::Request &request, const t_serverData &d
 
     bool isAllowed = isMethodAllowed(method, *found);
     if (method == "GET" && isAllowed)
-        return handleGET(request, data);
+        return handleGET(request, *found);
     if (method == "POST" && isAllowed)
-        return handlePOST(request, data);
+        return handlePOST(request, *found);
     if (method == "DELETE" && isAllowed)
-        return handleDELETE(request, data);
+        return handleDELETE(request, *found);
     return http::Response(http::METHOD_NOT_ALLOWED);
 }

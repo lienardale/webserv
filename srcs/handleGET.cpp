@@ -6,14 +6,14 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 20:30:43 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 11:02:31 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "response.hpp"
 #include "webserv.hpp"
 
-http::Response handleGET(const http::Request &request, const t_serverData &data)
+http::Response handleGET(const http::Request &request, const t_locationData &data)
 {
     (void)request;
     (void)data;
