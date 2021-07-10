@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 17:01:20 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 18:04:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "socket.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
+#include <iostream>
 #include <sys/epoll.h>
 #include <utility>
 
@@ -150,11 +151,13 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
 
             if (data.first.isFinished() || content.size() == 0)
             {
-                std::cout << data.first << std::endl;
+                http::Response response;
                 if ((int)data.first.header("body").size() > data.second.client_max_body_size)
-                    sock.send(http::Response(http::PAYLOAD_TOO_LARGE).toString(data.second.error_page));
+                    response = http::Response(http::PAYLOAD_TOO_LARGE);
                 else
-                    sock.send(handleRequest(data.first, data.second).toString(data.second.error_page));
+                    response = handleRequest(data.first, data.second);
+                _log(data.first, response);
+                sock.send(response.toString(data.second.error_page));
                 sock.close();
                 _requests.erase(fd);
             }
@@ -162,15 +165,17 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
     }
     catch (Socket::SocketException &e)
     {
-        sock.send(http::Response(http::INTERNAL_SERVER_ERROR).toString(_requests[fd].second.error_page));
-        std::cerr << e.what() << std::endl;
+        http::Response response = http::Response(http::INTERNAL_SERVER_ERROR);
+        _log(_requests[fd].first, response);
+        sock.send(response.toString(_requests[fd].second.error_page));
     }
     catch (ParsingException &e)
     {
-        sock.send(http::Response(http::BAD_REQUEST).toString(_requests[fd].second.error_page));
+        http::Response response = http::Response(http::BAD_REQUEST);
+        sock.send(response.toString(_requests[fd].second.error_page));
+        _log(_requests[fd].first, response);
         sock.close();
         _requests.erase(fd);
-        std::cerr << e.what() << std::endl;
     }
 }
 
@@ -190,4 +195,23 @@ void http::Server::stop(void)
             Socket(it->first, true).close();
         close(_epoll_fd);
     }
+}
+
+/*
+ *  Fonction qui affiche les logs sur la sortie standard
+ */
+
+void http::Server::_log(const http::Request &request, const http::Response &response) const
+{
+    time_t now = time(0);
+    int code = response.code();
+    std::cout << ctime(&now) << "\t";
+    if (code >= 400)
+        std::cout << RED;
+    else if (code >= 200 && code < 300)
+        std::cout << GREEN;
+    std::cout << response.code() << WHITE << "\t|\t";
+    std::cout << request.header("host") << "\t|\t";
+    std::cout << request.header("method") << "\t|\t";
+    std::cout << request.header("path") << std::endl;
 }
