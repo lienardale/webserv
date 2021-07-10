@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 16:51:23 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 17:01:20 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,9 +152,9 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             {
                 std::cout << data.first << std::endl;
                 if ((int)data.first.header("body").size() > data.second.client_max_body_size)
-                    sock.send(http::Response(http::PAYLOAD_TOO_LARGE).toString(_requests[fd].second.error_page));
+                    sock.send(http::Response(http::PAYLOAD_TOO_LARGE).toString(data.second.error_page));
                 else
-                    sock.send(handleRequest(data.first, data.second).toString(_requests[fd].second.error_page));
+                    sock.send(handleRequest(data.first, data.second).toString(data.second.error_page));
                 sock.close();
                 _requests.erase(fd);
             }
