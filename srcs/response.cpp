@@ -6,13 +6,14 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 12:33:01 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/10 17:03:24 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "statusCode.hpp"
 #include "webserv.hpp"
 #include <cstdlib>
+#include <ios>
 #include <map>
 #include <sstream>
 #include <string>
@@ -104,7 +105,24 @@ std::string http::Response::toString() const
         oss << "Content-Type: " << _body.second << "\r\n";
         oss << std::endl << _body.first;
     }
+    else if (_body.first.size() == 0 && _code >= 400)
+    {
+        std::string r = "<h1>" + http::statusToReason(_code) + "</h1>";
+        oss << "Content-Length: " << r.size() << "\r\n";
+        oss << "Content-Type: "
+            << "text/html\r\n";
+        oss << std::endl << r;
+    }
     else
         oss << std::endl;
     return oss.str();
+}
+
+std::string http::Response::toString(const std::map< int, std::string > &errorPages)
+{
+    std::map< int, std::string >::const_iterator found = errorPages.find(_code);
+
+    if (found != errorPages.end())
+        setBody(found->second, "text/html");
+    return toString();
 }

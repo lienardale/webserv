@@ -7,19 +7,21 @@
         ],
         "error_page": {
             "500": "error_views/500.html",
-            "404": "error_views/404.htm"
+            "404": "error_views/404.html",
+            "400": "error_views/400.html"
         },
 		"index": [
 			"index.html"
 		],
-        "client_max_body_size": 20,
+        "client_max_body_size": 1000,
         "root": "www",
         "autoindex": "off",
         "location": [
             {
         		"autoindex": "off",
                 "methods": [
-					"POST"
+					"POST",
+                    "DELETE"
                 ],
 				"index": [
 					"index.html",
@@ -31,7 +33,7 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/directory/dir"
+                "path": "/"
             },
             {
         		"autoindex": "off",
@@ -48,7 +50,7 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/"
+                "path": "/ferg"
             }
         ]
     },
