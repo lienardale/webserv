@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 09:33:32 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 10:55:21 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,8 @@ void http::Request::_extract(std::string &content) throw(ParsingException)
             _headers["protocol"] = ft_split(splitted.back(), "\r").front();
             if (_headers["protocol"] != "HTTP/1.1")
                 throw BadRequest("Wrong query protocol");
+            if (splitted.front() != "GET" && splitted.front() != "DELETE" && splitted.front() != "POST")
+                throw BadRequest("Wrong http method");
         }
         else
             throw BadRequest("Wrong query format");

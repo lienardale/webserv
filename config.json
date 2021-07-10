@@ -32,6 +32,23 @@
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
                 "path": "/directory/dir"
+            },
+            {
+        		"autoindex": "off",
+                "methods": [
+					"POST"
+                ],
+				"index": [
+					"index.html",
+					"test.html",
+            		"index.php"
+        		],
+                "fastcgi_param": {
+                    "fastcgi_pass": "127.0.0.1:9000",
+                    "fastcgi_index": "test.php",
+                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
+                },
+                "path": "/"
             }
         ]
     },
