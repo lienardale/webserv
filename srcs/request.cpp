@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 10:55:21 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 18:53:00 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,14 +190,15 @@ void http::Request::parse(const std::string &content) throw(ParsingException)
     while (!_isBody && (pos = _buffer.find("\n")) != std::string::npos)
     {
         val = _buffer.substr(0, pos);
-        if (!(_isBody = (val.size() == 1 && val[0] == '\r') || val.size() == 0))
+        if (!(_isBody = (val == "\r") || val.size() == 0))
             _extract(val);
         _buffer = _buffer.substr(pos + 1, _buffer.size() - (pos + 1));
     }
-    std::string method = header("method");
-    if (_isBody && _buffer.size() && method == "POST")
+
+    std::string contentLength = header("content-length");
+    if (_isBody && _buffer.size() && contentLength.size())
         _extractBody();
-    else if ((_isBody && _buffer.size() == 0) || (_isBody && method != "POST"))
+    else if (_isBody && contentLength.size() == 0)
     {
         _finish = true;
         if (_headers.find("host") == _headers.end())
