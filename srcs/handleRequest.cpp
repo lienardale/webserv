@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 11:03:12 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 11:46:21 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static std::list< t_locationData >::const_iterator findData(const http::Request 
 {
     std::string path = request.header("path");
     for (std::list< t_locationData >::const_iterator it = data.locations.begin(); it != data.locations.end(); it++)
-        if (it->path == path)
+        if (it->path.find(path) != std::string::npos)
             return it;
     return data.locations.end();
 }
