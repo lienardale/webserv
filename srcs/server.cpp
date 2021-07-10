@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 20:58:46 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 09:35:16 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "socket.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
+#include <sys/epoll.h>
 #include <utility>
 
 #define MAX_EVENTS 10
