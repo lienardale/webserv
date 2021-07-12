@@ -20,6 +20,7 @@
             {
         		"autoindex": "off",
                 "methods": [
+                    "GET",
 					"POST",
                     "DELETE"
                 ],
@@ -38,6 +39,7 @@
             {
         		"autoindex": "off",
                 "methods": [
+                    "GET",
 					"POST"
                 ],
 				"index": [

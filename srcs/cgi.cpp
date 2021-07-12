@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/09 16:59:26 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 14:08:00 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ cgi::cgi(Socket &sock, t_serverData &data) // throw( cgi::CGIException )
     // 	throw( cgi::CGIException() );
 }
 
-cgi::cgi(const http::Request &request, const t_serverData &data) // throw( cgi::CGIException )
+cgi::cgi(const http::Request &request, const t_locationData &data) // throw( cgi::CGIException )
 {
     setCgi(request, data);
     // if (setCgi(sock))
@@ -117,10 +117,11 @@ void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
     s_env._http_cookie = "HTTP_COOKIE=" + sock.get_m_request().header("                                            ");
 }
 
-void cgi::setCgiMetaVar(const http::Request &request, const t_serverData &data)
+void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data)
 {
-     char buffer [33];
-     bzero(buffer, sizeof(buffer));
+    (void)data;
+    char buffer [33];
+    bzero(buffer, sizeof(buffer));
     s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                 // ok
     s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length"); // ok
     s_env._content_type = "CONTENT_TYPE=" + request.header("Content-Type");       // ok
@@ -135,10 +136,10 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_serverData &data)
     s_env._request_uri = "REQUEST_URI=" + request.uri();                          // ok
     s_env._script_name = "SCRIPT_NAME=php-cgi7.0"; // FAST_CGI_CONF
     s_env._script_file_name = "SCRIPT_FILENAME=cgi-bin/php-cgi7.0";
-    s_env._server_port = "SERVER_PORT=" + SSTR(itoa(data.listen,buffer,10));
+    s_env._server_port = "SERVER_PORT=" + request.header("Port");/*+ SSTR(itoa(data.listen,buffer,10));*/
     s_env._server_protocol = "SERVER_PROTOCOL=" + request.protocol();                          // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
-    s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                                 // ok
+    s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                               // ok
     s_env._server_name = "SERVER_NAME=WEBSERV";                                                     // ok
     s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";                                                   // ok
     s_env._http_accept = "HTTP_ACCEPT=" + request.header("Accept");                            // ok
@@ -187,7 +188,7 @@ void cgi::setCgi(Socket &sock, t_serverData &data)
     // }
 }
 
-void cgi::setCgi(const http::Request &request, const t_serverData &data)
+void cgi::setCgi(const http::Request &request, const t_locationData &data)
 {
     setCgiMetaVar(request, data);
     setCgiEnv();

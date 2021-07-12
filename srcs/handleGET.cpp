@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 13:54:00 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 14:02:23 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "webserv.hpp"
 #include "cgi.hpp"
 
-std::string Cgi(const http::Request &request, const t_serverData &data)
+std::string Cgi(const http::Request &request, const t_locationData &data)
 {
     int fd[2];
     char content[100000];
