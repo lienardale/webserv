@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 14:00:22 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 19:46:54 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int http::Response::code(void) const
  *			Fonctions membres
  *******************************************************************************/
 
-std::string http::Response::toString() const
+std::string http::Response::toString()
 {
     std::ostringstream oss;
     time_t now = time(0);
@@ -112,8 +112,21 @@ std::string http::Response::toString() const
     if (_body.first.size())
     {
         oss << "Content-Length: " << _body.first.size() << "\r\n";
-        oss << "Content-Type: " << _body.second << "\r\n";
-        oss << std::endl << _body.first;
+        std::string::size_type found;
+        if ((found = _body.first.find("Content-Type: ")) != std::string::npos){
+            std::cout << "COUCOU MDR" << std::endl;
+            oss << _body.first.substr(found, _body.first.find("\n")) << "\r\n";
+            _body.first.erase(found, _body.first.find("\n"));
+            _body.first.erase(0, _body.first.find("\n"));
+        }
+        else{
+            std::cout << "SALUT LOL" << std::endl;
+            oss << "Content-Type: " << _body.second << "\r\n" << std::endl;
+        }
+        // _body.first.erase(0, _body.first.find("\n"));
+        // _body.first.erase(0, _body.first.find("\n"));
+        // _body.first.erase(_body.first.begin(), _body.first.begin() + _body.first.find("\n"));
+        oss << _body.first;
     }
     else if (_body.first.empty() && _code >= 400)
     {
@@ -130,9 +143,11 @@ std::string http::Response::toString() const
 
 std::string http::Response::toString(const std::map< int, std::string > &errorPages)
 {
+    // (void)errorPages;
     std::map< int, std::string >::const_iterator found = errorPages.find(_code);
 
-    if (found != errorPages.end())
+    if (found != errorPages.end()){
         setBody(found->second, "text/html");
+    }
     return toString();
 }

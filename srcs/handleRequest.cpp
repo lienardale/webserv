@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 18:18:14 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 18:26:49 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ static std::list< t_locationData >::iterator findData(const http::Request &reque
             std::count(path.begin(), path.end(), '.') >= 1)
             return it;
     }
-    return data.locations.end();
+    // return data.locations.end();
+    // to test directory listing
+    return data.locations.begin();
 }
 
 static bool isMethodAllowed(const std::string &method, const t_locationData &data)

@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:13:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 14:00:12 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 19:24:58 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class Response
     /**************************************************************************
      *			Fonctions membres
      *************************************************************************/
-    std::string toString(void) const;
+    std::string toString(void);
     std::string toString(const std::map< int, std::string > &errorPages);
 
   private:
