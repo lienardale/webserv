@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 17:03:12 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 15:51:21 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ typedef struct s_locationData
     std::map< std::string, std::string > fastcgi_param;
     bool autoindex;
     std::list< std::string > methods;
+    bool _isDir;
+    bool _directory;
+    std::string _index;
     s_locationData(void);
 
 } t_locationData;

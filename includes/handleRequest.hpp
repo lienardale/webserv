@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:47:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 12:14:56 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 16:02:30 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "request.hpp"
 #include "response.hpp"
 
-http::Response handleRequest(const http::Request &request, const t_serverData &data);
+http::Response handleRequest(const http::Request &request, t_serverData &data);
 
 http::Response handleGET(const http::Request &request, const t_locationData &data);
 

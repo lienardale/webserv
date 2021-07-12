@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 14:02:23 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 15:42:02 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,35 +36,35 @@ std::string Cgi(const http::Request &request, const t_locationData &data)
     return (std::string(content));
 }
 
-// void directoryListing(std::string file, t_serverData data, std::string _content)
-// {
-//     DIR *dh;
-//     DIR *is_dir;
-//     struct dirent *contents;
-//     std::string directory = file;
-//     std::fstream f;
-//     std::string d_slash;
+void directoryListing(std::string file, const t_locationData &data, std::string _content, http::Response &ret, const http::Request &request)
+{
+    DIR *dh;
+    DIR *is_dir;
+    struct dirent *contents;
+    std::string directory = file;
+    std::fstream f;
+    std::string d_slash;
 
-//     if (!(dh = opendir(directory.c_str())))
-//         headerCode("404 Not Found", 404, data);
-//     else
-//     {
-//         _content += ("<h1>Index of " + _infos[1] + "</h1>\n");
-//         while ((contents = readdir(dh)) != NULL)
-//         {
-//             if ((is_dir = opendir((data.root + _infos[1] + std::string(contents->d_name)).c_str())))
-//                 d_slash = "/";
-//             closedir(is_dir);
-//             if (std::string(contents->d_name) != ".")
-//                 _content += ("<li><a href=\"" + std::string(contents->d_name) + d_slash + "\">" +
-//                              (std::string(contents->d_name) + d_slash + "</a></li>\n"));
-//             d_slash = "";
-//         }
-//     }
-//     if (directory[directory.size() - 1] != '/')
-//         headerCode("301 Moved Permanently", 301, data);
-//     closedir(dh);
-// }
+    if (!(dh = opendir(directory.c_str())))
+        ret.setCode(http::NOT_FOUND);
+    else
+    {
+        _content += ("<h1>Index of " + request.header("Path") + "</h1>\n");
+        while ((contents = readdir(dh)) != NULL)
+        {
+            if ((is_dir = opendir((data.root + request.header("Path") + std::string(contents->d_name)).c_str())))
+                d_slash = "/";
+            closedir(is_dir);
+            if (std::string(contents->d_name) != ".")
+                _content += ("<li><a href=\"" + std::string(contents->d_name) + d_slash + "\">" +
+                             (std::string(contents->d_name) + d_slash + "</a></li>\n"));
+            d_slash = "";
+        }
+    }
+    if (directory[directory.size() - 1] != '/')
+        ret.setCode(http::MOVED_PERMANENTLY);
+    closedir(dh);
+}
 
 bool php_file(std::string file)
 {
@@ -81,6 +81,8 @@ bool php_file(std::string file)
     return false;
 }
 
+
+
 http::Response handleGET(const http::Request &request, const t_locationData &data)
 {
     // (void)request;
@@ -94,26 +96,26 @@ http::Response handleGET(const http::Request &request, const t_locationData &dat
     // ret.setHeader();
 
     file = data.root + request.header("Path");
-    if (request.header("Path") == "/" /*|| (_directory && !data.index.front().empty() && !data.autoindex)*/) //directory to set somewhere
+    if (request.header("Path") == "/" || (data._directory && !data.index.front().empty() && !data.autoindex)) //directory to set somewhere
         file += data.index.front();
     f.open(file.c_str(), std::ios::in);
 
-    /*if ((f.good() && !f.rdbuf()->in_avail()) ||
+    if ((f.good() && !f.rdbuf()->in_avail()) ||
         (!f.good() && !access(file.c_str(), F_OK)))
     {
         if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
-            directoryListing(file, data, _content); // to modify and/or move
+            directoryListing(file, data, _content, ret, request); // to modify and/or move
         else if (f.good() && !f.rdbuf()->in_avail() && !data.index.front().empty())
             ret.setCode(http::MOVED_PERMANENTLY);
         else
             ret.setCode(http::FORBIDDEN);
     }
-    else */if (f.good() && php_file(request.header("Path")))
+    else if (f.good() && php_file(request.header("Path")))
         ret.setBody(Cgi(request, data), "text/html"); // Cgi fct to modify and/or move
     else if (f.good())
         ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()), "text/html");
-    // else if (_directory && !data.index.front().empty() && !data.autoindex)
-    //     ret.setCode(http::FORBIDDEN);
+    else if (data._directory && !data.index.front().empty() && !data.autoindex)
+        ret.setCode(http::FORBIDDEN);
     else
         ret.setCode(http::NOT_FOUND);
     f.close();
