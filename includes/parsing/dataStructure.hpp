@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dataStructure.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 12:01:33 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 17:03:12 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_serverData
     std::list< t_locationData > locations;
     s_serverData(void);
 } t_serverData;
+
 
 /****************************************************************************************
  *				Operator overloading
