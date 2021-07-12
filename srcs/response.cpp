@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 16:53:13 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 18:57:04 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ static std::string statusLine(http::Status status)
 /******************************************************************************
  *			Constructeurs
  *******************************************************************************/
+http::Response::Response(void)
+{
+}
+
 http::Response::Response(http::Status code) : _code(code)
 {
 }
@@ -79,7 +83,13 @@ void http::Response::setCode(const http::Status code)
 {
     _code = code;
 }
-
+/********************************************************************************
+ *			Getters
+ ********************************************************************************/
+int http::Response::code(void) const
+{
+    return _code;
+}
 /*******************************************************************************
  *			Fonctions membres
  *******************************************************************************/
@@ -105,7 +115,7 @@ std::string http::Response::toString() const
         oss << "Content-Type: " << _body.second << "\r\n";
         oss << std::endl << _body.first;
     }
-    else if (_body.first.size() == 0 && _code >= 400)
+    else if (_body.first.empty() && _code >= 400)
     {
         std::string r = "<h1>" + http::statusToReason(_code) + "</h1>";
         oss << "Content-Length: " << r.size() << "\r\n";
