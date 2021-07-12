@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 16:01:52 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 18:18:14 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,27 +55,33 @@ static bool fileExists(const http::Request &request, t_serverData data, const st
 {
     bool exists;
 
+    // std::cout << "IN FILE EXISTS" << std::endl;
     std::ifstream f((data.root + request.header("Path") + "/" + name).c_str());
     exists = f.good();
     f.close();
+    // std::cout << "OUT OF FILE EXISTS" << std::endl;
     return exists;
 }
 
 // check which file to use in index
 // set index if set in a parent's location
-static void locIndex(const http::Request &request, t_serverData &data, t_locationData *found)
+static void locIndex(const http::Request &request, t_serverData &data, t_dirinfo *dir_info)
 {
     std::string path1;
-
+// std::cout << "IN 1ST FOR" << std::endl;
     for (std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it)
     {
+        // std::cout << "HERE" << std::endl;
         if (!it->empty() && fileExists(request, data, *it))
         {
-            found->_index = *it;
+            // std::cout << "*IT : " << *it << std::endl;
+            // std::cout << "FOUND INDEX : " << dir_info->_index << std::endl;
+            dir_info->_index = *it;
+            // std::cout << "BREAK" << std::endl;
             break;
         }
     }
-
+// std::cout << "IN 2ND FOR" << std::endl;
     for (std::list< t_locationData >::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
     {
         path1 = (it1->path[it1->path.size() - 1] == '/') ? it1->path.substr(0, it1->path.size() - 1) : it1->path;
@@ -85,15 +91,15 @@ static void locIndex(const http::Request &request, t_serverData &data, t_locatio
             {
                 if (!it2->empty() && fileExists(request, data, *it2))
                 {
-                    found->_index = *it2;
+                    dir_info->_index = *it2;
                     break;
                 }
             }
         }
     }
 
-    std::ifstream f((data.root + request.header("Path") + "/" + found->_index).c_str());
-    found->_isDir = (f.good() && !f.rdbuf()->in_avail()) ? true : false;
+    std::ifstream f((data.root + request.header("Path") + "/" + dir_info->_index).c_str());
+    dir_info->_isDir = (f.good() && !f.rdbuf()->in_avail()) ? true : false;
     f.close();
 }
 
@@ -105,15 +111,21 @@ http::Response handleRequest(const http::Request &request, t_serverData &data)
 
     std::list< t_locationData >::iterator found = findData(request, data);
     
-    found->_directory = directory(request.header("Path"));
-    locIndex(request, data, &(*found));
+    t_dirinfo dir_info;
+    
+    bzero(&dir_info, sizeof(t_dirinfo));
+    // std::cout << "IN DIRECTORY" << std::endl;
+    dir_info._directory = directory(request.header("Path"));
+    // std::cout << "IN LOC INDEX" << std::endl;
+    locIndex(request, data, &dir_info);
+    // std::cout << "IN LOC AUTO INDEX" << std::endl;
     locAutoindex(request, data);
     if (found == data.locations.end())
         return http::Response(http::NOT_FOUND);
     
     bool isAllowed = isMethodAllowed(method, *found);
     if (method == "GET" && isAllowed)
-        return handleGET(request, *found);
+        return handleGET(request, *found, &dir_info);
     if (method == "POST" && isAllowed)
         return handlePOST(request, *found);
     if (method == "DELETE" && isAllowed)

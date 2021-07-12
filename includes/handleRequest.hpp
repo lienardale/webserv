@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:47:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 16:02:30 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 17:46:02 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 http::Response handleRequest(const http::Request &request, t_serverData &data);
 
-http::Response handleGET(const http::Request &request, const t_locationData &data);
+http::Response handleGET(const http::Request &request, const t_locationData &data, t_dirinfo *dir_info);
 
 http::Response handlePOST(const http::Request &request, const t_locationData &data);
 
