@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/07/09 20:32:31 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 17:30:24 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "parsing/dataStructure.hpp"
 #include "request.hpp"
+#include "response.hpp"
 #include "socket.hpp"
 #include <cstdlib>
 #include <inttypes.h>
@@ -49,6 +50,7 @@ class Server
 
     void _handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException);
     void _watchFds(void) throw(Socket::SocketException);
+    void _log(const http::Request &request, const http::Response &response) const;
 };
 } // namespace http
 #endif

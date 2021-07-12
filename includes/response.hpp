@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:13:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 17:03:09 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/12 14:00:12 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ namespace http
 class Response
 {
   public:
+    Response(void);
     Response(http::Status code);
     Response(const Response &other);
     Response &operator=(const Response &other);
@@ -34,6 +35,10 @@ class Response
     void setHeader(const std::string key, const std::string value);
     void setBody(const std::string &content, const std::string mimetype);
     void setCode(const http::Status code);
+    /**************************************************************************
+     *			Getters
+     *************************************************************************/
+    int code(void) const;
 
     /**************************************************************************
      *			Fonctions membres

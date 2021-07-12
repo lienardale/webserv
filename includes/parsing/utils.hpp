@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:48:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 10:37:01 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/10 18:57:04 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ std::list< dataStore > parseStructList(std::map< std::string, conversion > conv,
 
     extractStructList< std::string::const_iterator & >(tmp, begin, end);
 
-    if (tmp.size() == 0)
+    if (tmp.empty())
         throw ValueError("Empty list of struct");
 
     for (std::list< std::string >::iterator it = tmp.begin(); it != tmp.end(); it++)
