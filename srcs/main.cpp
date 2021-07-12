@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 15:28:02 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/10 12:32:58 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,6 @@ int main(int ac, char **av, char **env)
 
         // list dataserv
         SERVER.init(conf.getContent(), 1);
-        // for(int i = 0 ; env[i], i++){
-        // 	SERVER.l_env->pushback(env[i]);
-        // }
-        // int i = 0;
-        // for (std::list< t_serverData >::iterator it = SERVER._configs.begin(); it != SERVER._configs.end(); it++)
-        // {
-        //     std::cout << "Data["<<i<<"]:\n" << *it << std::endl;
-        //     i++;
-        // }
         SERVER.listen();
     }
     catch (config::ConfigFileException const &e)

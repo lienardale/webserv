@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/07/07 18:42:47 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/09 20:32:31 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,9 @@ class Server
     void init(const std::list< t_serverData > &configs, uint32_t timeout);
 
   private:
-    std::map< int, http::Request > _requests;
     struct timeval _timeout;
-    std::list< t_serverData > _configs;
-    std::map< int, std::pair< Socket, t_serverData > > _serverSet;
-    Socket _currentSock;
-    t_serverData _currentData;
+    std::map< int, t_serverData > _serverSet;
+    std::map< int, std::pair< http::Request, t_serverData > > _requests;
     bool _run;
     int _epoll_fd;
 

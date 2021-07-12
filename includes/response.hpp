@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:13:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 13:32:25 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/10 17:03:09 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Response
      *			Fonctions membres
      *************************************************************************/
     std::string toString(void) const;
+    std::string toString(const std::map< int, std::string > &errorPages);
 
   private:
     http::Status _code;

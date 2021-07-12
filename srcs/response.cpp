@@ -6,13 +6,14 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 17:15:53 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/10 17:03:24 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "statusCode.hpp"
 #include "webserv.hpp"
 #include <cstdlib>
+#include <ios>
 #include <map>
 #include <sstream>
 #include <string>
@@ -90,7 +91,7 @@ std::string http::Response::toString() const
     char *dt = ctime(&now);
 
     oss << statusLine(_code) << ""
-        << "Accept-ranges: bytes\r\n";
+        << "Accept-Ranges: bytes\r\n";
 
     oss << "Server: NGINX -2.0\r\n";
     oss << "Date: " << dt;
@@ -100,9 +101,28 @@ std::string http::Response::toString() const
 
     if (_body.first.size())
     {
-        oss << "Content-length: " << _body.first.size() << "\r\n";
-        oss << "Content-type: " << _body.second << "\r\n";
+        oss << "Content-Length: " << _body.first.size() << "\r\n";
+        oss << "Content-Type: " << _body.second << "\r\n";
         oss << std::endl << _body.first;
     }
+    else if (_body.first.size() == 0 && _code >= 400)
+    {
+        std::string r = "<h1>" + http::statusToReason(_code) + "</h1>";
+        oss << "Content-Length: " << r.size() << "\r\n";
+        oss << "Content-Type: "
+            << "text/html\r\n";
+        oss << std::endl << r;
+    }
+    else
+        oss << std::endl;
     return oss.str();
+}
+
+std::string http::Response::toString(const std::map< int, std::string > &errorPages)
+{
+    std::map< int, std::string >::const_iterator found = errorPages.find(_code);
+
+    if (found != errorPages.end())
+        setBody(found->second, "text/html");
+    return toString();
 }
