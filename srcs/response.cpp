@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 19:46:54 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/13 10:36:17 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,19 +113,14 @@ std::string http::Response::toString()
     {
         oss << "Content-Length: " << _body.first.size() << "\r\n";
         std::string::size_type found;
-        if ((found = _body.first.find("Content-Type: ")) != std::string::npos){
-            std::cout << "COUCOU MDR" << std::endl;
-            oss << _body.first.substr(found, _body.first.find("\n")) << "\r\n";
-            _body.first.erase(found, _body.first.find("\n"));
-            _body.first.erase(0, _body.first.find("\n"));
+        std::string::size_type found2;
+        if ((found = _body.first.find("Content-type")) != std::string::npos){
+            found2 = _body.first.find("\n", found);
+            oss << _body.first.substr(found, found2);
+            _body.first.erase(found, found2);
         }
-        else{
-            std::cout << "SALUT LOL" << std::endl;
+        else
             oss << "Content-Type: " << _body.second << "\r\n" << std::endl;
-        }
-        // _body.first.erase(0, _body.first.find("\n"));
-        // _body.first.erase(0, _body.first.find("\n"));
-        // _body.first.erase(_body.first.begin(), _body.first.begin() + _body.first.find("\n"));
         oss << _body.first;
     }
     else if (_body.first.empty() && _code >= 400)
