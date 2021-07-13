@@ -6,13 +6,14 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 18:26:49 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/13 11:15:34 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 #include <algorithm>
 
+/*
 static std::list< t_locationData >::iterator findData(const http::Request &request, t_serverData &data)
 {
     std::string path = request.header("path");
@@ -28,10 +29,20 @@ static std::list< t_locationData >::iterator findData(const http::Request &reque
     // to test directory listing
     return data.locations.begin();
 }
+*/
 
-static bool isMethodAllowed(const std::string &method, const t_locationData &data)
+/*
+ * Generic function to find if an element of any type exists in list
+ */
+template < typename T >
+
+bool contains(std::list< T > &listOfElements, const T &element)
 {
-    return std::binary_search(data.methods.begin(), data.methods.end(), method);
+    // Find the iterator if element in li st
+    typename std::list< T >::iterator it = std::find(listOfElements.begin(), listOfElements.end(), element);
+    // return if iterator points to end or not. It points to end then it means
+    // element does not exists in list
+    return it != listOfElements.end();
 }
 
 // set autoindex true if autoindex is activated in a parent's location
@@ -67,7 +78,7 @@ static bool fileExists(const http::Request &request, t_serverData data, const st
 
 // check which file to use in index
 // set index if set in a parent's location
-static void locIndex(const http::Request &request, t_serverData &data, t_dirinfo *dir_info)
+static void locIndex(const http::Request &request, t_serverData &data, t_locInfos *loc)
 {
     std::string path1;
 // std::cout << "IN 1ST FOR" << std::endl;
@@ -76,10 +87,7 @@ static void locIndex(const http::Request &request, t_serverData &data, t_dirinfo
         // std::cout << "HERE" << std::endl;
         if (!it->empty() && fileExists(request, data, *it))
         {
-            // std::cout << "*IT : " << *it << std::endl;
-            // std::cout << "FOUND INDEX : " << dir_info->_index << std::endl;
-            dir_info->_index = *it;
-            // std::cout << "BREAK" << std::endl;
+            loc->_index = *it;
             break;
         }
     }
@@ -93,44 +101,46 @@ static void locIndex(const http::Request &request, t_serverData &data, t_dirinfo
             {
                 if (!it2->empty() && fileExists(request, data, *it2))
                 {
-                    dir_info->_index = *it2;
+                    loc->_index = *it2;
                     break;
                 }
             }
         }
     }
 
-    std::ifstream f((data.root + request.header("Path") + "/" + dir_info->_index).c_str());
-    dir_info->_isDir = (f.good() && !f.rdbuf()->in_avail()) ? true : false;
+    std::ifstream f((data.root + request.header("Path") + "/" + loc->_index).c_str());
+    loc->_isDir = (f.good() && !f.rdbuf()->in_avail()) ? true : false;
     f.close();
+}
+
+bool	methodAllowed(const http::Request &request, t_serverData &data)
+{
+    std::string path1;
+
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    {
+        path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
+        if (request.header("Path").find(path1) != std::string::npos && contains(it->methods, request.header("Method")))
+            return false;
+    }
+    return true;
 }
 
 http::Response handleRequest(const http::Request &request, t_serverData &data)
 {
     std::string method = request.header("Method");
+    t_locInfos loc;
+
     if (method != "GET" && method != "POST" && method != "DELETE")
         return http::Response(http::METHOD_NOT_ALLOWED);
-
-    std::list< t_locationData >::iterator found = findData(request, data);
-    
-    t_dirinfo dir_info;
-    
-    bzero(&dir_info, sizeof(t_dirinfo));
-    // std::cout << "IN DIRECTORY" << std::endl;
-    dir_info._directory = directory(request.header("Path"));
-    // std::cout << "IN LOC INDEX" << std::endl;
-    locIndex(request, data, &dir_info);
-    // std::cout << "IN LOC AUTO INDEX" << std::endl;
+    loc._directory = directory(request.header("Path"));
+    locIndex(request, data, &loc);
     locAutoindex(request, data);
-    if (found == data.locations.end())
-        return http::Response(http::NOT_FOUND);
-    
-    bool isAllowed = isMethodAllowed(method, *found);
-    if (method == "GET" && isAllowed)
-        return handleGET(request, *found, &dir_info);
-    if (method == "POST" && isAllowed)
-        return handlePOST(request, *found);
-    if (method == "DELETE" && isAllowed)
-        return handleDELETE(request, *found);
+    if (method == "GET" && methodAllowed(request, data))
+        return handleGET(request, data, loc);
+    if (method == "POST" && methodAllowed(request, data))
+        return handlePOST(request, data);
+    if (method == "DELETE" && methodAllowed(request, data))
+        return handleDELETE(request, data);
     return http::Response(http::METHOD_NOT_ALLOWED);
 }

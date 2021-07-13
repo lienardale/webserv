@@ -20,13 +20,11 @@
             {
         		"autoindex": "off",
                 "methods": [
-                    "GET",
 					"POST",
                     "DELETE"
                 ],
 				"index": [
 					"index.html",
-					"test.html",
             		"index.php"
         		],
                 "fastcgi_param": {
@@ -34,7 +32,7 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/"
+                "path": "/directory"
             },
             {
         		"autoindex": "off",

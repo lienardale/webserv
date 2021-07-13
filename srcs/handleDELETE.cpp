@@ -6,14 +6,14 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 16:22:27 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/12 17:48:20 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "response.hpp"
 #include "webserv.hpp"
 
-http::Response handleDELETE(const http::Request &request, const t_locationData &data)
+http::Response handleDELETE(const http::Request &request, const t_serverData &data)
 {
     std::string path = data.root + request.header("path");
     std::ifstream f(path.c_str());
