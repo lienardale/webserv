@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 14:00:25 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/13 14:47:11 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
     catch (ParsingException &e)
     {
         http::Response response = http::Response(http::BAD_REQUEST);
+        response.setHeader("Connection", "close");
         sock.send(response.toString(_requests[fd].second.error_page));
         _log(_requests[fd].first, response);
         sock.close();
