@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 21:20:37 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/13 11:14:52 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,12 +104,12 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
     {
         if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
 		{
-            ret.setCode(http::MOVED_PERMANENTLY);
+            		ret.setCode(http::MOVED_PERMANENTLY);
 			Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/" :  "http://" + request.header("Host") + request.header("Path") + "/" + loc._index;
 			ret.setHeader("Location", Location);
 		}
 		else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
-            ret.setBody(directoryListing(file, data, ret, request, loc), "text/html");
+			ret.setBody(directoryListing(file, data, ret, request, loc), "text/html");
 		else if (loc._directory)
 			ret.setCode(http::NOT_FOUND);
 		else

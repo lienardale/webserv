@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 18:20:31 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/13 11:15:34 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,9 @@ static std::list< t_locationData >::iterator findData(const http::Request &reque
             std::count(path.begin(), path.end(), '.') >= 1)
             return it;
     }
-    return data.locations.end();
+    // return data.locations.end();
+    // to test directory listing
+    return data.locations.begin();
 }
 */
 
@@ -66,9 +68,11 @@ static bool fileExists(const http::Request &request, t_serverData data, const st
 {
     bool exists;
 
+    // std::cout << "IN FILE EXISTS" << std::endl;
     std::ifstream f((data.root + request.header("Path") + "/" + name).c_str());
     exists = f.good();
     f.close();
+    // std::cout << "OUT OF FILE EXISTS" << std::endl;
     return exists;
 }
 
@@ -77,16 +81,17 @@ static bool fileExists(const http::Request &request, t_serverData data, const st
 static void locIndex(const http::Request &request, t_serverData &data, t_locInfos *loc)
 {
     std::string path1;
-
+// std::cout << "IN 1ST FOR" << std::endl;
     for (std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it)
     {
+        // std::cout << "HERE" << std::endl;
         if (!it->empty() && fileExists(request, data, *it))
         {
             loc->_index = *it;
             break;
         }
     }
-
+// std::cout << "IN 2ND FOR" << std::endl;
     for (std::list< t_locationData >::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
     {
         path1 = (it1->path[it1->path.size() - 1] == '/') ? it1->path.substr(0, it1->path.size() - 1) : it1->path;

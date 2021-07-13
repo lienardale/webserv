@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 14:00:22 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/13 10:36:17 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int http::Response::code(void) const
  *			Fonctions membres
  *******************************************************************************/
 
-std::string http::Response::toString() const
+std::string http::Response::toString()
 {
     std::ostringstream oss;
     time_t now = time(0);
@@ -112,8 +112,16 @@ std::string http::Response::toString() const
     if (_body.first.size())
     {
         oss << "Content-Length: " << _body.first.size() << "\r\n";
-        oss << "Content-Type: " << _body.second << "\r\n";
-        oss << std::endl << _body.first;
+        std::string::size_type found;
+        std::string::size_type found2;
+        if ((found = _body.first.find("Content-type")) != std::string::npos){
+            found2 = _body.first.find("\n", found);
+            oss << _body.first.substr(found, found2);
+            _body.first.erase(found, found2);
+        }
+        else
+            oss << "Content-Type: " << _body.second << "\r\n" << std::endl;
+        oss << _body.first;
     }
     else if (_body.first.empty() && _code >= 400)
     {
@@ -130,9 +138,11 @@ std::string http::Response::toString() const
 
 std::string http::Response::toString(const std::map< int, std::string > &errorPages)
 {
+    // (void)errorPages;
     std::map< int, std::string >::const_iterator found = errorPages.find(_code);
 
-    if (found != errorPages.end())
+    if (found != errorPages.end()){
         setBody(found->second, "text/html");
+    }
     return toString();
 }
