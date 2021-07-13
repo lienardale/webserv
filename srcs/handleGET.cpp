@@ -6,13 +6,14 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 12:04:24 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/13 16:12:41 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
 #include "response.hpp"
 #include "webserv.hpp"
+#include <string>
 
 std::string Cgi(const http::Request &request, const t_serverData &data)
 {
@@ -118,7 +119,9 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
             ret.setCode(http::FORBIDDEN);
     }
     else if (f.good() && php_file(request.header("Path")))
-        ret.setBody(Cgi(request, data), "text/html"); // Cgi fct to modify and/or move
+    {
+        ret.setBodyCGI(Cgi(request, data)); // Cgi fct to modify and/or move
+    }
     else if (f.good())
         ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()),
                     "text/html");
