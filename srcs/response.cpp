@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 16:11:18 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/13 16:16:52 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,6 @@ std::string http::Response::toString()
     if (_headers.find("Connection") == _headers.end())
         oss << "Connection: keep-alive"
             << "\r\n";
-    std::cout << "test: " << _bodyCGI << std::endl;
     if (_body.first.size())
     {
         oss << "Content-Length: " << _body.first.size() << "\r\n";
