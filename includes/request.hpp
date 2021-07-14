@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 12:15:02 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/14 12:34:02 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,33 +30,29 @@ class Request
     /**************************************************************************
      *				Getters
      *************************************************************************/
-    std::string method(void) const;
-    std::string uri(void) const;
-    std::string protocol(void) const;
+    std::string header(const std::string key) const;
     std::map< std::string, std::string > getHeader(void) const;
     bool keepAlive(void) const;
     bool isFinished(void) const;
+    bool isBodyTooLarge(void) const;
 
     /**************************************************************************
      *				Fonctions membres
      *************************************************************************/
-    std::string header(const std::string key) const;
-    void parse(const std::string &content) throw(ParsingException);
+
+    void parse(const std::string &content, int maxBodySize) throw(ParsingException);
     void clear(void);
 
   private:
     bool _isBody;
     bool _finish;
+    bool _isBodyTooLarge;
     std::string _buffer;
-    std::string _method;
-    std::string _uri;
-    std::string _protocol;
-    std::string _host;
     std::map< std::string, std::string > _headers;
 
     void _extract(std::string &content) throw(ParsingException);
     void _extractHeader(std::string &content) throw(ParsingException);
-    void _extractBody(void) throw(ParsingException);
+    void _extractBody(int maxBodySize) throw(ParsingException);
 };
 
 } // namespace http

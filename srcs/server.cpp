@@ -6,16 +6,23 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 14:47:11 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/14 16:14:46 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "server.hpp"
 #include "handleRequest.hpp"
+#include "parsing/dataStructure.hpp"
+#include "parsing/parsingExceptions.hpp"
+#include "request.hpp"
 #include "response.hpp"
 #include "socket.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
+#include <cstdio>
 #include <iostream>
+#include <map>
+#include <ostream>
 #include <sys/epoll.h>
 #include <utility>
 
@@ -134,49 +141,66 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
     std::map< int, t_serverData >::iterator found = _serverSet.find(fd);
     Socket sock(fd, true);
 
-    try
+    if (found != _serverSet.end())
     {
-        if (found != _serverSet.end())
+        try
         {
-
             int accepted = sock.accept().Fd();
-            _add_fd_to_poll(epoll_fd, accepted, EPOLLIN);
+            _add_fd_to_poll(epoll_fd, accepted, EPOLLIN | EPOLLRDHUP);
             _requests[accepted] = std::make_pair(http::Request(), found->second);
         }
-        else if (event->events & EPOLLIN)
+        catch (Socket::SocketException &e)
         {
-            const std::string content = sock.readContent();
-            _requests[fd].first.parse(content);
-            std::pair< http::Request, t_serverData > data = _requests[fd];
-
-            if (data.first.isFinished() || content.empty())
-            {
-                http::Response response;
-                if ((int)data.first.header("body").size() > data.second.client_max_body_size)
-                    response = http::Response(http::PAYLOAD_TOO_LARGE);
-                else
-                    response = handleRequest(data.first, data.second);
-                _log(data.first, response);
-                sock.send(response.toString(data.second.error_page));
-                sock.close();
-                _requests.erase(fd);
-            }
+            std::cout << e.what() << std::endl;
         }
     }
-    catch (Socket::SocketException &e)
+    else if (event->events & EPOLLRDHUP)
+        _removeAcceptedFD(sock, epoll_fd, event);
+    else if (event->events & EPOLLOUT)
     {
-        http::Response response = http::Response(http::INTERNAL_SERVER_ERROR);
-        _log(_requests[fd].first, response);
-        sock.send(response.toString(_requests[fd].second.error_page));
+        std::cout << "epollout" << std::endl;
+        std::pair< http::Request, t_serverData > data = _requests[fd];
+
+        http::Response response;
+        if (data.first.isBodyTooLarge())
+            response = http::Response(http::PAYLOAD_TOO_LARGE);
+        else
+            response = handleRequest(data.first, data.second);
+        _log(data.first, response);
+        sock.send(response.toString(data.second.error_page));
+        if (!data.first.keepAlive() || data.first.isBodyTooLarge())
+            _removeAcceptedFD(sock, epoll_fd, event);
+        else
+        {
+            _requests[fd].first.clear();
+            event->events = EPOLLIN;
+            epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
+        }
     }
-    catch (ParsingException &e)
+    else if (event->events & EPOLLIN)
     {
-        http::Response response = http::Response(http::BAD_REQUEST);
-        response.setHeader("Connection", "close");
-        sock.send(response.toString(_requests[fd].second.error_page));
-        _log(_requests[fd].first, response);
-        sock.close();
-        _requests.erase(fd);
+        try
+        {
+            const std::string content = sock.readContent();
+            std::cout << "epollin = " << content.size() << std::endl;
+
+            if (!_requests[fd].first.isBodyTooLarge())
+                _requests[fd].first.parse(content, _requests[fd].second.client_max_body_size);
+            if (content.size() < 300)
+            {
+                std::cout << _requests[fd].first << std::endl;
+                event->events = EPOLLOUT;
+                epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
+            }
+        }
+        catch (ParsingException &e)
+        {
+            http::Response response = http::Response(http::BAD_REQUEST);
+            response.setHeader("Connection", "close");
+            sock.send(response.toString(_requests[fd].second.error_page));
+            _log(_requests[fd].first, response);
+            _removeAcceptedFD(sock, epoll_fd, event);
+        }
     }
 }
 
@@ -216,4 +240,14 @@ void http::Server::_log(const http::Request &request, const http::Response &resp
     std::cout << request.header("host") << "\t|\t";
     std::cout << request.header("method") << "\t|\t";
     std::cout << request.header("path") << std::endl;
+}
+
+/*
+ *       Fonction qui retire un fd accepté d'epoll et de la map de requête
+ */
+void http::Server::_removeAcceptedFD(Socket &sock, int epoll_fd, struct epoll_event *event)
+{
+    sock.close();
+    _requests.erase(sock.Fd());
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, sock.Fd(), event);
 }

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/07/10 17:30:24 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/14 12:15:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Server
     void _handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException);
     void _watchFds(void) throw(Socket::SocketException);
     void _log(const http::Request &request, const http::Response &response) const;
+    void _removeAcceptedFD(Socket &sock, int epoll_fd, struct epoll_event *event);
 };
 } // namespace http
 #endif
