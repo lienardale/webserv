@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/12 14:08:00 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/13 17:07:17 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,8 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data
     s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                 // ok
     s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length"); // ok
     s_env._content_type = "CONTENT_TYPE=" + request.header("Content-Type");       // ok
-    s_env._path_info = "PATH_INFO=" + request.header("Path");                         // ok
-    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + request.header("Path");   // ok
+    s_env._path_info = "PATH_INFO=" + data.root + request.header("Path");                         // ok
+    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + data.root + request.header("Path");   // ok
     s_env._query_string = "QUERY_STRING=" + parseURI(request.uri());              // ok
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                              // ok
     s_env._remote_host = "REMOTE_HOST=" + request.header("Host");                 // ok
@@ -134,8 +134,8 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data
     s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
     s_env._request_method = "REQUEST_METHOD=" + request.method();                 // ok
     s_env._request_uri = "REQUEST_URI=" + request.uri();                          // ok
-    s_env._script_name = "SCRIPT_NAME=php-cgi7.0"; // FAST_CGI_CONF
-    s_env._script_file_name = "SCRIPT_FILENAME=cgi-bin/php-cgi7.0";
+    s_env._script_name = "SCRIPT_NAME=php-cgi"; // FAST_CGI_CONF
+    s_env._script_file_name = "SCRIPT_FILENAME=php-cgi";
     s_env._server_port = "SERVER_PORT=" + request.header("Port");/*+ SSTR(itoa(data.listen,buffer,10));*/
     s_env._server_protocol = "SERVER_PROTOCOL=" + request.protocol();                          // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
