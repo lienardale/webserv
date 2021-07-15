@@ -24,7 +24,6 @@
                     "DELETE"
                 ],
 				"index": [
-					"test3.html",
 					"index.html",
             		"index.php"
         		],
