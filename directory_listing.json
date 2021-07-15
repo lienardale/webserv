@@ -20,12 +20,13 @@
             {
         		"autoindex": "on",
                 "methods": [
+                    "GET",
 					"POST",
                     "DELETE"
                 ],
 				"index": [
-					"test3.html",
 					"index.html",
+					"test.html",
             		"index.php"
         		],
                 "fastcgi_param": {
@@ -33,34 +34,17 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/directory/dir/dir"
+                "path": "/directory/"
             },
             {
-        		"autoindex": "on",
-                "methods": [
-					"POST"
-                ],
-				"index": [
-					"test1.html",
-					"index.html",
-            		"index.php",
-					"yes.html"
-        		],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
-                },
-                "path": "/directory"
-            },
-			{
         		"autoindex": "off",
                 "methods": [
+                    "GET",
 					"POST"
                 ],
 				"index": [
+					"index.html",
 					"test.html",
-					"index.html",
             		"index.php"
         		],
                 "fastcgi_param": {
@@ -68,24 +52,7 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/"
-            },
-			{
-        		"autoindex": "off",
-                "methods": [
-					"POST"
-                ],
-				"index": [
-					"index.html",
-					"test2.html",
-            		"index.php"
-        		],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
-                },
-                "path": "/directory/dir"
+                "path": "/ferg"
             }
         ]
     },

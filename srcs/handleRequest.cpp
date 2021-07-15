@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 18:28:08 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 12:02:41 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ static bool fileExists(const http::Request &request, t_serverData data, const st
 static void locIndex(const http::Request &request, t_serverData &data, t_locInfos *loc)
 {
     std::string path1;
-
     for (std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it)
     {
         if (!it->empty() && fileExists(request, data, *it))

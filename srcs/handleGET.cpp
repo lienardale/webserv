@@ -3,22 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   handleGET.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 16:18:23 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 12:18:52 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "cgi.hpp"
 #include "response.hpp"
 #include "webserv.hpp"
-#include "cgi.hpp"
+#include <string>
 
 std::string Cgi(const http::Request &request, const t_serverData &data)
 {
     int fd[2];
     char content[100000];
     int pid;
+	std::string	root;
 
     cgi cgi_data(request, data.locations.front());
     pipe(fd);
@@ -27,8 +29,11 @@ std::string Cgi(const http::Request &request, const t_serverData &data)
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
-        execle("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), cgi_data.getCgiEnv(), NULL);
+        //execle("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), cgi_data.getCgiEnv(), NULL);
 		//execl("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), NULL);
+		root = (*data.root.rbegin() == '/') ? data.root.substr(0, data.root.size() - 1) : data.root;
+		execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", (root + request.header("Path")).c_str(),
+               cgi_data.getCgiEnv(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
@@ -37,7 +42,8 @@ std::string Cgi(const http::Request &request, const t_serverData &data)
     return (std::string(content));
 }
 
-std::string directoryListing(std::string file, const t_serverData &data, http::Response &ret, const http::Request &request, const t_locInfos &loc)
+std::string directoryListing(std::string file, const t_serverData &data, http::Response &ret,
+                             const http::Request &request, const t_locInfos &loc)
 {
     DIR *dh;
     DIR *is_dir;
@@ -45,8 +51,8 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
     std::string directory = file;
     std::fstream f;
     std::string d_slash;
-	std::string d_slashb;
-	std::string _content;
+    std::string d_slashb;
+    std::string _content;
 
     if (!(dh = opendir(directory.c_str())))
         ret.setCode(http::NOT_FOUND);
@@ -60,15 +66,15 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
                 d_slash = "/";
             closedir(is_dir);
             if (std::string(contents->d_name) != ".")
-                _content += ("<li><a href=\"" + request.header("Path") + d_slashb + std::string(contents->d_name) + d_slash + "\">" +
-                             (std::string(contents->d_name) + d_slash + "</a></li>\n"));
+                _content += ("<li><a href=\"" + request.header("Path") + d_slashb + std::string(contents->d_name) +
+                             d_slash + "\">" + (std::string(contents->d_name) + d_slash + "</a></li>\n"));
             d_slash = "";
         }
     }
     if (directory[directory.size() - 1] != '/')
         ret.setCode(http::MOVED_PERMANENTLY);
     closedir(dh);
-	return (_content);
+    return (_content);
 }
 
 bool php_file(std::string file)
@@ -99,13 +105,11 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
         file = data.root + request.header("Path") + loc._index;
     else
         file = data.root + request.header("Path"); // classic path request
-	//std::cout << file << std::endl;
     f.open(file.c_str(), std::ios::in);
-    if ((f.good() && !f.rdbuf()->in_avail()) ||
-        (!f.good() && !access(file.c_str(), F_OK)))
+    if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK)))
     {
         if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
-		{
+        {
             ret.setCode(http::MOVED_PERMANENTLY);
 			slash = (loc._directory) ? "" : "/";
 			Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/" :  "http://" + request.header("Host") + request.header("Path") + slash + loc._index;
@@ -113,16 +117,19 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 		}
 		else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
             ret.setBody(directoryListing(file, data, ret, request, loc), "text/html");
-		else if (loc._directory)
-			ret.setCode(http::NOT_FOUND);
-		else
-			ret.setCode(http::FORBIDDEN);
+        else if (loc._directory)
+            ret.setCode(http::NOT_FOUND);
+        else
+            ret.setCode(http::FORBIDDEN);
     }
     else if (f.good() && php_file(request.header("Path")))
-        ret.setBody(Cgi(request, data), "text/html"); // Cgi fct to modify and/or move
+    {
+        ret.setBodyCGI(Cgi(request, data)); // Cgi fct to modify and/or move
+    }
     else if (f.good())
-    	ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()), "text/html");
-    //else if (loc._directory && !loc._index.empty() && !data.autoindex)
+        ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()),
+                    "text/html");
+    // else if (loc._directory && !loc._index.empty() && !data.autoindex)
     //	ret.setCode(http::FORBIDDEN);
     else
         ret.setCode(http::NOT_FOUND);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 15:25:16 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 12:18:09 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <utility>
 
 /******************************************************************************
  *              Outils
@@ -47,7 +48,7 @@ http::Response::Response(http::Status code) : _code(code)
 }
 
 http::Response::Response(const Response &other)
-    : _code(other._code), _status(other._status), _headers(other._headers), _body(other._body)
+    : _code(other._code), _status(other._status), _headers(other._headers), _body(other._body), _bodyCGI(other._bodyCGI)
 {
 }
 
@@ -57,6 +58,7 @@ http::Response &http::Response::operator=(const Response &other)
     _body = other._body;
     _headers = other._headers;
     _status = other._status;
+    _bodyCGI = other._bodyCGI;
     return *this;
 }
 
@@ -77,6 +79,13 @@ void http::Response::setBody(const std::string &content, const std::string mimet
 {
     _body.first = content;
     _body.second = mimetype;
+    _bodyCGI.clear();
+}
+
+void http::Response::setBodyCGI(const std::string &content)
+{
+    _bodyCGI = content;
+    _body = std::make_pair(std::string(), std::string());
 }
 
 void http::Response::setCode(const http::Status code)
@@ -94,14 +103,13 @@ int http::Response::code(void) const
  *			Fonctions membres
  *******************************************************************************/
 
-std::string http::Response::toString() const
+std::string http::Response::toString()
 {
     std::ostringstream oss;
     time_t now = time(0);
     char *dt = ctime(&now);
 
-    oss << statusLine(_code) << ""
-        << "Accept-Ranges: bytes\r\n";
+    oss << statusLine(_code) << "Accept-Ranges: bytes\r\n";
 
     oss << "Server: NGINX -2.0\r\n";
     oss << "Date: " << dt;
@@ -109,12 +117,17 @@ std::string http::Response::toString() const
     for (std::map< std::string, std::string >::const_iterator it = _headers.begin(); it != _headers.end(); it++)
         oss << it->first << ": " << it->second << "\r\n";
 
+    if (_headers.find("Connection") == _headers.end())
+        oss << "Connection: keep-alive"
+            << "\r\n";
     if (_body.first.size())
     {
         oss << "Content-Length: " << _body.first.size() << "\r\n";
-        oss << "Content-Type: " << _body.second << "\r\n";
-        oss << std::endl << _body.first;
+        oss << "Content-Type: " << _body.second << "\r\n" << std::endl;
+        oss << _body.first;
     }
+    else if (_bodyCGI.size())
+        oss << _bodyCGI;
     else if (_body.first.empty() && _code >= 400)
     {
         std::string r = "<h1>" + http::statusToReason(_code) + "</h1>";

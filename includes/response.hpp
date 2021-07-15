@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:13:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 14:00:12 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/13 14:58:20 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Response
      *************************************************************************/
     void setHeader(const std::string key, const std::string value);
     void setBody(const std::string &content, const std::string mimetype);
+    void setBodyCGI(const std::string &content);
     void setCode(const http::Status code);
     /**************************************************************************
      *			Getters
@@ -43,7 +44,7 @@ class Response
     /**************************************************************************
      *			Fonctions membres
      *************************************************************************/
-    std::string toString(void) const;
+    std::string toString(void);
     std::string toString(const std::map< int, std::string > &errorPages);
 
   private:
@@ -51,6 +52,7 @@ class Response
     std::string _status;
     std::map< std::string, std::string > _headers;
     std::pair< std::string, std::string > _body;
+    std::string _bodyCGI;
 };
 } // namespace http
 

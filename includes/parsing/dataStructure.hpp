@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 16:27:17 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/13 11:21:30 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,15 @@ typedef struct s_serverData
     std::list< t_locationData > locations;
     s_serverData(void);
 } t_serverData;
+
+// typedef struct s_dirinfo
+// {
+//     bool _isDir;
+//     bool _directory;
+//     std::string _index;
+//     // s_dirinfo(void);
+
+// } t_dirinfo;
 
 
 /****************************************************************************************
