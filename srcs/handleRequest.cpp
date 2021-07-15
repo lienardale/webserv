@@ -34,7 +34,7 @@ static void locAutoindex(const http::Request &request, t_serverData &data)
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(1, it->path.size() - 1) : it->path;
+        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (it->autoindex != data.autoindex && request.header("Path").find(path1) != std::string::npos)
             data.autoindex = it->autoindex;
     }
