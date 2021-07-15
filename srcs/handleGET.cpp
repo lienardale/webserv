@@ -6,13 +6,14 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 13:56:03 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 15:42:58 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
 #include "response.hpp"
 #include "webserv.hpp"
+#include "handleRequest.hpp"
 #include <string>
 
 std::string directoryListing(std::string file, const t_serverData &data, http::Response &ret,
@@ -48,21 +49,6 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
         ret.setCode(http::MOVED_PERMANENTLY);
     closedir(dh);
     return (_content);
-}
-
-bool php_file(std::string file)
-{
-    std::string ext;
-
-    for (std::string::reverse_iterator it = file.rbegin(); it != file.rend(); ++it)
-    {
-        if (*it == '.')
-            break;
-        ext += *it;
-    }
-    if (ext == "php")
-        return true;
-    return false;
 }
 
 http::Response handleGET(const http::Request &request, const t_serverData &data, const t_locInfos &loc)

@@ -6,12 +6,27 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 12:02:41 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 15:41:43 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 #include <algorithm>
+
+bool php_file(std::string file)
+{
+    std::string ext;
+
+    for (std::string::reverse_iterator it = file.rbegin(); it != file.rend(); ++it)
+    {
+        if (*it == '.')
+            break;
+        ext += *it;
+    }
+    if (ext == "php")
+        return true;
+    return false;
+}
 
 /*
  * Generic function to find if an element of any type exists in list
@@ -117,7 +132,7 @@ http::Response handleRequest(const http::Request &request, t_serverData &data)
     if (method == "GET" && methodAllowed(request, data))
         return handleGET(request, data, loc);
     if (method == "POST" && methodAllowed(request, data))
-        return handlePOST(request, data);
+        return handlePOST(request, data, loc);
     if (method == "DELETE" && methodAllowed(request, data))
         return handleDELETE(request, data);
     return http::Response(http::METHOD_NOT_ALLOWED);

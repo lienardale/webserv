@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/15 14:00:17 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 14:10:07 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,8 +210,8 @@ void cgi::Cgi(const http::Request &request, const t_serverData &data)
         ::close(fd[1]);
         //execle("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), cgi_data.getCgiEnv(), NULL);
 		root = (*data.root.rbegin() == '/') ? data.root.substr(0, data.root.size() - 1) : data.root;
-		execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", (root + request.header("Path")).c_str(), getCgiEnv(), NULL);
-		//execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
+		//execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", (root + request.header("Path")).c_str(), getCgiEnv(), NULL);
+		execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
