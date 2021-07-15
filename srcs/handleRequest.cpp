@@ -6,30 +6,12 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 11:15:34 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/15 12:02:41 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 #include <algorithm>
-
-/*
-static std::list< t_locationData >::iterator findData(const http::Request &request, t_serverData &data)
-{
-    std::string path = request.header("path");
-    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); it++)
-    {
-        if ((path.find(it->path) != std::string::npos && it->path != "/") || it->path == path)
-            return it;
-        if (it->path == "/" && std::count(path.begin(), path.end(), '/') == 1 &&
-            std::count(path.begin(), path.end(), '.') >= 1)
-            return it;
-    }
-    // return data.locations.end();
-    // to test directory listing
-    return data.locations.begin();
-}
-*/
 
 /*
  * Generic function to find if an element of any type exists in list
@@ -52,9 +34,9 @@ static void locAutoindex(const http::Request &request, t_serverData &data)
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
-        if (it->autoindex && request.header("Path").find(path1) != std::string::npos)
-            data.autoindex = true;
+        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1) : it->path;
+        if (it->autoindex != data.autoindex && request.header("Path").find(path1) != std::string::npos)
+            data.autoindex = it->autoindex;
     }
 }
 
@@ -68,11 +50,9 @@ static bool fileExists(const http::Request &request, t_serverData data, const st
 {
     bool exists;
 
-    // std::cout << "IN FILE EXISTS" << std::endl;
     std::ifstream f((data.root + request.header("Path") + "/" + name).c_str());
     exists = f.good();
     f.close();
-    // std::cout << "OUT OF FILE EXISTS" << std::endl;
     return exists;
 }
 
@@ -81,17 +61,14 @@ static bool fileExists(const http::Request &request, t_serverData data, const st
 static void locIndex(const http::Request &request, t_serverData &data, t_locInfos *loc)
 {
     std::string path1;
-// std::cout << "IN 1ST FOR" << std::endl;
     for (std::list< std::string >::iterator it = data.index.begin(); it != data.index.end(); ++it)
     {
-        // std::cout << "HERE" << std::endl;
         if (!it->empty() && fileExists(request, data, *it))
         {
             loc->_index = *it;
             break;
         }
     }
-// std::cout << "IN 2ND FOR" << std::endl;
     for (std::list< t_locationData >::iterator it1 = data.locations.begin(); it1 != data.locations.end(); ++it1)
     {
         path1 = (it1->path[it1->path.size() - 1] == '/') ? it1->path.substr(0, it1->path.size() - 1) : it1->path;
@@ -107,7 +84,6 @@ static void locIndex(const http::Request &request, t_serverData &data, t_locInfo
             }
         }
     }
-
     std::ifstream f((data.root + request.header("Path") + "/" + loc->_index).c_str());
     loc->_isDir = (f.good() && !f.rdbuf()->in_avail()) ? true : false;
     f.close();
@@ -130,9 +106,11 @@ http::Response handleRequest(const http::Request &request, t_serverData &data)
 {
     std::string method = request.header("Method");
     t_locInfos loc;
-
+	
     if (method != "GET" && method != "POST" && method != "DELETE")
         return http::Response(http::METHOD_NOT_ALLOWED);
+	if (*request.header("Path").begin() != '/')
+		return http::Response(http::FORBIDDEN);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);

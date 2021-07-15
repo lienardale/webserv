@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 16:16:52 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/15 12:18:09 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,15 +123,6 @@ std::string http::Response::toString()
     if (_body.first.size())
     {
         oss << "Content-Length: " << _body.first.size() << "\r\n";
-        // std::string::size_type found;
-        // std::string::size_type found2;
-        /*if ((found = _body.first.find("Content-type")) != std::string::npos)
-        {
-            found2 = _body.first.find("\n", found);
-            oss << _body.first.substr(found, found2);
-            _body.first.erase(found, found2);
-        }
-        else*/
         oss << "Content-Type: " << _body.second << "\r\n" << std::endl;
         oss << _body.first;
     }
@@ -154,9 +145,9 @@ std::string http::Response::toString(const std::map< int, std::string > &errorPa
 {
     std::map< int, std::string >::const_iterator found = errorPages.find(_code);
 
-    if (found != errorPages.end())
-    {
+    if (found != errorPages.end() && found->second == "error_page_not_valid" && _code != 404)
+		setBody(errorPages.find(404)->second, "text/html");
+	if (found != errorPages.end() && found->second != "error_page_not_valid")
         setBody(found->second, "text/html");
-    }
     return toString();
 }

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 16:12:41 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/15 12:18:52 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ std::string Cgi(const http::Request &request, const t_serverData &data)
     int fd[2];
     char content[100000];
     int pid;
+	std::string	root;
 
     cgi cgi_data(request, data.locations.front());
     pipe(fd);
@@ -28,7 +29,10 @@ std::string Cgi(const http::Request &request, const t_serverData &data)
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
-        execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", ("www" + request.header("Path")).c_str(),
+        //execle("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), cgi_data.getCgiEnv(), NULL);
+		//execl("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), NULL);
+		root = (*data.root.rbegin() == '/') ? data.root.substr(0, data.root.size() - 1) : data.root;
+		execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", (root + request.header("Path")).c_str(),
                cgi_data.getCgiEnv(), NULL);
     }
     ::close(fd[1]);
@@ -57,7 +61,7 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
         _content += ("<h1>Index of " + request.header("Path") + "</h1>\n");
         while ((contents = readdir(dh)) != NULL)
         {
-            d_slashb = (loc._directory) ? "" : "/";
+			d_slashb = (loc._directory) ? "" : "/";
             if ((is_dir = opendir((data.root + request.header("Path") + std::string(contents->d_name)).c_str())))
                 d_slash = "/";
             closedir(is_dir);
@@ -92,26 +96,26 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 {
     std::fstream f;
     std::string file;
-    std::string Location;
+	std::string Location;
+	std::string slash;
 
     http::Response ret = http::Response(http::OK);
 
-    if (request.header("Path") == "/" || (loc._directory && !loc._index.empty() && !data.autoindex))
+    if (request.header("Path") == "/" || (loc._directory && !loc._index.empty()))
         file = data.root + request.header("Path") + loc._index;
     else
         file = data.root + request.header("Path"); // classic path request
-                                                   // std::cout << file << std::endl;
     f.open(file.c_str(), std::ios::in);
     if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK)))
     {
         if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
         {
             ret.setCode(http::MOVED_PERMANENTLY);
-            Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/"
-                                     : "http://" + request.header("Host") + request.header("Path") + "/" + loc._index;
-            ret.setHeader("Location", Location);
-        }
-        else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
+			slash = (loc._directory) ? "" : "/";
+			Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/" :  "http://" + request.header("Host") + request.header("Path") + slash + loc._index;
+			ret.setHeader("Location", Location);
+		}
+		else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
             ret.setBody(directoryListing(file, data, ret, request, loc), "text/html");
         else if (loc._directory)
             ret.setCode(http::NOT_FOUND);
