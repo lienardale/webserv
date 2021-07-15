@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:47:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 11:13:46 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/15 15:42:08 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,10 @@ http::Response handleRequest(const http::Request &request, t_serverData &data);
 
 http::Response handleGET(const http::Request &request, const t_serverData &data, const t_locInfos &loc);
 
-http::Response handlePOST(const http::Request &request, const t_serverData &data);
+http::Response handlePOST(const http::Request &request, const t_serverData &data, const t_locInfos &loc);
 
 http::Response handleDELETE(const http::Request &request, const t_serverData &data);
+
+bool php_file(std::string file);
 
 #endif

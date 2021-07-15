@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/13 18:30:19 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 16:02:12 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,6 +225,7 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
 
     bzero(buffer, sizeof(buffer));
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+	std::cout << "--REQUEST--" << buffer << std::endl;
     return std::string(static_cast< char * >(buffer), ret);
 }
 
@@ -234,6 +235,7 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
  */
 void Socket::send(const std::string content) throw(SocketException)
 {
+	std::cout << "--RESPONSE--" << content.c_str() << std::endl;
     if (::send(_fd, content.c_str(), content.size(), 0) == -1)
         throw Socket::SocketException();
 }
