@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/13 17:07:17 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 14:00:17 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,10 @@ cgi::cgi(Socket &sock, t_serverData &data) // throw( cgi::CGIException )
     // 	throw( cgi::CGIException() );
 }
 
-cgi::cgi(const http::Request &request, const t_locationData &data) // throw( cgi::CGIException )
+cgi::cgi(const http::Request &request, const t_locationData &data, const t_serverData &dataserv) // throw( cgi::CGIException )
 {
     setCgi(request, data);
+	Cgi(request, dataserv);
     // if (setCgi(sock))
     // 	throw( cgi::CGIException() );
 }
@@ -192,4 +193,34 @@ void cgi::setCgi(const http::Request &request, const t_locationData &data)
 {
     setCgiMetaVar(request, data);
     setCgiEnv();
+}
+
+void cgi::Cgi(const http::Request &request, const t_serverData &data)
+{
+    int fd[2];
+    char content[100000];
+    int pid;
+	std::string	root;
+
+    pipe(fd);
+    if ((pid = fork()) == 0)
+    {
+        dup2(fd[1], STDOUT_FILENO);
+        ::close(fd[0]);
+        ::close(fd[1]);
+        //execle("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), cgi_data.getCgiEnv(), NULL);
+		root = (*data.root.rbegin() == '/') ? data.root.substr(0, data.root.size() - 1) : data.root;
+		execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", (root + request.header("Path")).c_str(), getCgiEnv(), NULL);
+		//execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
+    }
+    ::close(fd[1]);
+    read(fd[0], content, sizeof(content));
+    ::close(fd[0]);
+    waitpid(pid, NULL, -1);
+    _output = std::string(content);
+}
+
+std::string	cgi::getOutput() const
+{
+	return _output;
 }

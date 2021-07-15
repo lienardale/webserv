@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/07/12 14:07:02 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/15 13:56:54 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,12 @@ class cgi
 
     meta_var s_env;
     char *env[LEN_CGI_ENV + 1];
+	std::string	_output;
     cgi();
 
   public:
     cgi(Socket &sock, t_serverData &data) /* throw( cgi::CGIException )*/;
-    cgi(const http::Request &request, const t_locationData &data);
+    cgi(const http::Request &request, const t_locationData &data, const t_serverData &dataserv);
     cgi(const cgi &);
     ~cgi();
     cgi &operator=(const cgi &);
@@ -103,6 +104,8 @@ class cgi
     void setCgiEnv(void);
     std::string parseURI(std::string uri);
     char **getCgiEnv(void);
+	void Cgi(const http::Request &request, const t_serverData &data);
+	std::string	getOutput() const;
 
     // class CGIException : public std::exception
     // {

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 12:18:52 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/15 13:56:03 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,33 +14,6 @@
 #include "response.hpp"
 #include "webserv.hpp"
 #include <string>
-
-std::string Cgi(const http::Request &request, const t_serverData &data)
-{
-    int fd[2];
-    char content[100000];
-    int pid;
-	std::string	root;
-
-    cgi cgi_data(request, data.locations.front());
-    pipe(fd);
-    if ((pid = fork()) == 0)
-    {
-        dup2(fd[1], STDOUT_FILENO);
-        ::close(fd[0]);
-        ::close(fd[1]);
-        //execle("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), cgi_data.getCgiEnv(), NULL);
-		//execl("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), NULL);
-		root = (*data.root.rbegin() == '/') ? data.root.substr(0, data.root.size() - 1) : data.root;
-		execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", (root + request.header("Path")).c_str(),
-               cgi_data.getCgiEnv(), NULL);
-    }
-    ::close(fd[1]);
-    read(fd[0], content, sizeof(content));
-    ::close(fd[0]);
-    waitpid(pid, NULL, -1);
-    return (std::string(content));
-}
 
 std::string directoryListing(std::string file, const t_serverData &data, http::Response &ret,
                              const http::Request &request, const t_locInfos &loc)
@@ -123,9 +96,7 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
             ret.setCode(http::FORBIDDEN);
     }
     else if (f.good() && php_file(request.header("Path")))
-    {
-        ret.setBodyCGI(Cgi(request, data)); // Cgi fct to modify and/or move
-    }
+        ret.setBodyCGI(cgi(request, data.locations.front(), data).getOutput()); // Cgi fct to modify and/or move
     else if (f.good())
         ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()),
                     "text/html");
