@@ -6,37 +6,15 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/14 16:04:55 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/15 15:42:58 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
+#include "handleRequest.hpp"
 #include "response.hpp"
 #include "webserv.hpp"
 #include <string>
-
-std::string Cgi(const http::Request &request, const t_serverData &data)
-{
-    int fd[2];
-    char content[100000];
-    int pid;
-
-    cgi cgi_data(request, data.locations.front());
-    pipe(fd);
-    if ((pid = fork()) == 0)
-    {
-        dup2(fd[1], STDOUT_FILENO);
-        ::close(fd[0]);
-        ::close(fd[1]);
-        execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", ("www" + request.header("Path")).c_str(),
-               cgi_data.getCgiEnv(), NULL);
-    }
-    ::close(fd[1]);
-    read(fd[0], content, sizeof(content));
-    ::close(fd[0]);
-    waitpid(pid, NULL, -1);
-    return (std::string(content));
-}
 
 std::string directoryListing(std::string file, const t_serverData &data, http::Response &ret,
                              const http::Request &request, const t_locInfos &loc)
@@ -73,42 +51,28 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
     return (_content);
 }
 
-bool php_file(std::string file)
-{
-    std::string ext;
-
-    for (std::string::reverse_iterator it = file.rbegin(); it != file.rend(); ++it)
-    {
-        if (*it == '.')
-            break;
-        ext += *it;
-    }
-    if (ext == "php")
-        return true;
-    return false;
-}
-
 http::Response handleGET(const http::Request &request, const t_serverData &data, const t_locInfos &loc)
 {
     std::fstream f;
     std::string file;
     std::string Location;
+    std::string slash;
 
     http::Response ret = http::Response(http::OK);
 
-    if (request.header("Path") == "/" || (loc._directory && !loc._index.empty() && !data.autoindex))
+    if (request.header("Path") == "/" || (loc._directory && !loc._index.empty()))
         file = data.root + request.header("Path") + loc._index;
     else
         file = data.root + request.header("Path"); // classic path request
-                                                   // std::cout << file << std::endl;
     f.open(file.c_str(), std::ios::in);
     if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK)))
     {
         if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
         {
             ret.setCode(http::MOVED_PERMANENTLY);
+            slash = (loc._directory) ? "" : "/";
             Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/"
-                                     : "http://" + request.header("Host") + request.header("Path") + "/" + loc._index;
+                                     : "http://" + request.header("Host") + request.header("Path") + slash + loc._index;
             ret.setHeader("Location", Location);
         }
         else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
@@ -119,9 +83,7 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
             ret.setCode(http::FORBIDDEN);
     }
     else if (f.good() && php_file(request.header("Path")))
-    {
-        ret.setBodyCGI(Cgi(request, data)); // Cgi fct to modify and/or move
-    }
+        ret.setBodyCGI(cgi(request, data.locations.front(), data).getOutput()); // Cgi fct to modify and/or move
     else if (f.good())
         ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()),
                     "text/html");
@@ -130,7 +92,8 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
     else
         ret.setCode(http::NOT_FOUND);
     f.close();
-    // ret.setBody(request.header("method") + " " + request.header("path") + " " + request.header("protocol"),
+    // ret.setBody(request.header("method") + " " + request.header("path") + " " +
+    // request.header("protocol"),
     //             "text/html; charset=utf-8");
     return ret;
 }

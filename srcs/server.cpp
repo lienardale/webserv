@@ -151,14 +151,13 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         }
         catch (Socket::SocketException &e)
         {
-            std::cout << e.what() << std::endl;
+            std::cerr << e.what() << std::endl;
         }
     }
     else if (event->events & EPOLLRDHUP)
         _removeAcceptedFD(sock, epoll_fd, event);
     else if (event->events & EPOLLOUT)
     {
-        std::cout << "epollout" << std::endl;
         std::pair< http::Request, t_serverData > data = _requests[fd];
 
         http::Response response;
@@ -182,13 +181,11 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         try
         {
             const std::string content = sock.readContent();
-            std::cout << "epollin = " << content.size() << std::endl;
 
             if (!_requests[fd].first.isBodyTooLarge())
                 _requests[fd].first.parse(content, _requests[fd].second.client_max_body_size);
             if (content.size() < 300)
             {
-                std::cout << _requests[fd].first << std::endl;
                 event->events = EPOLLOUT;
                 epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
             }

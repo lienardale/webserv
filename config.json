@@ -18,9 +18,8 @@
         "autoindex": "off",
         "location": [
             {
-        		"autoindex": "off",
+        		"autoindex": "on",
                 "methods": [
-					"POST",
                     "DELETE"
                 ],
 				"index": [
@@ -32,17 +31,30 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/directory"
+                "path": "/directory/dir/dir"
             },
             {
-        		"autoindex": "off",
+        		"autoindex": "on",
                 "methods": [
-                    "GET",
-					"POST"
                 ],
 				"index": [
+					"test1.html",
 					"index.html",
+            		"index.php",
+					"yes.html"
+        		],
+                "fastcgi_param": {
+                    "fastcgi_pass": "127.0.0.1:9000",
+                    "fastcgi_index": "test.php",
+                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
+                },
+                "path": "/directory"
+            },
+			{
+        		"autoindex": "off",
+				"index": [
 					"test.html",
+					"index.html",
             		"index.php"
         		],
                 "fastcgi_param": {
@@ -50,7 +62,21 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/ferg"
+                "path": "/"
+            },
+			{
+        		"autoindex": "off",
+				"index": [
+					"index.html",
+					"test2.html",
+            		"index.php"
+        		],
+                "fastcgi_param": {
+                    "fastcgi_pass": "127.0.0.1:9000",
+                    "fastcgi_index": "test.php",
+                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
+                },
+                "path": "/directory/dir"
             }
         ]
     },

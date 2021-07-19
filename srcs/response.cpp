@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 16:30:27 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/15 12:18:09 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,9 +145,9 @@ std::string http::Response::toString(const std::map< int, std::string > &errorPa
 {
     std::map< int, std::string >::const_iterator found = errorPages.find(_code);
 
-    if (found != errorPages.end())
-    {
+    if (found != errorPages.end() && found->second == "error_page_not_valid" && _code != 404)
+        setBody(errorPages.find(404)->second, "text/html");
+    if (found != errorPages.end() && found->second != "error_page_not_valid")
         setBody(found->second, "text/html");
-    }
     return toString();
 }
