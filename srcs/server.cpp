@@ -182,9 +182,8 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         {
             const std::string content = sock.readContent();
 
-            if (!_requests[fd].first.isBodyTooLarge())
-                _requests[fd].first.parse(content, _requests[fd].second.client_max_body_size);
-            if (content.size() < 300)
+            _requests[fd].first.parse(content, _requests[fd].second.client_max_body_size);
+            if (_requests[fd].first.isFinished())
             {
                 event->events = EPOLLOUT;
                 epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
