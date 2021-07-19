@@ -226,7 +226,6 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
 
     bzero(buffer, sizeof(buffer));
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-    std::cout << "--REQUEST--" << buffer << std::endl;
     return std::string(static_cast< char * >(buffer), ret);
 }
 

@@ -185,6 +185,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             _requests[fd].first.parse(content, _requests[fd].second.client_max_body_size);
             if (_requests[fd].first.isFinished())
             {
+                std::cout << _requests[fd].first << std::endl;
                 event->events = EPOLLOUT;
                 epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
             }
@@ -208,12 +209,19 @@ void http::Server::stop(void)
     std::cout << "Gracefully stopping the server..." << std::endl;
     if (_run)
     {
-        _run = false;
-        for (std::map< int, std::pair< http::Request, t_serverData > >::iterator it = _requests.begin();
-             it != _requests.end(); it++)
-            Socket(it->first, true).close();
-        for (std::map< int, t_serverData >::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
-            Socket(it->first, true).close();
+        try
+        {
+            _run = false;
+            for (std::map< int, std::pair< http::Request, t_serverData > >::iterator it = _requests.begin();
+                 it != _requests.end(); it++)
+                Socket(it->first, true).close();
+            for (std::map< int, t_serverData >::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
+                Socket(it->first, true).close();
+        }
+        catch (Socket::SocketException &e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
         close(_epoll_fd);
     }
 }
