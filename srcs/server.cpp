@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/14 16:14:46 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/26 16:11:25 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ static void _add_fd_to_poll(int epoll_fd, int socket_fd, uint32_t mask) throw(So
 
 /*
  *	Initialise un serveur qui écoutera sur un port donnée
- *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre chaque écoute
+ *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre
+ *chaque écoute
  *	@Lien: http://manpagesfr.free.fr/man/man2/select.2.html
  */
 http::Server::Server() : _run(false)
@@ -108,7 +109,8 @@ void http::Server::init(const std::list< t_serverData > &configs, uint32_t timeo
 }
 
 /*
- *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le constructeur
+ *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le
+ *constructeur
  *	@Infos: la fonction arrête le programme si une SocketException est levé
  */
 void http::Server::listen(void)
@@ -132,7 +134,8 @@ void http::Server::listen(void)
 }
 
 /*
- *	Fonction qui se charge de la lecture des données reçues par le serveur via la socket client
+ *	Fonction qui se charge de la lecture des données reçues par le serveur
+ *  via la socket client
  *	@Parametres: Le fd sur lequel la lecture doit se faire
  *	@Infos La fonction lève une SocketException si erreur
  */
@@ -155,7 +158,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         }
     }
     else if (event->events & EPOLLRDHUP)
-        _removeAcceptedFD(sock, epoll_fd, event);
+        _removeAcceptedFD(sock);
     else if (event->events & EPOLLOUT)
     {
         std::pair< http::Request, t_serverData > data = _requests[fd];
@@ -168,7 +171,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         _log(data.first, response);
         sock.send(response.toString(data.second.error_page));
         if (!data.first.keepAlive() || data.first.isBodyTooLarge())
-            _removeAcceptedFD(sock, epoll_fd, event);
+            _removeAcceptedFD(sock);
         else
         {
             _requests[fd].first.clear();
@@ -196,7 +199,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
             response.setHeader("Connection", "close");
             sock.send(response.toString(_requests[fd].second.error_page));
             _log(_requests[fd].first, response);
-            _removeAcceptedFD(sock, epoll_fd, event);
+            _removeAcceptedFD(sock);
         }
     }
 }
@@ -249,9 +252,17 @@ void http::Server::_log(const http::Request &request, const http::Response &resp
 /*
  *       Fonction qui retire un fd accepté d'epoll et de la map de requête
  */
-void http::Server::_removeAcceptedFD(Socket &sock, int epoll_fd, struct epoll_event *event)
+void http::Server::_removeAcceptedFD(Socket &sock)
 {
-    sock.close();
-    _requests.erase(sock.Fd());
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, sock.Fd(), event);
+    try
+    {
+        sock.close();
+        _requests.erase(sock.Fd());
+    }
+    catch (Socket::SocketException &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+
+    // epoll_ctl(epoll_fd, EPOLL_CTL_DEL, sock.Fd(), event);
 }
