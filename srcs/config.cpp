@@ -153,7 +153,7 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
     found = false;
     if (fcgi.first.compare(SSTR("fastcgi_param")) == 0 /*|| (found = true)*/)
     {
-        dirp = opendir(getenv("PWD"));
+        dirp = opendir(getenv("CGI_BIN"));
         while (dirp && (tmp = readdir(dirp)) != NULL)
         {
             if (strlen(tmp->d_name) /*d_namlen*/ == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0)

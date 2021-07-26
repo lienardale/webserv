@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/26 18:47:20 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/26 19:55:43 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data
 {
     (void)data;
     char buffer [33];
+    std::string cgi_script = SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
     bzero(buffer, sizeof(buffer));
     s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                 // ok
     s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length"); // ok
@@ -117,8 +118,8 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data
     s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
     s_env._request_method = "REQUEST_METHOD=" + request.header("Method");                 // ok
     s_env._request_uri = "REQUEST_URI=" + request.header("Uri");                          // ok
-    s_env._script_name = "SCRIPT_NAME=" + (*(data.fastcgi_param.find("fastcgi_param"))).second; // FAST_CGI_CONF
-    s_env._script_file_name = "SCRIPT_FILENAME=" + (*(data.fastcgi_param.find("fastcgi_param"))).second;
+    s_env._script_name = "SCRIPT_NAME=" + cgi_script; // FAST_CGI_CONF
+    s_env._script_file_name = "SCRIPT_FILENAME=" + cgi_script;
     s_env._server_port = "SERVER_PORT=" + request.header("Port");/*+ SSTR(itoa(data.listen,buffer,10));*/
     s_env._server_protocol = "SERVER_PROTOCOL=" + request.header("Protocol");                          // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
@@ -172,9 +173,11 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
     char content[100000];
     int pid;
 	std::string	root;
+    std::string cgi_script;
 
     pipe(fd);
     (void)data;
+    cgi_script = getenv("CGI_BIN") + SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
     for (int i = 0 ; getCgiEnv()[i]; i++){
         std::cout << "env[" << i <<"]:" << getCgiEnv()[i] << std::endl;
     }
@@ -188,7 +191,7 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
 		// execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
         // std::cout << "CGI_SCRIPT :" << (*(data.fastcgi_param.find("fastcgi_param"))).second.c_str() << std::endl;
 
-        execl((*(data.fastcgi_param.find("fastcgi_param"))).second.c_str(), (*(data.fastcgi_param.find("fastcgi_param"))).second.c_str(), (root + request.header("Path")).c_str()/*, getCgiEnv()*/,NULL);
+        execl(cgi_script.c_str(), cgi_script.c_str(), (root + request.header("Path")).c_str()/*, getCgiEnv()*/,NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
