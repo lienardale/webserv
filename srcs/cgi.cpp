@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/15 14:10:07 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/26 18:47:20 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,10 @@ cgi::cgi()
 {
 }
 
-cgi::cgi(Socket &sock, t_serverData &data) // throw( cgi::CGIException )
-{
-    setCgi(sock, data);
-    // if (setCgi(sock))
-    // 	throw( cgi::CGIException() );
-}
-
 cgi::cgi(const http::Request &request, const t_locationData &data, const t_serverData &dataserv) // throw( cgi::CGIException )
 {
     setCgi(request, data);
-	Cgi(request, dataserv);
+	Cgi(request, data, dataserv);
     // if (setCgi(sock))
     // 	throw( cgi::CGIException() );
 }
@@ -88,34 +81,23 @@ std::string cgi::parseURI(std::string uri)
     return "";
 }
 
-void cgi::setCgiMetaVar(Socket &sock, t_serverData &data)
+// trim from end of string (right)
+std::string rtrim(std::string s, const char* t)
 {
-     char buffer [33];
-     bzero(buffer, sizeof(buffer));
-    s_env._auth_type = "AUTH_TYPE=" + sock.get_m_request().header("AuthType");                 // ok
-    s_env._content_length = "CONTENT_LENGTH=" + sock.get_m_request().header("Content-Length"); // ok
-    s_env._content_type = "CONTENT_TYPE=" + sock.get_m_request().header("Content-Type");       // ok
-    s_env._path_info = "PATH_INFO=" + data.root + sock.get_infos()[1];                         // ok
-    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + data.root + sock.get_infos()[1];   // ok
-    s_env._query_string = "QUERY_STRING=" + parseURI(sock.get_m_request().uri());              // ok
-    s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                              // ok
-    s_env._remote_host = "REMOTE_HOST=" + sock.get_m_request().header("Host");                 // ok
-    s_env._remote_ident = "REMOTE_IDENT=user_id";                                              // ok
-    s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
-    s_env._request_method = "REQUEST_METHOD=" + sock.get_m_request().method();                 // ok
-    s_env._request_uri = "REQUEST_URI=" + sock.get_m_request().uri();                          // ok
-    s_env._script_name = "SCRIPT_NAME=php-cgi7.0"; // FAST_CGI_CONF
-    s_env._script_file_name = "SCRIPT_FILENAME=cgi-bin/php-cgi7.0";
-    s_env._server_port = "SERVER_PORT=" + SSTR(itoa(data.listen,buffer,10));
-    s_env._server_protocol = "SERVER_PROTOCOL=" + sock.get_m_request().protocol();                          // ok
-    s_env._redirect_status = "REDIRECT_STATUS=200";
-    s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                                 // ok
-    s_env._server_name = "SERVER_NAME=WEBSERV";                                                     // ok
-    s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";                                                   // ok
-    s_env._http_accept = "HTTP_ACCEPT=" + sock.get_m_request().header("Accept");                            // ok
-    s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + sock.get_m_request().header("Accept-Language"); // ok
-    s_env._http_user_agent = "HTTP_USER_AGENT=" + sock.get_m_request().header("User-Agent");                // ok
-    s_env._http_cookie = "HTTP_COOKIE=" + sock.get_m_request().header("                                            ");
+    s.erase(s.find_last_not_of(t) + 1);
+    return s;
+}
+
+// trim from beginning of string (left)
+std::string ltrim(std::string s, const char* t)
+{
+    s.erase(0, s.find_first_not_of(t));
+    return s;
+}
+
+std::string cgi::strtrim(std::string s, const char *t)
+{
+    return ltrim(rtrim(s, t), t);
 }
 
 void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data)
@@ -126,19 +108,19 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data
     s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                 // ok
     s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length"); // ok
     s_env._content_type = "CONTENT_TYPE=" + request.header("Content-Type");       // ok
-    s_env._path_info = "PATH_INFO=" + data.root + request.header("Path");                         // ok
-    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + data.root + request.header("Path");   // ok
-    s_env._query_string = "QUERY_STRING=" + parseURI(request.uri());              // ok
+    s_env._path_info = "PATH_INFO=/" + strtrim(data.root, "/") + request.header("Path");                         // ok
+    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path");   // ok
+    s_env._query_string = "QUERY_STRING=" + parseURI(request.header("Uri"));              // ok
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                              // ok
     s_env._remote_host = "REMOTE_HOST=" + request.header("Host");                 // ok
     s_env._remote_ident = "REMOTE_IDENT=user_id";                                              // ok
     s_env._remote_user = "REMOTE_USER=user_name";                                              // ok
-    s_env._request_method = "REQUEST_METHOD=" + request.method();                 // ok
-    s_env._request_uri = "REQUEST_URI=" + request.uri();                          // ok
-    s_env._script_name = "SCRIPT_NAME=php-cgi"; // FAST_CGI_CONF
-    s_env._script_file_name = "SCRIPT_FILENAME=php-cgi";
+    s_env._request_method = "REQUEST_METHOD=" + request.header("Method");                 // ok
+    s_env._request_uri = "REQUEST_URI=" + request.header("Uri");                          // ok
+    s_env._script_name = "SCRIPT_NAME=" + (*(data.fastcgi_param.find("fastcgi_param"))).second; // FAST_CGI_CONF
+    s_env._script_file_name = "SCRIPT_FILENAME=" + (*(data.fastcgi_param.find("fastcgi_param"))).second;
     s_env._server_port = "SERVER_PORT=" + request.header("Port");/*+ SSTR(itoa(data.listen,buffer,10));*/
-    s_env._server_protocol = "SERVER_PROTOCOL=" + request.protocol();                          // ok
+    s_env._server_protocol = "SERVER_PROTOCOL=" + request.header("Protocol");                          // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
     s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                               // ok
     s_env._server_name = "SERVER_NAME=WEBSERV";                                                     // ok
@@ -178,24 +160,13 @@ void cgi::setCgiEnv(void)
     env[LEN_CGI_ENV] = NULL;
 }
 
-void cgi::setCgi(Socket &sock, t_serverData &data)
-{
-    // (void) sock;
-    // (void) data;
-    setCgiMetaVar(sock, data);
-    setCgiEnv();
-    // for (int i = 0; env[i]; i++){
-    // 	std::cout << "env["<<i<<"] = |" << env[i]<<"|" << std::endl;
-    // }
-}
-
 void cgi::setCgi(const http::Request &request, const t_locationData &data)
 {
     setCgiMetaVar(request, data);
     setCgiEnv();
 }
 
-void cgi::Cgi(const http::Request &request, const t_serverData &data)
+void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_serverData &data_serv)
 {
     int fd[2];
     char content[100000];
@@ -203,21 +174,28 @@ void cgi::Cgi(const http::Request &request, const t_serverData &data)
 	std::string	root;
 
     pipe(fd);
+    (void)data;
+    for (int i = 0 ; getCgiEnv()[i]; i++){
+        std::cout << "env[" << i <<"]:" << getCgiEnv()[i] << std::endl;
+    }
+
     if ((pid = fork()) == 0)
     {
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
-        //execle("php-cgi", "php-cgi", ("www" + request.header("Path")).c_str(), cgi_data.getCgiEnv(), NULL);
-		root = (*data.root.rbegin() == '/') ? data.root.substr(0, data.root.size() - 1) : data.root;
-		//execle("cgi-bin/php-cgi7.0", "cgi-bin/php-cgi7.0", (root + request.header("Path")).c_str(), getCgiEnv(), NULL);
-		execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
+		root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
+		// execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
+        // std::cout << "CGI_SCRIPT :" << (*(data.fastcgi_param.find("fastcgi_param"))).second.c_str() << std::endl;
+
+        execl((*(data.fastcgi_param.find("fastcgi_param"))).second.c_str(), (*(data.fastcgi_param.find("fastcgi_param"))).second.c_str(), (root + request.header("Path")).c_str()/*, getCgiEnv()*/,NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
     ::close(fd[0]);
     waitpid(pid, NULL, -1);
     _output = std::string(content);
+    // std::cout << "\nOUPUT\n" << _output << std::endl;
 }
 
 std::string	cgi::getOutput() const

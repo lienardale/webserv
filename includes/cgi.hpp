@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/07/15 13:56:54 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/26 18:25:27 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,19 +92,17 @@ class cgi
     cgi();
 
   public:
-    cgi(Socket &sock, t_serverData &data) /* throw( cgi::CGIException )*/;
-    cgi(const http::Request &request, const t_locationData &data, const t_serverData &dataserv);
+    cgi(const http::Request &request, const t_locationData &data, const t_serverData &dataserv)/* throw( cgi::CGIException )*/;;
     cgi(const cgi &);
     ~cgi();
     cgi &operator=(const cgi &);
-    void setCgi(Socket &sock, t_serverData &data);
-    void setCgiMetaVar(Socket &sock, t_serverData &data);
     void setCgi(const http::Request &request, const t_locationData &data);
     void setCgiMetaVar(const http::Request &request, const t_locationData &data);
     void setCgiEnv(void);
     std::string parseURI(std::string uri);
+    std::string strtrim(std::string str, const char *c);
     char **getCgiEnv(void);
-	void Cgi(const http::Request &request, const t_serverData &data);
+	void Cgi(const http::Request &request, const t_locationData &data, const t_serverData &data_serv);
 	std::string	getOutput() const;
 
     // class CGIException : public std::exception
