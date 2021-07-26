@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 15:42:58 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/26 17:41:45 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,16 @@
 #include "webserv.hpp"
 #include "handleRequest.hpp"
 #include <string>
+
+bool	emptyFile(std::fstream *f)
+{
+	f->seekg (0, f->end);
+	int length = f->tellg();
+	f->seekg (0, f->beg);
+	if (length == 0)
+		return true;
+	return false;
+}
 
 std::string directoryListing(std::string file, const t_serverData &data, http::Response &ret,
                              const http::Request &request, const t_locInfos &loc)
@@ -64,8 +74,8 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
         file = data.root + request.header("Path") + loc._index;
     else
         file = data.root + request.header("Path"); // classic path request
-    f.open(file.c_str(), std::ios::in);
-    if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK)))
+    f.open(file.c_str(), std::ios::in);	
+    if (((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK))) && !emptyFile(&f))
     {
         if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
         {
