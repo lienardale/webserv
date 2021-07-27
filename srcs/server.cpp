@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/26 16:11:25 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/26 17:34:40 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,11 @@
 #include "statusCode.hpp"
 #include "webserv.hpp"
 #include <cstdio>
+#include <exception>
 #include <iostream>
 #include <map>
 #include <ostream>
+#include <stdexcept>
 #include <sys/epoll.h>
 #include <utility>
 
@@ -161,6 +163,7 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         _removeAcceptedFD(sock);
     else if (event->events & EPOLLOUT)
     {
+
         std::pair< http::Request, t_serverData > data = _requests[fd];
 
         http::Response response;

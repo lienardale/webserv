@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/15 16:02:12 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/26 17:44:03 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,9 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
 
     bzero(buffer, sizeof(buffer));
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-    return std::string(static_cast< char * >(buffer), ret);
+    if (ret)
+        return std::string(static_cast< char * >(buffer), ret);
+    return "";
 }
 
 /*
