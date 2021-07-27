@@ -128,10 +128,10 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
 
     // fastcgi_index		| index.php										| file exists
     bool found = false;
-    if (fcgi.first.compare(SSTR("fastcgi_index")) == 0 || (found = true))
+    DIR *dirp;
+    struct dirent *tmp;
+    if (fcgi.first.compare(SSTR("fastcgi_index")) == 0 /*|| (found = true)*/)
     {
-        DIR *dirp;
-        struct dirent *tmp;
         dirp = opendir(root);
         while (dirp && (tmp = readdir(dirp)) != NULL)
         {
@@ -144,14 +144,31 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
         }
         if (dirp)
             closedir(dirp);
+        if (!found)
+            throw ValueError::ParsingException("incorrect CGI index value : " + fcgi.second +
+                                            ", no corresponding file found");
     }
-    if (!found)
-        throw ValueError::ParsingException("incorrect CGI index value : " + fcgi.second +
-                                           ", no corresponding file found");
 
     // fastcgi_param		| SCRIPT_FILENAME								| /scripts$fastcgi_script_name
-    // -> TO DO
-
+    found = false;
+    if (fcgi.first.compare(SSTR("fastcgi_param")) == 0 /*|| (found = true)*/)
+    {
+        dirp = opendir(getenv("CGI_BIN"));
+        while (dirp && (tmp = readdir(dirp)) != NULL)
+        {
+            if (strlen(tmp->d_name) /*d_namlen*/ == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0)
+            {
+                (void)closedir(dirp);
+                dirp = NULL;
+                found = true;
+            }
+        }
+        if (dirp)
+            closedir(dirp);
+        if (!found)
+            throw ValueError::ParsingException("incorrect CGI script value : " + fcgi.second +
+                                            ", no corresponding file found");
+    }
     // fastcgi_pass			| 127.0.0.1:9000								| listen
 
     Socket sock;
@@ -199,6 +216,11 @@ void config::locationData_check(t_locationData &lD)
     for (std::list< std::string >::iterator it = lD.methods.begin(); it != lD.methods.end(); it++)
     {
         config::methods_check(*it);
+    }
+
+    for (std::map < std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end(); it++)
+    {
+        config::fastcgi_param_check(*it, lD.root.c_str());
     }
 }
 

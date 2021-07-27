@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 15:41:43 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/26 16:11:58 by alienard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,8 @@ http::Response handleRequest(const http::Request &request, t_serverData &data)
 	
     if (method != "GET" && method != "POST" && method != "DELETE")
         return http::Response(http::METHOD_NOT_ALLOWED);
-	if (*request.header("Path").begin() != '/')
-		return http::Response(http::FORBIDDEN);
+    if (*request.header("Path").begin() != '/')
+        return http::Response(http::FORBIDDEN);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);
