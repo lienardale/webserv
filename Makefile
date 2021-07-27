@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+         #
+#    By: alienard@student.42.fr <alienard>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/07/09 11:13:40 by dboyer           ###   ########.fr        #
+#    Updated: 2021/07/27 16:36:30 by alienard@st      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -88,6 +88,6 @@ re      :	fclean all
 #									Extra Rules
 ################################################################################
 run 	:	all
-	./${NAME}
+	CGI_BIN=$(PWD)/cgi_test ./${NAME}
 
 .PHONY  :	all clean fclean re bonus%

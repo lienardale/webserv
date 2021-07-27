@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/26 19:55:43 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/27 16:37:36 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,10 +178,6 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
     pipe(fd);
     (void)data;
     cgi_script = getenv("CGI_BIN") + SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
-    for (int i = 0 ; getCgiEnv()[i]; i++){
-        std::cout << "env[" << i <<"]:" << getCgiEnv()[i] << std::endl;
-    }
-
     if ((pid = fork()) == 0)
     {
         dup2(fd[1], STDOUT_FILENO);
@@ -189,8 +185,6 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
         ::close(fd[1]);
 		root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
 		// execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
-        // std::cout << "CGI_SCRIPT :" << (*(data.fastcgi_param.find("fastcgi_param"))).second.c_str() << std::endl;
-
         execl(cgi_script.c_str(), cgi_script.c_str(), (root + request.header("Path")).c_str()/*, getCgiEnv()*/,NULL);
     }
     ::close(fd[1]);
@@ -198,7 +192,6 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
     ::close(fd[0]);
     waitpid(pid, NULL, -1);
     _output = std::string(content);
-    // std::cout << "\nOUPUT\n" << _output << std::endl;
 }
 
 std::string	cgi::getOutput() const
