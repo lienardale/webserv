@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 12:15:02 by alienard         ###   ########.fr       */
+/*   Updated: 2021/07/27 14:53:18 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,12 @@ class Request
     std::map< std::string, std::string > getHeader(void) const;
     bool keepAlive(void) const;
     bool isFinished(void) const;
+
+ 	/**************************************************************************
+     *				Getters
+     *************************************************************************/
+	
+	void setHeaderPath(std::string path);
 
     /**************************************************************************
      *				Fonctions membres

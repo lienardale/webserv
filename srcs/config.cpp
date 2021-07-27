@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/06/30 18:32:54 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/27 12:18:36 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ config::config(char *path)
     {
         _content = Parser(fs).parse();
         config_check(&_content);
-        // std::cout << _content << std::endl;
         std::cout << GREEN << "Parsing [OK]" << std::endl;
         std::cout << WHITE << std::endl;
     }

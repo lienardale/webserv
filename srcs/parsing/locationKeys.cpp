@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 10:50:18 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/27 11:52:45 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,16 @@ static void handlePath(t_locationData &location, const std::string value) throw(
     if (location.path.size())
         throw ValueError("Duplicate key: path");
     location.path = value;
+}
+
+static void handleRoot(t_locationData &location, const std::string value) throw(ParsingException)
+{
+    if (location.root.size())
+        throw ValueError("Duplicate key: root");
+    if (value[value.size() - 1] != '/')
+        location.root = value + "/";
+    else
+        location.root = value;
 }
 
 static void handleAutoindex(t_locationData &location, const std::string value) throw(ParsingException)
@@ -85,7 +95,7 @@ static void handleFastCGI(t_locationData &location, const std::string value) thr
 
 static std::pair< std::string, castLocation > KEY_FUNCTIONS[] = {
     std::make_pair("methods", handleMethods), std::make_pair("path", handlePath), std::make_pair("index", handleIndex),
-    std::make_pair("autoindex", handleAutoindex), std::make_pair("fastcgi_param", handleFastCGI)};
+    std::make_pair("autoindex", handleAutoindex), std::make_pair("root", handleRoot), std::make_pair("fastcgi_param", handleFastCGI)};
 
 std::map< std::string, castLocation > castLocationMap(void)
 {
