@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/27 18:34:44 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/28 15:44:04 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
                 d_slash = "/";
             closedir(is_dir);
             if (std::string(contents->d_name) != ".")
-                _content += ("<li><a href=\"" + request.header("Path") + d_slashb + std::string(contents->d_name) +
+                _content += ("<li><a href=\"" + loc._urlPath + d_slashb + std::string(contents->d_name) +
                              d_slash + "\">" + (std::string(contents->d_name) + d_slash + "</a></li>\n"));
             d_slash = "";
         }
@@ -81,7 +81,7 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
         {
             ret.setCode(http::MOVED_PERMANENTLY);
 			slash = (loc._directory) ? "" : "/";
-			Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/" :  "http://" + request.header("Host") + request.header("Path") + slash + loc._index;
+			Location = (!loc._isDir) ? "http://" + request.header("Host") + loc._urlPath + "/" :  "http://" + request.header("Host") + loc._urlPath + slash + loc._index;
 			ret.setHeader("Location", Location);
 		}
 		else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)

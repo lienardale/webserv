@@ -57,7 +57,7 @@
 					"test2.html",
             		"index.php"
         		],
-                "path": "/directory/dir"
+                "path": "/"
             }
         ]
     },

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/09 11:08:41 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 16:06:04 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/28 15:45:13 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ http::Response handlePOST(const http::Request &request, const t_serverData &data
 		{
 			ret.setCode(http::MOVED_PERMANENTLY);
 			slash = (loc._directory) ? "" : "/";
-			Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/" :  "http://" + request.header("Host") + request.header("Path") + slash + loc._index;
+			Location = (!loc._isDir) ? "http://" + request.header("Host") + loc._urlPath + "/" :  "http://" + request.header("Host") + loc._urlPath + slash + loc._index;
 			ret.setHeader("Location", Location);
 		}
 		else if (loc._directory)

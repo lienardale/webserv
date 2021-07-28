@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 14:15:47 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/28 15:27:04 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,9 @@ std::string	pathMofifiedIfRoot(std::string path, t_serverData &data, t_locInfos 
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1) : it->path;
+		path1 = it->path;
+        if (*path1.rbegin() != '/' )
+			path1.push_back('/');
         if (!it->root.empty() && path.find(path1) != std::string::npos && loc->_locb != path1)
 		{
 			root = (it->root[it->root.size() - 1] == '/' && it->root != "/") ? it->root.substr(0, it->root.size() - 1) : it->root;
@@ -146,6 +148,7 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
         return http::Response(http::METHOD_NOT_ALLOWED);	
 	if (*request.header("Path").begin() != '/')
 		return http::Response(http::FORBIDDEN);		
+	loc._urlPath = request.header("Path");
 	while (!(path = pathMofifiedIfRoot(request.header("Path"), data, &loc)).empty())
 		request.setHeaderPath(path);
     loc._directory = directory(request.header("Path"));
