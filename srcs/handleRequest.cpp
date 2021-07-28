@@ -104,7 +104,7 @@ static void locIndex(const http::Request &request, t_serverData &data, t_locInfo
     f.close();
 }
 
-std::string	pathMofifiedIfRoot(std::string path, t_serverData &data, t_locInfos *loc)
+std::string	pathModifiedIfRoot(std::string path, t_serverData &data, t_locInfos *loc)
 {
 	std::string path1;
 	std::string root;
@@ -146,7 +146,7 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
         return http::Response(http::METHOD_NOT_ALLOWED);	
 	if (*request.header("Path").begin() != '/')
 		return http::Response(http::FORBIDDEN);		
-	while (!(path = pathMofifiedIfRoot(request.header("Path"), data, &loc)).empty())
+	while (!(path = pathModifiedIfRoot(request.header("Path"), data, &loc)).empty())
 		request.setHeaderPath(path);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
