@@ -1,15 +1,15 @@
 [
-    {
-        "listen": "127.0.0.1:8000",
-        "server_name": [
-            "localhost",
-            "192.168.1.18"
-        ],
-        "error_page": {
-            "500": "error_views/500.html",
-            "404": "error_views/404.html",
-            "400": "error_views/400.html"
-        },
+{
+	"listen": "127.0.0.1:8000",
+		"server_name": [
+			"localhost",
+		"192.168.1.18"
+		],
+		"error_page": {
+			"500": "error_views/500.html",
+			"404": "error_views/404.html",
+			"400": "error_views/400.html"
+		},
 		"index": [
 			"index.html"
 		],
