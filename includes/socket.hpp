@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/27 15:46:53 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 16:02:45 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,7 @@ class Socket
 
     // Getters
     int Fd(void) const;
-    std::string get_request(void) const;
-    http::Request get_m_request(void) const;
     struct sockaddr_in infos(void) const;
-    t_locationData *get_locationData(void) const;
     std::vector< std::string > get_infos(void) const;
 
     // Member functions
@@ -64,25 +61,6 @@ class Socket
     Socket accept(void) throw(Socket::SocketException);
     std::string readContent(void);
     void send(const std::string content) throw(SocketException);
-
-    void parseRequest(void);
-    void serverResponse(t_serverData data);
-    void Get(t_serverData data);
-    void Post(t_serverData data);
-    void Delete(t_serverData data);
-    void badRequest(t_serverData data);
-    void setCgiEnv(void);
-    std::string Cgi(t_serverData &data);
-    bool php_file(void);
-    void directoryListing(std::string file, t_serverData data);
-    void sendpage(t_serverData data);
-    void headerCode(std::string content, int code, t_serverData data);
-    void locAutoindex(t_serverData *data);
-    bool methodAllowed(t_serverData data);
-    void directory(const std::string &name);
-    void locIndex(t_serverData data);
-    bool fileExists(t_serverData data, const std::string &name);
-    void redirectDir(t_serverData data);
 
     // Operator overloading
     bool operator==(const int fd) const;
@@ -100,15 +78,6 @@ class Socket
     int _opt;
     struct sockaddr_in _address;
     socklen_t _socklen;
-    std::vector< std::string > _infos;
-    std::string _request;
-    std::string _content;
-    std::string _code;
-    bool _directory;
-    bool _isDir;
-    std::string _index;
-    t_locationData *_loc;
-    http::Request m_request;
 };
 
 #endif

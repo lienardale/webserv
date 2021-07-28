@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 14:24:52 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 16:10:39 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "socket.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
+#include <algorithm>
 #include <cstdio>
 #include <exception>
 #include <iostream>
@@ -52,8 +53,7 @@ static void _add_fd_to_poll(int epoll_fd, int socket_fd, uint32_t mask) throw(So
 
 /*
  *	Initialise un serveur qui écoutera sur un port donnée
- *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre
- *chaque écoute
+ *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre chaque écoute
  *	@Lien: http://manpagesfr.free.fr/man/man2/select.2.html
  */
 http::Server::Server() : _run(false)
@@ -111,8 +111,7 @@ void http::Server::init(const std::list< t_serverData > &configs, uint32_t timeo
 }
 
 /*
- *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le
- *constructeur
+ *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le constructeur
  *	@Infos: la fonction arrête le programme si une SocketException est levé
  */
 void http::Server::listen(void)
@@ -143,7 +142,7 @@ void http::Server::listen(void)
  */
 
 void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_serverData > &data,
-                                   struct epoll_event *event, int epoll_fd)
+                                   struct epoll_event *event, int epoll_fd) throw(Socket::SocketException)
 {
     http::Response response;
     if (data.first.isBodyTooLarge())
@@ -163,7 +162,7 @@ void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_ser
 }
 
 void http::Server::_handleEpollin(Socket &sock, std::pair< http::Request, t_serverData > &data, const int epoll_fd,
-                                  struct epoll_event *event)
+                                  struct epoll_event *event) throw(ParsingException)
 {
     const std::string content = sock.readContent();
 
@@ -176,7 +175,7 @@ void http::Server::_handleEpollin(Socket &sock, std::pair< http::Request, t_serv
     }
 }
 
-void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException)
+void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(std::exception)
 {
     std::map< int, t_serverData >::iterator found = _serverSet.find(fd);
     Socket sock(fd, true);
@@ -205,6 +204,10 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         _removeAcceptedFD(sock);
     }
     catch (Socket::SocketException &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+    catch (std::exception &e)
     {
         std::cerr << e.what() << std::endl;
     }
@@ -269,6 +272,5 @@ void http::Server::_removeAcceptedFD(Socket &sock)
     {
         std::cerr << e.what() << std::endl;
     }
-
     // epoll_ctl(epoll_fd, EPOLL_CTL_DEL, sock.Fd(), event);
 }

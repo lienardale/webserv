@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/27 16:07:57 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 16:05:22 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@
 #include <strings.h>
 
 /******************************************************************************
- *			Fonctions statiques permettant l'initialisation d'une
- *socket
+ *	Fonctions statiques permettant l'initialisation d'une socket
  *****************************************************************************/
 
 /*
@@ -112,11 +111,10 @@ Socket::Socket(void) throw(Socket::SocketException)
 
 /*
  *	Constructeur par copie (deepcopy) de Socket
- *	@Info: Le fd est dupliqué via la fonction dup
  *	@Lien: http://manpagesfr.free.fr/man/man2/dup.2.html
  */
 Socket::Socket(const Socket &other) throw(Socket::SocketException)
-    : _fd(dup(other._fd)), _opt(other._opt), _address(other._address), _socklen(other._socklen)
+    : _fd(other._fd), _opt(other._opt), _address(other._address), _socklen(other._socklen)
 {
 }
 
@@ -125,7 +123,7 @@ Socket::~Socket(void)
 }
 
 /******************************************************************************
- *					SocketException
+ *				SocketException
  *****************************************************************************/
 /*
  *	Le message correspond au message de errno
@@ -136,7 +134,7 @@ const char *Socket::SocketException::what() const throw()
 }
 
 /******************************************************************************
- *								Getters
+ *				Getters
  *****************************************************************************/
 
 /*
@@ -148,22 +146,6 @@ int Socket::Fd() const
 }
 
 /*
- *	Retourne la request de la socket
- */
-std::string Socket::get_request() const
-{
-    return _request;
-}
-
-/*
- *	Retourne la request parsée de la socket
- */
-http::Request Socket::get_m_request(void) const
-{
-    return m_request;
-}
-
-/*
  *	Retourne les infos de la socket (structure sockaddr_in)
  */
 struct sockaddr_in Socket::infos() const
@@ -171,18 +153,8 @@ struct sockaddr_in Socket::infos() const
     return _address;
 }
 
-t_locationData *Socket::get_locationData(void) const
-{
-    return _loc;
-}
-
-std::vector< std::string > Socket::get_infos(void) const
-{
-    return _infos;
-}
-
-/******************************************************************************
- *							Fonction membres
+/*****************************************************************************
+ *			Fonction membres
  *****************************************************************************/
 
 /*
@@ -211,7 +183,6 @@ Socket Socket::accept(void) throw(Socket::SocketException)
     int clientSocket = ::accept(_fd, (struct sockaddr *)&_address, &_socklen);
     if (clientSocket < 0)
         throw(Socket::SocketException());
-    // store buf in words table (infos)
     return Socket(clientSocket, false);
 }
 
@@ -225,11 +196,11 @@ std::string Socket::readContent(void)
     char buffer[300];
 
     bzero(buffer, sizeof(buffer));
-
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-    if (ret > 0)
-        return std::string(static_cast< char * >(buffer), ret);
-    return "";
+
+    if (ret <= 0)
+        return "";
+    return std::string(static_cast< char * >(buffer), ret);
 }
 
 /*
@@ -239,7 +210,7 @@ std::string Socket::readContent(void)
 void Socket::send(const std::string content) throw(SocketException)
 {
     std::cout << "--RESPONSE--" << content.c_str() << std::endl;
-    if (::send(_fd, content.c_str(), content.size(), 0) == -1)
+    if (::send(_fd, content.c_str(), content.size(), 0) <= 0)
         throw Socket::SocketException();
 }
 
