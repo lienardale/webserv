@@ -6,12 +6,11 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 16:14:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/27 12:01:12 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 13:29:18 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
-#include <ostream>
 
 std::ostream &operator<<(std::ostream &os, const t_locationData &l)
 {
@@ -20,6 +19,7 @@ std::ostream &operator<<(std::ostream &os, const t_locationData &l)
     os << "\t\tindex: " << l.index << std::endl;
     os << "\t\tautoindex: " << l.autoindex << std::endl;
     os << "\t\tmethods: " << l.methods << std::endl;
+    os << "\t\troot: " << l.root << std::endl;
     os << "\t\tpath: " << l.path << std::endl;
     os << "\t}";
     return os;

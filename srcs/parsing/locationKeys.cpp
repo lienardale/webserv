@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/27 12:10:33 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 13:30:33 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,6 @@ static void handlePath(t_locationData &location, const std::string value) throw(
     location.path = value;
 }
 
-static void handleAutoindex(t_locationData &location, const std::string value) throw(ParsingException)
-{
-    std::string error_msg = "Value error: autoindex value should be 'on' or 'off' not " + value;
-
-    if (value != "on" && value != "off")
-        throw ValueError(error_msg);
-    location.autoindex = value == "on";
-}
-
 static void handleRoot(t_locationData &location, const std::string value) throw(ParsingException)
 {
     if (location.root.size())
@@ -57,6 +48,15 @@ static void handleRoot(t_locationData &location, const std::string value) throw(
         location.root = value + "/";
     else
         location.root = value;
+}
+
+static void handleAutoindex(t_locationData &location, const std::string value) throw(ParsingException)
+{
+    std::string error_msg = "Value error: autoindex value should be 'on' or 'off' not " + value;
+
+    if (value != "on" && value != "off")
+        throw ValueError(error_msg);
+    location.autoindex = value == "on";
 }
 
 static void fillFastCGI(t_locationData &location, const std::string value) throw(ParsingException)

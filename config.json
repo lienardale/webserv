@@ -1,118 +1,93 @@
 [
-    {
-        "listen": "127.0.0.1:8000",
-        "server_name": [
-            "test",
-            "192.168.1.18"
-        ],
-        "error_page": {
-            "500": "error_views/500.html",
-            "404": "error_views/404.html",
-            "400": "error_views/400.html"
-        },
-        "index": [
-            "index.html"
-        ],
-        "client_max_body_size": 200000,
-        "root": "YoupiBanane",
-        "autoindex": "off",
-        "location": [
-            {
-                "autoindex": "on",
-                "methods": [
-                    "DELETE"
-                ],
-                "index": [
-                    "index.html",
-                    "index.php"
-                ],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
-                },
-                "path": "/",
-                "root": "ceci est un test"
-            },
-            {
-                "autoindex": "on",
-                "methods": [],
-                "index": [
-                    "test1.html",
-                    "index.html",
-                    "index.php",
-                    "yes.html"
-                ],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
-                },
-                "path": "/directory"
-            },
-            {
-                "autoindex": "off",
-                "index": [
-                    "test.html",
-                    "index.html",
-                    "index.php"
-                ],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
-                },
-                "path": "/"
-            },
-            {
-                "autoindex": "off",
-                "index": [
-                    "index.html",
-                    "test2.html",
-                    "index.php"
-                ],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
-                },
-                "path": "/directory/dir"
-            }
-        ]
-    },
-    {
-        "listen": 8000,
-        "server_name": [
-            "localhost2",
-            "www.localhost2"
-        ],
-        "error_page": {
-            "500": "error_views/500.html",
-            "404": "error_views/404.html"
-        },
-        "client_max_body_size": 1000,
-        "root": "./www/",
-        "index": [
-            "index.html",
-            "index.html"
-        ],
-        "location": [
-            {
-                "methods": [
-                    "POST",
-                    "DELETE"
-                ],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
-                },
-                "index": [
-                    "test.php",
-                    "index.html"
-                ],
-                "path": "/test"
-            }
-        ]
-    }
+	{
+		"listen": "127.0.0.1:8000",
+		"server_name": [
+			"localhost",
+			"192.168.1.18"
+		],
+		"error_page": {
+			"500": "error_views/500.html",
+			"404": "error_views/404.html",
+			"400": "error_views/400.html"
+		},
+		"index": [
+			"index.html"
+		],
+		"client_max_body_size": 1000,
+		"root": "www",
+		"autoindex": "off",
+		"location": [
+			{
+				"autoindex": "on",
+				"methods": [
+					"DELETE"
+				],
+				"index": [
+					"index.html",
+					"index.php"
+				],
+				"path": "/",
+				"root": "ceci est un test"
+			},
+			{
+				"autoindex": "on",
+				"methods": [],
+				"index": [
+					"test1.html",
+					"index.html",
+					"index.php",
+					"yes.html"
+				],
+				"path": "/directory"
+			},
+			{
+				"autoindex": "off",
+				"index": [
+					"test.html",
+					"index.html",
+					"index.php"
+				],
+				"path": "/"
+			},
+			{
+				"autoindex": "off",
+				"index": [
+					"index.html",
+					"test2.html",
+					"index.php"
+				],
+				"path": "/directory/dir"
+			}
+		]
+	},
+	{
+		"listen": 8000,
+		"server_name": [
+			"localhost2",
+			"www.localhost2"
+		],
+		"error_page": {
+			"500": "error_views/500.html",
+			"404": "error_views/404.html"
+		},
+		"client_max_body_size": 1000,
+		"root": "./www/",
+		"index": [
+			"index.html",
+			"index.html"
+		],
+		"location": [
+			{
+				"methods": [
+					"POST",
+					"DELETE"
+				],
+				"index": [
+					"test.php",
+					"index.html"
+				],
+				"path": "/test"
+			}
+		]
+	}
 ]

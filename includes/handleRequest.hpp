@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:47:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 15:42:08 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/27 15:32:48 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct	s_locInfos
     bool _directory;
     std::string	_index;
 	std::string	_content;
+	std::string _locb;
 }				t_locInfos;
 
 http::Response handleRequest(const http::Request &request, t_serverData &data);

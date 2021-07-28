@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/27 17:26:54 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 13:34:27 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,26 @@ static void locIndex(const http::Request &request, t_serverData &data, t_locInfo
     f.close();
 }
 
+std::string pathMofifiedIfRoot(std::string path, t_serverData &data, t_locInfos *loc)
+{
+    std::string path1;
+    std::string root;
+
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    {
+        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1)
+                                                                          : it->path;
+        if (!it->root.empty() && path.find(path1) != std::string::npos && loc->_locb != path1)
+        {
+            root = (it->root[it->root.size() - 1] == '/' && it->root != "/") ? it->root.substr(0, it->root.size() - 1)
+                                                                             : it->root;
+            loc->_locb = path1;
+            return path.replace(path.find(it->path), it->path.size(), root);
+        }
+    }
+    return "";
+}
+
 bool methodAllowed(const http::Request &request, t_serverData &data)
 {
     std::string path1;
@@ -122,21 +142,28 @@ http::Response handleRequest(const http::Request &request, t_serverData &data)
 {
     std::string method = request.header("Method");
     t_locInfos loc;
+    std::string path;
 
-    if (method == "GET" || method == "POST" || method == "DELETE")
+    if (method != "GET" && method != "POST" && method != "DELETE")
+        return http::Response(http::METHOD_NOT_ALLOWED);
+    if (*request.header("Path").begin() != '/')
+        return http::Response(http::FORBIDDEN);
+    loc._directory = directory(request.header("Path"));
+    locIndex(request, data, &loc);
+    locAutoindex(request, data);
+    std::cout << "loc: " << loc._locb << std::endl;
+    while (!(path = pathMofifiedIfRoot(request.header("Path"), data, &loc)).empty())
     {
-        if (*request.header("Path").begin() != '/')
-            return http::Response(http::FORBIDDEN);
-        loc._directory = directory(request.header("Path"));
-        locIndex(request, data, &loc);
-        locAutoindex(request, data);
-        if (method == "GET" && methodAllowed(request, data))
-            return handleGET(request, data, loc);
-        if (method == "POST" && methodAllowed(request, data))
-            return handlePOST(request, data, loc);
-        if (method == "DELETE" && methodAllowed(request, data))
-            return handleDELETE(request, data);
+        static_cast< http::Request >(request).setHeaderPath(path);
+        std::cout << "Path: " << path << std::endl;
+        std::cout << "PATH: " << request.header("Path") << std::endl;
+        std::cout << "loc: " << loc._locb << std::endl;
     }
-    std::cout << "okok" << std::endl;
+    if (method == "GET" && methodAllowed(request, data))
+        return handleGET(request, data, loc);
+    if (method == "POST" && methodAllowed(request, data))
+        return handlePOST(request, data, loc);
+    if (method == "DELETE" && methodAllowed(request, data))
+        return handleDELETE(request, data);
     return http::Response(http::METHOD_NOT_ALLOWED);
 }
