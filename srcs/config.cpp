@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <dirent.h>
 #include <exception>
+#include <iostream>
 
 /******************************************************************************
  *			Constructeurs/Destructeurs
@@ -68,7 +69,6 @@ config::config(char *path)
     {
         _content = Parser(fs).parse();
         config_check(&_content);
-        // std::cout << _content << std::endl;
         std::cout << GREEN << "Parsing [OK]" << std::endl;
         std::cout << WHITE << std::endl;
     }

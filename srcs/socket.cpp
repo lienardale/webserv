@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/26 17:44:03 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/27 16:07:57 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,14 +219,15 @@ Socket Socket::accept(void) throw(Socket::SocketException)
  *	Lit une partie du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-std::string Socket::readContent(void) throw(Socket::SocketException)
+std::string Socket::readContent(void)
 {
     int ret = 0;
     char buffer[300];
 
     bzero(buffer, sizeof(buffer));
+
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-    if (ret)
+    if (ret > 0)
         return std::string(static_cast< char * >(buffer), ret);
     return "";
 }

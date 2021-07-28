@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/26 17:34:40 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/27 17:34:41 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,22 +164,29 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
     else if (event->events & EPOLLOUT)
     {
 
-        std::pair< http::Request, t_serverData > data = _requests[fd];
-
-        http::Response response;
-        if (data.first.isBodyTooLarge())
-            response = http::Response(http::PAYLOAD_TOO_LARGE);
-        else
-            response = handleRequest(data.first, data.second);
-        _log(data.first, response);
-        sock.send(response.toString(data.second.error_page));
-        if (!data.first.keepAlive() || data.first.isBodyTooLarge())
-            _removeAcceptedFD(sock);
-        else
+        try
         {
-            _requests[fd].first.clear();
-            event->events = EPOLLIN;
-            epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
+            std::pair< http::Request, t_serverData > data = _requests[fd];
+
+            http::Response response;
+            if (data.first.isBodyTooLarge())
+                response = http::Response(http::PAYLOAD_TOO_LARGE);
+            else
+                response = handleRequest(data.first, data.second);
+            _log(data.first, response);
+            sock.send(response.toString(data.second.error_page));
+            if (!data.first.keepAlive() || data.first.isBodyTooLarge())
+                _removeAcceptedFD(sock);
+            else
+            {
+                _requests[fd].first.clear();
+                event->events = EPOLLIN;
+                epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
+            }
+        }
+        catch (Socket::SocketException &e)
+        {
+            std::cerr << e.what() << std::endl;
         }
     }
     else if (event->events & EPOLLIN)
@@ -200,9 +207,13 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
         {
             http::Response response = http::Response(http::BAD_REQUEST);
             response.setHeader("Connection", "close");
-            sock.send(response.toString(_requests[fd].second.error_page));
             _log(_requests[fd].first, response);
+            sock.send(response.toString(_requests[fd].second.error_page));
             _removeAcceptedFD(sock);
+        }
+        catch (Socket::SocketException &e)
+        {
+            std::cerr << e.what() << std::endl;
         }
     }
 }

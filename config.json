@@ -2,7 +2,7 @@
     {
         "listen": "127.0.0.1:8000",
         "server_name": [
-            "localhost",
+            "test",
             "192.168.1.18"
         ],
         "error_page": {
@@ -13,7 +13,7 @@
         "index": [
             "index.html"
         ],
-        "client_max_body_size": 1000,
+        "client_max_body_size": 200000,
         "root": "YoupiBanane",
         "autoindex": "off",
         "location": [
@@ -31,7 +31,8 @@
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "SCRIPT_FILENAME  /scripts$fastcgi_script_name"
                 },
-                "path": "/"
+                "path": "/",
+                "root": "ceci est un test"
             },
             {
                 "autoindex": "on",
@@ -80,7 +81,7 @@
         ]
     },
     {
-        "listen": 4000,
+        "listen": 8000,
         "server_name": [
             "localhost2",
             "www.localhost2"

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 15:41:43 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/27 17:26:54 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,5 +137,6 @@ http::Response handleRequest(const http::Request &request, t_serverData &data)
         if (method == "DELETE" && methodAllowed(request, data))
             return handleDELETE(request, data);
     }
+    std::cout << "okok" << std::endl;
     return http::Response(http::METHOD_NOT_ALLOWED);
 }

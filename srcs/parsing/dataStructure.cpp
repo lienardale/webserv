@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 16:14:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 15:17:11 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/27 12:01:12 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 std::ostream &operator<<(std::ostream &os, const t_locationData &l)
 {
     os << "{ " << std::endl << "\t\tfastcgi_param: " << l.fastcgi_param << std::endl;
+    os << "root: " << l.root << std::endl;
     os << "\t\tindex: " << l.index << std::endl;
     os << "\t\tautoindex: " << l.autoindex << std::endl;
     os << "\t\tmethods: " << l.methods << std::endl;
