@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 14:15:47 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/28 14:31:23 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ static void locAutoindex(const http::Request &request, t_serverData &data)
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1) : it->path;
+        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1)
+                                                                          : it->path;
         if (it->autoindex != data.autoindex && request.header("Path").find(path1) != std::string::npos)
             data.autoindex = it->autoindex;
     }
@@ -104,25 +105,27 @@ static void locIndex(const http::Request &request, t_serverData &data, t_locInfo
     f.close();
 }
 
-std::string	pathModifiedIfRoot(std::string path, t_serverData &data, t_locInfos *loc)
+std::string pathModifiedIfRoot(std::string path, t_serverData &data, t_locInfos *loc)
 {
-	std::string path1;
-	std::string root;
+    std::string path1;
+    std::string root;
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1) : it->path;
+        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1)
+                                                                          : it->path;
         if (!it->root.empty() && path.find(path1) != std::string::npos && loc->_locb != path1)
-		{
-			root = (it->root[it->root.size() - 1] == '/' && it->root != "/") ? it->root.substr(0, it->root.size() - 1) : it->root;
-			loc->_locb = path1;
-			return path.replace(path.find(it->path), it->path.size(), root);
-		}
+        {
+            root = (it->root[it->root.size() - 1] == '/' && it->root != "/") ? it->root.substr(0, it->root.size() - 1)
+                                                                             : it->root;
+            loc->_locb = path1;
+            return path.replace(path.find(it->path), it->path.size(), root);
+        }
     }
-	return "";
+    return "";
 }
 
-bool	methodAllowed(const http::Request &request, t_serverData &data)
+bool methodAllowed(const http::Request &request, t_serverData &data)
 {
     std::string path1;
 
@@ -139,15 +142,15 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
 {
     std::string method = requestHeader.header("Method");
     t_locInfos loc;
-	std::string path;
-	
-	http::Request request(requestHeader);
+    std::string path;
+
+    http::Request request(requestHeader);
     if (method != "GET" && method != "POST" && method != "DELETE")
-        return http::Response(http::METHOD_NOT_ALLOWED);	
-	if (*request.header("Path").begin() != '/')
-		return http::Response(http::FORBIDDEN);		
-	while (!(path = pathModifiedIfRoot(request.header("Path"), data, &loc)).empty())
-		request.setHeaderPath(path);
+        return http::Response(http::METHOD_NOT_ALLOWED);
+    if (*request.header("Path").begin() != '/')
+        return http::Response(http::FORBIDDEN);
+    while (!(path = pathModifiedIfRoot(request.header("Path"), data, &loc)).empty())
+        request.setHeaderPath(path);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);

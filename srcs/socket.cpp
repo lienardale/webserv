@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/15 16:02:12 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/27 16:07:57 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "socket.hpp"
 #include "cgi.hpp"
 #include "request.hpp"
 #include "webserv.hpp"
@@ -218,15 +219,17 @@ Socket Socket::accept(void) throw(Socket::SocketException)
  *	Lit une partie du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-std::string Socket::readContent(void) throw(Socket::SocketException)
+std::string Socket::readContent(void)
 {
     int ret = 0;
     char buffer[300];
 
     bzero(buffer, sizeof(buffer));
+
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-	std::cout << "--REQUEST--" << buffer << std::endl;
-    return std::string(static_cast< char * >(buffer), ret);
+    if (ret > 0)
+        return std::string(static_cast< char * >(buffer), ret);
+    return "";
 }
 
 /*
@@ -235,7 +238,7 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
  */
 void Socket::send(const std::string content) throw(SocketException)
 {
-	std::cout << "--RESPONSE--" << content.c_str() << std::endl;
+    std::cout << "--RESPONSE--" << content.c_str() << std::endl;
     if (::send(_fd, content.c_str(), content.size(), 0) == -1)
         throw Socket::SocketException();
 }

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/27 11:52:45 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/28 13:30:33 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,9 @@ static void handleFastCGI(t_locationData &location, const std::string value) thr
 }
 
 static std::pair< std::string, castLocation > KEY_FUNCTIONS[] = {
-    std::make_pair("methods", handleMethods), std::make_pair("path", handlePath), std::make_pair("index", handleIndex),
-    std::make_pair("autoindex", handleAutoindex), std::make_pair("root", handleRoot), std::make_pair("fastcgi_param", handleFastCGI)};
+    std::make_pair("methods", handleMethods),       std::make_pair("path", handlePath),
+    std::make_pair("index", handleIndex),           std::make_pair("autoindex", handleAutoindex),
+    std::make_pair("fastcgi_param", handleFastCGI), std::make_pair("root", handleRoot)};
 
 std::map< std::string, castLocation > castLocationMap(void)
 {

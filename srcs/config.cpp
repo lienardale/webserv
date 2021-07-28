@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <dirent.h>
 #include <exception>
+#include <iostream>
 
 /******************************************************************************
  *			Constructeurs/Destructeurs

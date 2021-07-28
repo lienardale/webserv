@@ -1,9 +1,9 @@
 [
-{
-	"listen": "127.0.0.1:8000",
+	{
+		"listen": "127.0.0.1:8000",
 		"server_name": [
 			"localhost",
-		"192.168.1.18"
+			"192.168.1.18"
 		],
 		"error_page": {
 			"500": "error_views/500.html",
@@ -13,82 +13,81 @@
 		"index": [
 			"index.html"
 		],
-        "client_max_body_size": 1000,
-        "root": "www",
-        "autoindex": "off",
-        "location": [
-            {
-        		"autoindex": "on",
-                "methods": [
-                    "DELETE"
-                ],
+		"client_max_body_size": 1000,
+		"root": "www",
+		"autoindex": "off",
+		"location": [
+			{
+				"autoindex": "on",
+				"methods": [
+					"DELETE"
+				],
 				"index": [
 					"index.html",
-            		"index.php"
-        		],
-                "path": "/directory/dir/dir"
-            },
-            {
-        		"autoindex": "on",
-                "methods": [
-                ],
+					"index.php"
+				],
+				"path": "/directory/dir/dir"
+			},
+			{
+				"autoindex": "on",
+				"methods": [],
 				"index": [
 					"test1.html",
 					"index.html",
-            		"index.php",
+					"index.php",
 					"yes.html"
-        		],
+				],
 				"root": "/directory1",
-                "path": "/directory"
-            },
+				"path": "/directory"
+			},
 			{
-        		"autoindex": "off",
+				"autoindex": "off",
 				"index": [
 					"test.html",
 					"index.html",
-            		"index.php"
-        		],
-                "path": "/"
-            },
+					"index.php"
+				],
+				"path": "/"
+			},
 			{
-        		"autoindex": "off",
+				"autoindex": "off",
 				"index": [
 					"index.html",
 					"test2.html",
-            		"index.php"
-        		],
-                "path": "/directory/dir"
-            }
-        ]
-    },
-    {
-        "listen": 4000,
-        "server_name": [
-            "localhost2",
-            "www.localhost2"
-        ],
-        "error_page": {
-            "500": "error_views/500.html",
-            "404": "error_views/404.html"
-        },
-        "client_max_body_size": 1000,
-        "root": "./www/",
-        "index": [
-            "index.html",
-            "index.html"
-        ],
-        "location": [
-            {
-                "methods": [
-                    "POST",
-                    "DELETE"
-                ],
-                "index": [
-                    "test.php",
-                    "index.html"
-                ],
-                "path": "/test"
-            }
-        ]
-    }
+					"index.php"
+				],
+				"path": "/directory/dir"
+			}
+		]
+	},
+	{
+		"listen": 4000,
+		"server_name": [
+			"localhost2",
+			"www.localhost2"
+		],
+		"error_page": {
+			"500": "error_views/500.html",
+			"404": "error_views/404.html"
+		},
+		"client_max_body_size": 1000,
+		"root": "./www/",
+		"index": [
+			"index.html",
+			"index.html"
+		],
+		"location": [
+			{
+				"methods": [
+					"POST",
+					"DELETE"
+				],
+				"index": [
+					"test.php",
+					"index.html"
+				],
+				"path": "/test"
+			}
+		]
+	}
 ]

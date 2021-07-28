@@ -11,9 +11,9 @@
 /* ************************************************************************** */
 
 #include "cgi.hpp"
+#include "handleRequest.hpp"
 #include "response.hpp"
 #include "webserv.hpp"
-#include "handleRequest.hpp"
 #include <string>
 
 bool	emptyFile(std::fstream *f)
@@ -45,7 +45,7 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
         _content += ("<h1>Index of " + request.header("Path") + "</h1>\n");
         while ((contents = readdir(dh)) != NULL)
         {
-			d_slashb = (loc._directory) ? "" : "/";
+            d_slashb = (loc._directory) ? "" : "/";
             if ((is_dir = opendir((data.root + request.header("Path") + std::string(contents->d_name)).c_str())))
                 d_slash = "/";
             closedir(is_dir);
@@ -65,8 +65,8 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 {
     std::fstream f;
     std::string file;
-	std::string Location;
-	std::string slash;
+    std::string Location;
+    std::string slash;
 
     http::Response ret = http::Response(http::OK);
 
@@ -80,11 +80,12 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
         if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
         {
             ret.setCode(http::MOVED_PERMANENTLY);
-			slash = (loc._directory) ? "" : "/";
-			Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/" :  "http://" + request.header("Host") + request.header("Path") + slash + loc._index;
-			ret.setHeader("Location", Location);
-		}
-		else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
+            slash = (loc._directory) ? "" : "/";
+            Location = (!loc._isDir) ? "http://" + request.header("Host") + request.header("Path") + "/"
+                                     : "http://" + request.header("Host") + request.header("Path") + slash + loc._index;
+            ret.setHeader("Location", Location);
+        }
+        else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
             ret.setBody(directoryListing(file, data, ret, request, loc), "text/html");
         else if (loc._directory)
             ret.setCode(http::NOT_FOUND);
@@ -104,7 +105,8 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
     else
         ret.setCode(http::NOT_FOUND);
     f.close();
-    // ret.setBody(request.header("method") + " " + request.header("path") + " " + request.header("protocol"),
+    // ret.setBody(request.header("method") + " " + request.header("path") + " " +
+    // request.header("protocol"),
     //             "text/html; charset=utf-8");
     return ret;
 }
