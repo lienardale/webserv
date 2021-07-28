@@ -26,8 +26,7 @@
 					"index.html",
 					"index.php"
 				],
-				"path": "/",
-				"root": "ceci est un test"
+				"path": "/directory/dir/dir"
 			},
 			{
 				"autoindex": "on",
@@ -38,6 +37,7 @@
 					"index.php",
 					"yes.html"
 				],
+				"root": "/directory1",
 				"path": "/directory"
 			},
 			{
@@ -61,7 +61,7 @@
 		]
 	},
 	{
-		"listen": 8000,
+		"listen": 4000,
 		"server_name": [
 			"localhost2",
 			"www.localhost2"

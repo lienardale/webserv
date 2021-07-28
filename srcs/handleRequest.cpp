@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 13:34:27 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 14:31:23 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ static void locIndex(const http::Request &request, t_serverData &data, t_locInfo
     f.close();
 }
 
-std::string pathMofifiedIfRoot(std::string path, t_serverData &data, t_locInfos *loc)
+std::string pathModifiedIfRoot(std::string path, t_serverData &data, t_locInfos *loc)
 {
     std::string path1;
     std::string root;
@@ -138,27 +138,22 @@ bool methodAllowed(const http::Request &request, t_serverData &data)
     return true;
 }
 
-http::Response handleRequest(const http::Request &request, t_serverData &data)
+http::Response handleRequest(const http::Request &requestHeader, t_serverData &data)
 {
-    std::string method = request.header("Method");
+    std::string method = requestHeader.header("Method");
     t_locInfos loc;
     std::string path;
 
+    http::Request request(requestHeader);
     if (method != "GET" && method != "POST" && method != "DELETE")
         return http::Response(http::METHOD_NOT_ALLOWED);
     if (*request.header("Path").begin() != '/')
         return http::Response(http::FORBIDDEN);
+    while (!(path = pathModifiedIfRoot(request.header("Path"), data, &loc)).empty())
+        request.setHeaderPath(path);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);
-    std::cout << "loc: " << loc._locb << std::endl;
-    while (!(path = pathMofifiedIfRoot(request.header("Path"), data, &loc)).empty())
-    {
-        static_cast< http::Request >(request).setHeaderPath(path);
-        std::cout << "Path: " << path << std::endl;
-        std::cout << "PATH: " << request.header("Path") << std::endl;
-        std::cout << "loc: " << loc._locb << std::endl;
-    }
     if (method == "GET" && methodAllowed(request, data))
         return handleGET(request, data, loc);
     if (method == "POST" && methodAllowed(request, data))
