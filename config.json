@@ -26,11 +26,6 @@
 					"index.html",
             		"index.php"
         		],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "php-cgi"
-                },
                 "path": "/directory/dir/dir"
             },
             {
@@ -43,11 +38,7 @@
             		"index.php",
 					"yes.html"
         		],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "php-cgi"
-                },
+				"root": "/directory1",
                 "path": "/directory"
             },
 			{
@@ -57,11 +48,6 @@
 					"index.html",
             		"index.php"
         		],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "php-cgi"
-                },
                 "path": "/"
             },
 			{
@@ -71,11 +57,6 @@
 					"test2.html",
             		"index.php"
         		],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "php-cgi"
-                },
                 "path": "/directory/dir"
             }
         ]
@@ -102,11 +83,6 @@
                     "POST",
                     "DELETE"
                 ],
-                "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "php-cgi"
-                },
                 "index": [
                     "test.php",
                     "index.html"
