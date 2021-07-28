@@ -3,7 +3,7 @@
 	"listen": "127.0.0.1:8000",
 		"server_name": [
 			"localhost",
-		"192.168.1.18"
+			"192.168.1.18"
 		],
 		"error_page": {
 			"500": "error_views/500.html",
@@ -44,19 +44,15 @@
 			{
         		"autoindex": "off",
 				"index": [
-					"test.html",
-					"index.html",
-            		"index.php"
-        		],
-                "path": "/"
-            },
-			{
-        		"autoindex": "off",
-				"index": [
 					"index.html",
 					"test2.html",
             		"index.php"
         		],
+                "fastcgi_param": {
+                    "fastcgi_pass": "127.0.0.1:9000",
+                    "fastcgi_index": "test.php",
+                    "fastcgi_param": "php-cgi"
+                },
                 "path": "/"
             }
         ]

@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 15:27:04 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/28 18:32:37 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,11 +137,32 @@ bool	methodAllowed(const http::Request &request, t_serverData &data)
     return true;
 }
 
+void	setLocation(t_locationData *location, t_serverData &data, const http::Request &request)
+{
+	std::string path1;
+	std::string	requestPath = request.header("Path");
+	int i = requestPath.size();
+
+	for(std::string::reverse_iterator it = requestPath.rbegin(); it != requestPath.rend() && *it != '/'; ++it) {
+		i--;
+	}
+	requestPath.erase(i, requestPath.size());
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    {
+        path1 = it->path;
+        if (*path1.rbegin() != '/' )
+			path1.push_back('/');
+        if (requestPath == path1)
+            *location = *it;
+    }
+}
+
 http::Response handleRequest(const http::Request &requestHeader, t_serverData &data)
 {
     std::string method = requestHeader.header("Method");
     t_locInfos loc;
 	std::string path;
+	t_locationData location;
 	
 	http::Request request(requestHeader);
     if (method != "GET" && method != "POST" && method != "DELETE")
@@ -151,6 +172,7 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
 	loc._urlPath = request.header("Path");
 	while (!(path = pathMofifiedIfRoot(request.header("Path"), data, &loc)).empty())
 		request.setHeaderPath(path);
+	setLocation(&location, data, request);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);
