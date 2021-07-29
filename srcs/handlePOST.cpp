@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/09 11:08:41 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 15:45:13 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/29 14:34:36 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,10 @@ http::Response handlePOST(const http::Request &request, const t_serverData &data
 		else
 			ret.setCode(http::FORBIDDEN);
 	}
-	else if (f.good() && php_file(request.header("Path")))
+	else if (f.good() && php_file(request.header("Path")) && cgiActivated(file, loc))
 	{
 		ret.setHeader("Transfer-Encoding", "chunked");
-		ret.setBodyCGI(cgi(request, data.locations.front(), data).getOutput()); // Cgi fct to modify and/or move
+		ret.setBodyCGI(cgi(request, loc._location, data).getOutput()); // Cgi fct to modify and/or move
 	}
 	else if (f.good())
 		ret.setCode(http::METHOD_NOT_ALLOWED);

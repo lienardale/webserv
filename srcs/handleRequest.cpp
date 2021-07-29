@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 18:32:37 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/29 14:32:06 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,18 @@ bool php_file(std::string file)
     if (ext == "php")
         return true;
     return false;
+}
+
+bool	cgiActivated(const std::string &file, const t_locInfos &loc)
+{
+	if (!loc._location.fastcgi_param.empty())
+	{
+		if (loc._location.fastcgi_param.find("fastcgi_param") != loc._location.fastcgi_param.end() &&
+			loc._location.fastcgi_param.find("fastcgi_index") != loc._location.fastcgi_param.end() &&
+			file.find(loc._location.fastcgi_param.find("fastcgi_index")->second) != std::string::npos)
+			return true;
+	}
+	return false;
 }
 
 /*
@@ -137,7 +149,7 @@ bool	methodAllowed(const http::Request &request, t_serverData &data)
     return true;
 }
 
-void	setLocation(t_locationData *location, t_serverData &data, const http::Request &request)
+void	setLocation(t_locInfos *loc, t_serverData &data, const http::Request &request)
 {
 	std::string path1;
 	std::string	requestPath = request.header("Path");
@@ -153,7 +165,7 @@ void	setLocation(t_locationData *location, t_serverData &data, const http::Reque
         if (*path1.rbegin() != '/' )
 			path1.push_back('/');
         if (requestPath == path1)
-            *location = *it;
+            loc->_location = *it;
     }
 }
 
@@ -162,17 +174,16 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
     std::string method = requestHeader.header("Method");
     t_locInfos loc;
 	std::string path;
-	t_locationData location;
 	
 	http::Request request(requestHeader);
     if (method != "GET" && method != "POST" && method != "DELETE")
-        return http::Response(http::METHOD_NOT_ALLOWED);	
+        return http::Response(http::METHOD_NOT_ALLOWED);
 	if (*request.header("Path").begin() != '/')
-		return http::Response(http::FORBIDDEN);		
+		return http::Response(http::FORBIDDEN);
 	loc._urlPath = request.header("Path");
 	while (!(path = pathMofifiedIfRoot(request.header("Path"), data, &loc)).empty())
 		request.setHeaderPath(path);
-	setLocation(&location, data, request);
+	setLocation(&loc, data, request);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);

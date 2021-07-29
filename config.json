@@ -38,7 +38,6 @@
             		"index.php",
 					"yes.html"
         		],
-				"root": "/directory1",
                 "path": "/directory"
             },
 			{
@@ -49,7 +48,6 @@
             		"index.php"
         		],
                 "fastcgi_param": {
-                    "fastcgi_pass": "127.0.0.1:9000",
                     "fastcgi_index": "test.php",
                     "fastcgi_param": "php-cgi"
                 },

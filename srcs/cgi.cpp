@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/27 16:37:36 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/07/29 14:29:58 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,6 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
     std::string cgi_script;
 
     pipe(fd);
-    (void)data;
     cgi_script = getenv("CGI_BIN") + SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
     if ((pid = fork()) == 0)
     {

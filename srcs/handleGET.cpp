@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 15:44:04 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/29 14:32:27 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,20 +91,13 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
         else
             ret.setCode(http::FORBIDDEN);
     }
-    else if (f.good() && php_file(request.header("Path")))
-    {
-        ret.setBodyCGI(cgi(request, data.locations.front(), data).getOutput()); // Cgi fct to modify and/or move
-        // std::cout << ret.toString() << std::endl;
-    }
+    else if (f.good() && php_file(request.header("Path")) && cgiActivated(file, loc))
+        ret.setBodyCGI(cgi(request, loc._location, data).getOutput()); // Cgi fct to modify and/or move
     else if (f.good())
         ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()),
                     "text/html");
-    // else if (loc._directory && !loc._index.empty() && !data.autoindex)
-    //	ret.setCode(http::FORBIDDEN);
     else
         ret.setCode(http::NOT_FOUND);
     f.close();
-    // ret.setBody(request.header("method") + " " + request.header("path") + " " + request.header("protocol"),
-    //             "text/html; charset=utf-8");
     return ret;
 }
