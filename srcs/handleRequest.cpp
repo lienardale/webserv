@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 14:31:23 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/29 14:50:54 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,18 @@ bool php_file(std::string file)
     if (ext == "php")
         return true;
     return false;
+}
+
+bool	cgiActivated(const std::string &file, const t_locInfos &loc)
+{
+	if (!loc._location.fastcgi_param.empty())
+	{
+		if (loc._location.fastcgi_param.find("fastcgi_param") != loc._location.fastcgi_param.end() &&
+			loc._location.fastcgi_param.find("fastcgi_index") != loc._location.fastcgi_param.end() &&
+			file.find(loc._location.fastcgi_param.find("fastcgi_index")->second) != std::string::npos)
+			return true;
+	}
+	return false;
 }
 
 /*
@@ -112,8 +124,9 @@ std::string pathModifiedIfRoot(std::string path, t_serverData &data, t_locInfos 
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1)
-                                                                          : it->path;
+		path1 = it->path;
+        if (*path1.rbegin() != '/' )
+			path1.push_back('/');
         if (!it->root.empty() && path.find(path1) != std::string::npos && loc->_locb != path1)
         {
             root = (it->root[it->root.size() - 1] == '/' && it->root != "/") ? it->root.substr(0, it->root.size() - 1)
@@ -138,6 +151,26 @@ bool methodAllowed(const http::Request &request, t_serverData &data)
     return true;
 }
 
+void	setLocation(t_locInfos *loc, t_serverData &data, const http::Request &request)
+{
+	std::string path1;
+	std::string	requestPath = request.header("Path");
+	int i = requestPath.size();
+
+	for(std::string::reverse_iterator it = requestPath.rbegin(); it != requestPath.rend() && *it != '/'; ++it) {
+		i--;
+	}
+	requestPath.erase(i, requestPath.size());
+    for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
+    {
+        path1 = it->path;
+        if (*path1.rbegin() != '/' )
+			path1.push_back('/');
+        if (requestPath == path1)
+            loc->_location = *it;
+    }
+}
+
 http::Response handleRequest(const http::Request &requestHeader, t_serverData &data)
 {
     std::string method = requestHeader.header("Method");
@@ -147,10 +180,12 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
     http::Request request(requestHeader);
     if (method != "GET" && method != "POST" && method != "DELETE")
         return http::Response(http::METHOD_NOT_ALLOWED);
-    if (*request.header("Path").begin() != '/')
-        return http::Response(http::FORBIDDEN);
-    while (!(path = pathModifiedIfRoot(request.header("Path"), data, &loc)).empty())
-        request.setHeaderPath(path);
+	if (*request.header("Path").begin() != '/')
+		return http::Response(http::FORBIDDEN);
+	loc._urlPath = request.header("Path");
+	while (!(path = pathModifiedIfRoot(request.header("Path"), data, &loc)).empty())
+		request.setHeaderPath(path);
+	setLocation(&loc, data, request);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);

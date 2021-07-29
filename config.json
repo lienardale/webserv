@@ -36,58 +36,53 @@
 					"index.html",
 					"index.php",
 					"yes.html"
-				],
-				"root": "/directory1",
-				"path": "/directory"
-			},
-			{
-				"autoindex": "off",
-				"index": [
-					"test.html",
-					"index.html",
-					"index.php"
-				],
-				"path": "/"
-			},
+        		],
+				"root", "/directory1",
+                "path": "/directory"
+            },
 			{
 				"autoindex": "off",
 				"index": [
 					"index.html",
 					"test2.html",
-					"index.php"
-				],
-				"path": "/directory/dir"
-			}
-		]
-	},
-	{
-		"listen": 4000,
-		"server_name": [
-			"localhost2",
-			"www.localhost2"
-		],
-		"error_page": {
-			"500": "error_views/500.html",
-			"404": "error_views/404.html"
-		},
-		"client_max_body_size": 1000,
-		"root": "./www/",
-		"index": [
-			"index.html",
-			"index.html"
-		],
-		"location": [
-			{
-				"methods": [
-					"POST",
-					"DELETE"
-				],
-				"index": [
-					"test.php",
-					"index.html"
-				],
-				"path": "/test"
-			}
-		]
-	}
+            		"index.php"
+        		],
+                "fastcgi_param": {
+                    "fastcgi_index": "test.php",
+                    "fastcgi_param": "php-cgi"
+                },
+                "path": "/"
+            }
+        ]
+    },
+    {
+        "listen": 4000,
+        "server_name": [
+            "localhost2",
+            "www.localhost2"
+        ],
+        "error_page": {
+            "500": "error_views/500.html",
+            "404": "error_views/404.html"
+        },
+        "client_max_body_size": 1000,
+        "root": "./www/",
+        "index": [
+            "index.html",
+            "index.html"
+        ],
+        "location": [
+            {
+                "methods": [
+                    "POST",
+                    "DELETE"
+                ],
+                "index": [
+                    "test.php",
+                    "index.html"
+                ],
+                "path": "/test"
+            }
+        ]
+    }
 ]
