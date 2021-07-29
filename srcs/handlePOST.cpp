@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/09 11:08:41 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/29 14:34:36 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/29 14:49:00 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,12 @@
 
 http::Response handlePOST(const http::Request &request, const t_serverData &data, const t_locInfos &loc)
 {
-	std::fstream f;
-	std::string file;
-	std::string Location;
-	std::string slash;
+    std::fstream f;
+    std::string file;
+    std::string Location;
+    std::string slash;
 
-	http::Response ret = http::Response(http::OK);
+    http::Response ret = http::Response(http::OK);
 
 	if (request.header("Path") == "/" || (loc._directory && !loc._index.empty()))
 		file = data.root + request.header("Path") + loc._index;

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/27 15:01:03 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/28 13:34:55 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,13 @@ static std::vector< std::string > ft_split(std::string str, std::string toFind)
 /******************************************************************************
  *               Constructeurs
  ******************************************************************************/
-http::Request::Request(void) : _isBody(false), _finish(false)
+http::Request::Request(void) : _isBody(false), _finish(false), _isBodyTooLarge(false)
 {
 }
 
 http::Request::Request(const Request &other)
-    : _isBody(other._isBody), _finish(other._finish), _method(other._method), _uri(other._uri),
-      _protocol(other._protocol), _host(other._host), _headers(other._headers)
+    : _isBody(other._isBody), _finish(other._finish), _isBodyTooLarge(other._isBodyTooLarge), _buffer(other._buffer),
+      _headers(other._headers)
 {
 }
 
@@ -65,11 +65,10 @@ http::Request &http::Request::operator=(const http::Request &other)
     (void)other;
 
     _headers = other._headers;
-    _host = other._host;
-    _method = other._method;
-    _protocol = other._protocol;
-    _uri = other._uri;
     _finish = other._finish;
+    _buffer = other._buffer;
+    _isBody = other._isBody;
+    _isBodyTooLarge = other._isBodyTooLarge;
     return *this;
 }
 
@@ -80,22 +79,6 @@ http::Request::~Request(void)
 /******************************************************************************
  *               Getters
  ******************************************************************************/
-
-std::string http::Request::method(void) const
-{
-    return _method;
-}
-
-std::string http::Request::uri(void) const
-{
-    return _uri;
-}
-
-std::string http::Request::protocol(void) const
-{
-    return _protocol;
-}
-
 std::map< std::string, std::string > http::Request::getHeader() const
 {
     return _headers;
@@ -114,13 +97,17 @@ bool http::Request::keepAlive() const
     return true;
 }
 
+bool http::Request::isBodyTooLarge(void) const
+{
+    return _isBodyTooLarge;
+}
 /******************************************************************************
  *               Setters
  ******************************************************************************/
 
 void http::Request::setHeaderPath(std::string path)
 {
-	_headers["path"] = path;
+    _headers["path"] = path;
 }
 
 /******************************************************************************
@@ -159,19 +146,21 @@ void http::Request::_extract(std::string &content) throw(ParsingException)
     }
 }
 
-void http::Request::_extractBody(void) throw(ParsingException)
+void http::Request::_extractBody(int maxBodySize) throw(ParsingException)
 {
     std::string body = header("body");
     std::string host = header("host");
     int contentLength = std::atoi(header("content-length").c_str());
 
-    if (static_cast< int >(body.size() + _buffer.size()) > contentLength)
-        throw BadRequest("Wrong body size");
     if (host.empty())
         BadRequest("No host in header");
+    if (static_cast< int >(body.size() + _buffer.size()) > contentLength)
+        throw BadRequest("Wrong body size");
+    if (static_cast< int >(body.size() + _buffer.size()) > maxBodySize)
+        _isBodyTooLarge = true;
     _headers["body"] += _buffer;
-    _finish = static_cast< int >(_headers["body"].size()) == contentLength;
     _buffer.clear();
+    _finish = static_cast< int >(_headers["body"].size()) == contentLength;
 }
 
 void http::Request::_extractHeader(std::string &content) throw(ParsingException)
@@ -191,7 +180,7 @@ void http::Request::_extractHeader(std::string &content) throw(ParsingException)
         throw BadRequest("Wrong key value syntax");
 }
 
-void http::Request::parse(const std::string &content) throw(ParsingException)
+void http::Request::parse(const std::string &content, int maxBodySize) throw(ParsingException)
 {
     std::string::size_type pos;
     std::string val;
@@ -206,8 +195,8 @@ void http::Request::parse(const std::string &content) throw(ParsingException)
     }
 
     std::string contentLength = header("content-length");
-    if (_isBody && _buffer.size() && contentLength.size())
-        _extractBody();
+    if (_isBody && !_buffer.empty() && !contentLength.empty())
+        _extractBody(maxBodySize);
     else if (_isBody && contentLength.empty())
     {
         _finish = true;

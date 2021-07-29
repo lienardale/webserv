@@ -146,8 +146,8 @@ std::string http::Response::toString(const std::map< int, std::string > &errorPa
     std::map< int, std::string >::const_iterator found = errorPages.find(_code);
 
     if (found != errorPages.end() && found->second == "error_page_not_valid" && _code != 404)
-		setBody(errorPages.find(404)->second, "text/html");
-	if (found != errorPages.end() && found->second != "error_page_not_valid")
+        setBody(errorPages.find(404)->second, "text/html");
+    if (found != errorPages.end() && found->second != "error_page_not_valid")
         setBody(found->second, "text/html");
     return toString();
 }

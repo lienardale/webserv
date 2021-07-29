@@ -1,6 +1,6 @@
 [
-{
-	"listen": "127.0.0.1:8000",
+	{
+		"listen": "127.0.0.1:8000",
 		"server_name": [
 			"localhost",
 			"192.168.1.18"
@@ -13,35 +13,35 @@
 		"index": [
 			"index.html"
 		],
-        "client_max_body_size": 1000,
-        "root": "www",
-        "autoindex": "off",
-        "location": [
-            {
-        		"autoindex": "on",
-                "methods": [
-                    "DELETE"
-                ],
+		"client_max_body_size": 1000,
+		"root": "www",
+		"autoindex": "off",
+		"location": [
+			{
+				"autoindex": "on",
+				"methods": [
+					"DELETE"
+				],
 				"index": [
 					"index.html",
-            		"index.php"
-        		],
-                "path": "/directory/dir/dir"
-            },
-            {
-        		"autoindex": "on",
-                "methods": [
-                ],
+					"index.php"
+				],
+				"path": "/directory/dir/dir"
+			},
+			{
+				"autoindex": "on",
+				"methods": [],
 				"index": [
 					"test1.html",
 					"index.html",
-            		"index.php",
+					"index.php",
 					"yes.html"
         		],
+				"root", "/directory1",
                 "path": "/directory"
             },
 			{
-        		"autoindex": "off",
+				"autoindex": "off",
 				"index": [
 					"index.html",
 					"test2.html",

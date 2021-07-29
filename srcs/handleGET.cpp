@@ -6,14 +6,14 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/29 14:32:27 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/07/29 14:50:04 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
+#include "handleRequest.hpp"
 #include "response.hpp"
 #include "webserv.hpp"
-#include "handleRequest.hpp"
 #include <string>
 
 bool	emptyFile(std::fstream *f)
@@ -45,7 +45,7 @@ std::string directoryListing(std::string file, const t_serverData &data, http::R
         _content += ("<h1>Index of " + request.header("Path") + "</h1>\n");
         while ((contents = readdir(dh)) != NULL)
         {
-			d_slashb = (loc._directory) ? "" : "/";
+            d_slashb = (loc._directory) ? "" : "/";
             if ((is_dir = opendir((data.root + request.header("Path") + std::string(contents->d_name)).c_str())))
                 d_slash = "/";
             closedir(is_dir);
@@ -65,8 +65,8 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 {
     std::fstream f;
     std::string file;
-	std::string Location;
-	std::string slash;
+    std::string Location;
+    std::string slash;
 
     http::Response ret = http::Response(http::OK);
 
