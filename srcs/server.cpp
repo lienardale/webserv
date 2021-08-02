@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 16:10:39 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/02 17:00:39 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void http::Server::listen(void)
     while (_run)
     {
         event_count = epoll_wait(_epoll_fd, events, MAX_EVENTS, -1);
-        for (int i = 0; i < event_count; i++)
+        for (int i = 0; i < event_count && _run; i++)
             _handleReady(_epoll_fd, events[i].data.fd, &events[i]);
     }
 }
