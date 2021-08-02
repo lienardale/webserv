@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/07/28 16:06:28 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 17:06:55 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,7 +201,7 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
     }
 }
 
-void config::locationData_check(t_locationData &lD)
+void config::locationData_check(t_locationData &lD, t_serverData sD)
 {
 
     if (lD.path.empty())
@@ -220,7 +220,7 @@ void config::locationData_check(t_locationData &lD)
     for (std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end();
          it++)
     {
-        config::fastcgi_param_check(*it, lD.root.c_str());
+        config::fastcgi_param_check(*it, sD.root.c_str());
     }
 }
 
@@ -259,7 +259,7 @@ void config::serverData_check(t_serverData &sD)
 
     for (std::list< t_locationData >::iterator it = sD.locations.begin(); it != sD.locations.end(); it++)
     {
-        config::locationData_check(*it);
+        config::locationData_check(*it, sD);
     }
 }
 
