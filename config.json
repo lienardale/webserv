@@ -14,8 +14,8 @@
 			"index.html"
 		],
 		"client_max_body_size": 1000,
-		"root": "www",
-		"autoindex": "off",
+		"root": "YoupiBanane",
+		"autoindex": "on",
 		"location": [
 			{
 				"autoindex": "on",
@@ -38,7 +38,7 @@
 					"yes.html"
         		],
 				"root": "/directory1",
-				"path": "/directory"
+                "path": "/directory"
             },
 			{
 				"autoindex": "on",

@@ -35,7 +35,6 @@ config::config()
     {
         _content = Parser(fs).parse();
         config_check(&_content);
-        // std::cout << _content << std::endl;
         std::cout << GREEN << "Parsing [OK]" << std::endl;
         std::cout << WHITE << std::endl;
     }
@@ -146,7 +145,7 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
             closedir(dirp);
         if (!found)
             throw ValueError::ParsingException("incorrect CGI index value : " + fcgi.second +
-                                            ", no corresponding file found");
+                                               ", no corresponding file found");
     }
 
     // fastcgi_param		| SCRIPT_FILENAME								| /scripts$fastcgi_script_name
@@ -167,7 +166,7 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
             closedir(dirp);
         if (!found)
             throw ValueError::ParsingException("incorrect CGI script value : " + fcgi.second +
-                                            ", no corresponding file found");
+                                               ", no corresponding file found");
     }
     // fastcgi_pass			| 127.0.0.1:9000								| listen
 
@@ -218,7 +217,8 @@ void config::locationData_check(t_locationData &lD, t_serverData sD)
         config::methods_check(*it);
     }
 
-    for (std::map < std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end(); it++)
+    for (std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end();
+         it++)
     {
         config::fastcgi_param_check(*it, sD.root.c_str());
     }
