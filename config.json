@@ -14,8 +14,8 @@
 			"index.html"
 		],
 		"client_max_body_size": 1000,
-		"root": "www",
-		"autoindex": "off",
+		"root": "YoupiBanane",
+		"autoindex": "on",
 		"location": [
 			{
 				"autoindex": "on",
@@ -37,20 +37,16 @@
 					"index.php",
 					"yes.html"
         		],
-				"root", "/directory1",
+				"root": "/directory1",
                 "path": "/directory"
             },
 			{
-				"autoindex": "off",
+				"autoindex": "on",
 				"index": [
 					"index.html",
 					"test2.html",
             		"index.php"
         		],
-                "fastcgi_param": {
-                    "fastcgi_index": "test.php",
-                    "fastcgi_param": "php-cgi"
-                },
                 "path": "/"
             }
         ]

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/07/28 14:19:56 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/07/28 15:26:58 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 #define SERVER_HPP
 
 #include "parsing/dataStructure.hpp"
+#include "parsing/parsingExceptions.hpp"
 #include "request.hpp"
 #include "response.hpp"
 #include "socket.hpp"
 #include <cstdlib>
+#include <exception>
 #include <inttypes.h>
 #include <map>
 #include <sys/epoll.h>
@@ -49,10 +51,10 @@ class Server
     int _epoll_fd;
 
     void _handleEpollout(Socket &sock, std::pair< http::Request, t_serverData > &data, struct epoll_event *event,
-                         int epoll_fd);
+                         int epoll_fd) throw(Socket::SocketException);
     void _handleEpollin(Socket &sock, std::pair< http::Request, t_serverData > &data, const int epoll_fd,
-                        struct epoll_event *event);
-    void _handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(Socket::SocketException);
+                        struct epoll_event *event) throw(ParsingException);
+    void _handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(std::exception);
     void _watchFds(void) throw(Socket::SocketException);
     void _log(const http::Request &request, const http::Response &response) const;
     void _removeAcceptedFD(Socket &sock);

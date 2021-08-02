@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/15 12:18:09 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/02 15:55:56 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,12 +132,15 @@ std::string http::Response::toString()
     {
         std::string r = "<h1>" + http::statusToReason(_code) + "</h1>";
         oss << "Content-Length: " << r.size() << "\r\n";
-        oss << "Content-Type: "
-            << "text/html\r\n";
+        oss << "Content-Type: text/html\r\n";
         oss << std::endl << r;
     }
     else
+    {
+        oss << "Content-Length: 0\r\n";
+        oss << "Content-Type: text/html\r\n";
         oss << std::endl;
+    }
     return oss.str();
 }
 

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:48:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/10 18:57:04 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/02 16:32:21 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,11 +133,11 @@ void parseStructFields(dataStore &store, const std::map< std::string, conversion
             found = keyMap.find(key);
             if (found == keyMap.end())
                 throw ValueError("Key " + key + " is not valid");
-            if (*(begin + 1) == '{')
+            if (*begin == ':' && *(begin + 1) == '{')
                 value = extract< std::string::iterator & >("{}", ++begin, end);
-            else if (*(begin + 1) == '[')
+            else if (*begin == ':' && *(begin + 1) == '[')
                 value = extract< std::string::iterator & >("[]", ++begin, end);
-            else if (*(begin + 1) == '"')
+            else if (*begin == ':' && *(begin + 1) == '"')
                 value = extract< std::string::iterator & >("\"\"", ++begin, end);
             else if (*begin == ':')
                 value = extract< std::string::iterator & >(":,", begin, end);
