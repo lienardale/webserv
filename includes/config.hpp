@@ -24,6 +24,24 @@ class config
             return ("Error: Invalid config file (webserv.conf)");
         }
     };
+	class MimeException : public std::exception
+    {
+      public:
+        MimeException(void) throw()
+        {
+            return;
+        }
+        MimeException(const MimeException &src) throw();
+        virtual ~MimeException(void) throw()
+        {
+            return;
+        }
+        MimeException &operator=(const MimeException &rhs) throw();
+        virtual const char *what() const throw()
+        {
+            return ("Error: Invalid mime types file (mime/mime.types)");
+        }
+    };
     config(void);
     config(char *path);
     config(std::string server, int port);
@@ -43,12 +61,14 @@ class config
     void fastcgi_param_check(std::pair< const std::string, std::string > &fcgi, const char *root);
     void methods_check(std::string &method);
     std::list< t_serverData > getContent() const;
+	void setMimeTypes();
     // int ft_print_config(void);
 
   private:
     std::string server;
     int port;
     std::list< t_serverData > _content;
+	std::map<std::string, std::string> _mimeTypes;
 };
 
 #endif

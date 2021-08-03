@@ -14,7 +14,7 @@
 			"index.html"
 		],
 		"client_max_body_size": 1000,
-		"root": "YoupiBanane",
+		"root": "www",
 		"autoindex": "on",
 		"location": [
 			{
@@ -48,7 +48,7 @@
             		"index.php"
         		],
 				"fastcgi_param": {
-					"fastcgi_index": "post.php",
+					"fastcgi_index": "test.php",
 					"fastcgi_param": "php-cgi"
 				},
                 "path": "/"

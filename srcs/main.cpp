@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/02 19:15:22 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/03 10:56:35 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,34 +19,6 @@ void handleSignal(int sig)
 	(void)sig;
 
 	SERVER.stop();
-}
-
-void setMimeTypes(std::map<std::string, std::string> *mimeTypes)
-{
-	std::ifstream file("mime.types");
-	std::string	line;
-	std::string value;
-
-	(void)mimeTypes;
-	if (file.is_open())
-	{
-		while (getline(file, line))
-		{
-			std::istringstream iss(line);
-			std::vector<std::string> result;
-
-			for (std::string s; iss >> s;)
-				result.push_back(s);
-			value = result.front();
-			for (std::vector<std::string>::iterator it = result.begin(); it != result.end() ; ++it)
-			{
-				if (*it != *result.begin())
-					(*mimeTypes)[*it] = value;
-			}
-			value.clear();
-		}
-		file.close();
-	}	
 }
 
 int main(int ac, char **av, char **env)
@@ -62,14 +34,7 @@ int main(int ac, char **av, char **env)
 	{
 		if (ac == 1)
 			av[1] = NULL;
-		config conf(av[1]);
-		setMimeTypes(&mimeTypes);
-
-		//print out map
-		for (std::map<std::string, std::string >::const_iterator it = mimeTypes.begin();
-	    	it != mimeTypes.end(); ++it)
-		    	std::cout << it->first << ": " << it->second  << std::endl;
-		//
+		config conf(av[1]);	
 
 		// Signal handling
 		std::signal(SIGINT, handleSignal);
