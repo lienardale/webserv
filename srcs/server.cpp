@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 16:10:39 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/03 09:56:45 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,13 @@
 #include <cstdio>
 #include <exception>
 #include <iostream>
+#include <list>
 #include <map>
+#include <netinet/in.h>
 #include <ostream>
 #include <stdexcept>
 #include <sys/epoll.h>
+#include <sys/socket.h>
 #include <utility>
 
 #define MAX_EVENTS 10
@@ -123,15 +126,36 @@ void http::Server::listen(void)
     _epoll_fd = epoll_create1(EPOLL_CLOEXEC);
 
     for (std::map< int, t_serverData >::iterator it = _serverSet.begin(); it != _serverSet.end(); it++)
+    {
+        Socket sock(it->first, true);
         _add_fd_to_poll(_epoll_fd, it->first, EPOLLIN);
+        if (_serverSetByPort.count(sock.port()) == 0)
+            _serverSetByPort[sock.port()] = std::list< t_serverData >();
+        _serverSetByPort[sock.port()].push_back(it->second);
+    }
 
     _run = true;
     while (_run)
     {
         event_count = epoll_wait(_epoll_fd, events, MAX_EVENTS, -1);
-        for (int i = 0; i < event_count; i++)
+        for (int i = 0; i < event_count && _run; i++)
             _handleReady(_epoll_fd, events[i].data.fd, &events[i]);
     }
+}
+
+/*
+ *           Fonction qui match le host de la requête avec un t_serverData
+ *           qui possède un serverName identique
+ */
+t_serverData http::Server::_getServerData(Socket &sock, std::string host)
+{
+    std::list< t_serverData > data = _serverSetByPort[sock.port()];
+    for (std::list< t_serverData >::iterator it = data.begin(); it != data.end(); it++)
+    {
+        if (std::binary_search(it->server_name.begin(), it->server_name.end(), host))
+            return *it;
+    }
+    return data.front();
 }
 
 /*
@@ -140,15 +164,17 @@ void http::Server::listen(void)
  *	@Parametres: Le fd sur lequel la lecture doit se faire
  *	@Infos La fonction lève une SocketException si erreur
  */
-
 void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_serverData > &data,
                                    struct epoll_event *event, int epoll_fd) throw(Socket::SocketException)
 {
     http::Response response;
+    t_serverData serverData = _getServerData(sock, data.first.header("host"));
+
     if (data.first.isBodyTooLarge())
         response = http::Response(http::PAYLOAD_TOO_LARGE);
     else
-        response = handleRequest(data.first, data.second);
+        response = handleRequest(data.first, serverData);
+
     _log(data.first, response);
     sock.send(response.toString(data.second.error_page));
     if (!data.first.keepAlive() || data.first.isBodyTooLarge())

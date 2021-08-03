@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/07/28 16:05:22 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/02 18:32:43 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,11 @@ int Socket::Fd() const
 struct sockaddr_in Socket::infos() const
 {
     return _address;
+}
+
+int Socket::port(void) const
+{
+    return ntohs(_address.sin_port);
 }
 
 /*****************************************************************************
