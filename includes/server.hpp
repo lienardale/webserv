@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/07/28 15:26:58 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/02 19:24:57 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Server
   private:
     struct timeval _timeout;
     std::map< int, t_serverData > _serverSet;
+    std::map< int, std::list< t_serverData > > _serverSetByPort;
     std::map< int, std::pair< http::Request, t_serverData > > _requests;
     bool _run;
     int _epoll_fd;
@@ -58,6 +59,7 @@ class Server
     void _watchFds(void) throw(Socket::SocketException);
     void _log(const http::Request &request, const http::Response &response) const;
     void _removeAcceptedFD(Socket &sock);
+    t_serverData _getServerData(Socket &sock, std::string host);
 };
 } // namespace http
 #endif

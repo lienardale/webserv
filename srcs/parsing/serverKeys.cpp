@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 13:30:43 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/02 19:19:35 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ static void handleServerName(t_serverData &server, const std::string value) thro
     if (server.server_name.size())
         throw ValueError("Duplicate key: server_name");
     parseStringList< std::list< std::string > & >(server.server_name, value);
+    server.server_name.sort();
 }
 
 static void handleAutoindex(t_serverData &server, const std::string value) throw(ParsingException)

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 16:02:45 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/02 18:31:51 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Socket
     // Getters
     int Fd(void) const;
     struct sockaddr_in infos(void) const;
-    std::vector< std::string > get_infos(void) const;
+    int port(void) const;
 
     // Member functions
     void listen(const int port, const std::string) throw(Socket::SocketException);
