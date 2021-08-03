@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/02 19:26:40 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/03 09:56:45 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,12 +153,9 @@ t_serverData http::Server::_getServerData(Socket &sock, std::string host)
     for (std::list< t_serverData >::iterator it = data.begin(); it != data.end(); it++)
     {
         if (std::binary_search(it->server_name.begin(), it->server_name.end(), host))
-        {
-            std::cout << "MATCHED" << std::endl;
             return *it;
-        }
     }
-    return _requests[sock.Fd()].second;
+    return data.front();
 }
 
 /*
@@ -173,7 +170,6 @@ void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_ser
     http::Response response;
     t_serverData serverData = _getServerData(sock, data.first.header("host"));
 
-    std::cout << serverData << std::endl;
     if (data.first.isBodyTooLarge())
         response = http::Response(http::PAYLOAD_TOO_LARGE);
     else
