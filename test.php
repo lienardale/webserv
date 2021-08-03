@@ -1,7 +1,19 @@
 <?php
 
-echo '<pre>'; print_r($_GET); echo '</pre>';
-echo '<pre>'; print_r($_POST); echo '</pre>';
-echo '<pre>'; print_r($_DELETE); echo '</pre>';
+$uploaddir = './uploads/';
+$uploadfile = $uploaddir . basename($_FILES['file']['name']);
+
+echo '<pre>';
+if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
+    echo "Le fichier est valide, et a été téléchargé
+           avec succès. Voici plus d'informations :\n";
+} else {
+    echo "Attaque potentielle par téléchargement de fichiers.
+          Voici plus d'informations :\n";
+}
+
+echo 'Voici quelques informations de débogage :';
+
+print_r($_FILES);
 
 ?>

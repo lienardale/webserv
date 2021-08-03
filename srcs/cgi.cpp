@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/29 14:46:06 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/03 15:55:50 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
 #include <stdlib.h>
+#include <unistd.h>
 
 /******************************************************************************
  *				Constructeurs et Destructeurs
@@ -176,6 +177,7 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
     std::string cgi_script;
 
     pipe(fd);
+
     cgi_script = getenv("CGI_BIN") + SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
     if ((pid = fork()) == 0)
     {
@@ -184,7 +186,7 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
         ::close(fd[1]);
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
         // execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
-        execl(cgi_script.c_str(), cgi_script.c_str(), (root + request.header("Path")).c_str() /*, getCgiEnv()*/, NULL);
+        execle(cgi_script.c_str(), cgi_script.c_str(), (root + request.header("Path")).c_str(), getCgiEnv(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));

@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/13 11:21:30 by alienard         ###   ########.fr       */
+/*   Updated: 2021/08/03 11:35:55 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_serverData
     std::list< std::string > server_name;
     std::map< int, std::string > error_page;
     std::list< t_locationData > locations;
+	std::map<std::string, std::string> *mimeTypes;
     s_serverData(void);
 } t_serverData;
 
