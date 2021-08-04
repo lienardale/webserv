@@ -14,8 +14,8 @@ export CONTENT_TYPE="multipart/form-data; boundary=--------------------------181
 export SERVER_PROTOCOL=http/1.1
 export CONTENT_LENGTH=1857
 export REQUEST_METHOD=POST
-export SCRIPT_FILENAME=./test.php
-export SCRIPT_NAME=/test.php
+export SCRIPT_FILENAME=./upload.php
+export SCRIPT_NAME=/upload.php
 export REDIRECT_STATUS=200
 
 cat upload-form.txt | php-cgi
