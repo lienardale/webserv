@@ -1,19 +1,15 @@
 <?php
 
+// Dossier d'upload
 $uploaddir = './uploads/';
-$uploadfile = $uploaddir . basename($_FILES['file']['name']);
 
-echo '<pre>';
-if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
-    echo "Le fichier est valide, et a été téléchargé
-           avec succès. Voici plus d'informations :\n";
-} else {
-    echo "Attaque potentielle par téléchargement de fichiers.
-          Voici plus d'informations :\n";
+// Sauvegarde de tous les fichiers passés en input
+foreach ($_FILES as $file){
+    $uploadfile = $uploaddir . basename($file['name']);
+    if (move_uploaded_file($file['tmp_name'], $uploadfile)){
+        echo "Le fichier " . $file['name'] . " a bien été envoyé\n";
+    } else {
+        echo "Erreur dans l'envoie du fichier " . $file['name'] . "\n";
+    }
 }
-
-echo 'Voici quelques informations de débogage :';
-
-print_r($_FILES);
-
 ?>

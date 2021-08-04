@@ -1,5 +1,5 @@
 ----------------------------181455433616366442896447
-Content-Disposition: form-data; name="file"; filename="test.cpp"
+Content-Disposition: form-data; name="file"; filename="test1.cpp"
 Content-Type: text/x-c
 
 #include <magic.h>
@@ -35,7 +35,7 @@ int main(void) {
   return 0;
 }
 ----------------------------181455433616366442896447
-Content-Disposition: form-data; name="file2"; filename="test.cpp"
+Content-Disposition: form-data; name="file2"; filename="test2.cpp"
 Content-Type: text/x-c
 
 #include <magic.h>
