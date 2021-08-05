@@ -6,10 +6,11 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/02 15:02:26 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/03 14:02:00 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "parsing/dataStructure.hpp"
 #include "webserv.hpp"
 #include <algorithm>
 
@@ -142,8 +143,10 @@ bool methodAllowed(const http::Request &request, t_serverData &data)
 {
     std::string path1;
 
+    std::cout << data << std::endl;
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
+        std::cout << request.header("Path") << std::endl;
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (request.header("Path").find(path1) != std::string::npos && contains(it->methods, request.header("Method")))
             return false;

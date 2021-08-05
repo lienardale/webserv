@@ -1,9 +1,10 @@
-<html>
-	<head>
-		<title>Test PHP</title>
-	</head>
-	<body>
-		<?php echo '<p>Bonjour le monde</p>'; ?>
-		<?php phpinfo(); ?>
-	</body>
-</html>
+<?php
+
+echo '<pre>'; print_r($_GET); echo '</pre>';
+echo '<pre>'; print_r($_POST); echo '</pre>';
+
+echo '<pre>'; print_r($_FILES); echo '</pre>';
+
+echo '<pre>'; print_r($_REQUEST); echo '</pre>';
+
+?>
