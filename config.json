@@ -13,125 +13,17 @@
 			"index.html"
 		],
 		"client_max_body_size": 1000,
-		"root": "www",
-		"autoindex": "on",
+		"root": "public",
+		"autoindex": "off",
 		"location": [
 			{
-				"autoindex": "on",
-				"methods": [
-					"DELETE"
-				],
-				"index": [
-					"index.html",
-					"index.php"
-				],
-				"path": "/directory/dir/dir"
-			},
-			{
-				"autoindex": "on",
+				"autoindex": "off",
 				"methods": [],
 				"index": [
-					"test1.html",
-					"index.html",
-					"index.php",
-					"yes.html"
-        		],
-				"root": "/directory1",
-                "path": "/directory"
-            },
-			{
-				"autoindex": "on",
-				"index": [
-					"index.html",
-					"test2.html",
-            		"index.php"
-        		],
-				"fastcgi_param": {
-					"fastcgi_index": "test.php",
-					"fastcgi_param": "php-cgi"
-				},
-                "path": "/"
-            }
-        ]
-    },
-	{
-		"listen": "127.0.0.1:8000",
-		"server_name": [
-			"server2"
-		],
-		"error_page": {
-			"500": "error_views/500.html",
-			"404": "error_views/404.html",
-			"400": "error_views/400.html"
-		},
-		"index": [
-			"index.html"
-		],
-		"client_max_body_size": 1000,
-		"root": "www",
-		"autoindex": "on",
-		"location": [
-			{
-				"autoindex": "on",
-				"methods": [
-					"DELETE"
+					"index.html"
 				],
-				"index": [
-					"index.html",
-					"index.php"
-				],
-				"path": "/directory/dir/dir"
-			},
-			{
-				"autoindex": "on",
-				"methods": [],
-				"index": [
-					"test1.html",
-					"index.html",
-					"index.php",
-					"yes.html"
-        		],
-				"root": "/directory1",
-                "path": "/directory"
-            },
-			{
-				"autoindex": "on",
-				"index": [
-					"index.html",
-					"test2.html",
-            		"index.php"
-        		],
-                "path": "/"
-            }
-        ]
-    },
-    {
-        "listen": 4000,
-        "server_name": [
-            "localhost2",
-            "www.localhost2"
-        ],
-        "error_page": {
-            "500": "error_views/500.html",
-            "404": "error_views/404.html"
-        },
-        "client_max_body_size": 1000,
-        "root": "./www/",
-        "index": [
-            "index.html",
-            "index.html"
-        ],
-        "location": [
-            {
-                "methods": [
-                    "DELETE"
-                ],
-                "index": [
-                    "test.php",
-                    "index.html"
-                ],
-                "path": "/test"
-            }
-        ]
-    }
+				"path": "/"
+			}
+		]
+	}
 ]
