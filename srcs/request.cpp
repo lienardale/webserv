@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/02 15:02:12 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/06 09:57:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,21 @@ std::string http::Request::header(const std::string key) const
     return "";
 }
 
+static std::string _cleanPath(std::string path)
+{
+    std::vector< std::string > res = ft_split(path, "?");
+    return res.front();
+}
+
+static std::string _cleanQuery(std::string path)
+{
+
+    std::vector< std::string > res = ft_split(path, "?");
+    if (res.size() > 1)
+        return *++res.begin();
+    return "";
+}
+
 void http::Request::_extract(std::string &content) throw(ParsingException)
 {
     std::string method = header("method");
@@ -134,7 +149,8 @@ void http::Request::_extract(std::string &content) throw(ParsingException)
         if (splitted.size() == 3)
         {
             _headers["method"] = splitted.front();
-            _headers["path"] = splitted[1];
+            _headers["path"] = _cleanPath(splitted[1]);
+            _headers["query"] = _cleanQuery(splitted[1]);
             _headers["protocol"] = ft_split(splitted.back(), "\r").front();
             if (_headers["protocol"] != "HTTP/1.1")
                 throw BadRequest("Wrong query protocol");
