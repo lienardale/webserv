@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/04 15:35:27 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/06 15:39:38 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
 #include <stdlib.h>
+#include <unistd.h>
 
 /******************************************************************************
  *				Constructeurs et Destructeurs
@@ -184,7 +185,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         ::close(fd[1]);
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
         // execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
-        execl(cgi_script.c_str(), cgi_script.c_str(), (root + request.header("Path")).c_str() /*, getCgiEnv()*/, NULL);
+        execle(cgi_script.c_str(), cgi_script.c_str(), (root + request.header("Path")).c_str(), getCgiEnv(), NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
