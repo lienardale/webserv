@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/03 12:00:55 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/06 15:16:16 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,12 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 			ret.setHeader("Location", Location);
 		}
 		else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
-			ret.setBody(directoryListing(file, data, ret, request, loc), "text/html");
+			ret.setBody(directoryListing(file, data, ret, request, loc), mimeTypes(file, data));
 		else if (loc._directory)
 			ret.setCode(http::NOT_FOUND);
 		else
 			ret.setCode(http::FORBIDDEN);
-	}
-	else if (f.good() && php_file(request.header("Path")) && cgiActivated(file, loc))
-		ret.setBodyCGI(cgi(request, loc._location, data).getOutput()); // Cgi fct to modify and/or move
+	}	
 	else if (f.good())
 		ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()), mimeTypes(file, data));
 	else

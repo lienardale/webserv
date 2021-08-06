@@ -47,7 +47,6 @@
             		"index.php"
         		],
 				"fastcgi_param": {
-					"fastcgi_index": "test.php",
 					"fastcgi_param": "php-cgi"
 				},
                 "path": "/"

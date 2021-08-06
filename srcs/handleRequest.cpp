@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/02 15:02:26 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/06 15:35:28 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ bool php_file(std::string file)
     return false;
 }
 
+/*
 bool cgiActivated(const std::string &file, const t_locInfos &loc)
 {
     if (!loc._location.fastcgi_param.empty())
@@ -39,6 +40,7 @@ bool cgiActivated(const std::string &file, const t_locInfos &loc)
     }
     return false;
 }
+*/
 
 /*
  * Generic function to find if an element of any type exists in list
@@ -151,24 +153,16 @@ bool methodAllowed(const http::Request &request, t_serverData &data)
     return true;
 }
 
-void setLocation(t_locInfos *loc, t_serverData &data, const http::Request &request)
+void locCgi(const http::Request &request, t_serverData &data, t_locInfos *loc)
 {
     std::string path1;
-    std::string requestPath = request.header("Path");
-    int i = requestPath.size();
 
-    for (std::string::reverse_iterator it = requestPath.rbegin(); it != requestPath.rend() && *it != '/'; ++it)
-    {
-        i--;
-    }
-    requestPath.erase(i, requestPath.size());
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = it->path;
-        if (*path1.rbegin() != '/')
-            path1.push_back('/');
-        if (requestPath == path1)
-            loc->_location = *it;
+        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1)
+                                                                          : it->path;
+		if (!it->fastcgi_param["fastcgi_param"].empty() && request.header("Path").find(path1) != std::string::npos)
+			loc->_fastcgiParam = it->fastcgi_param["fastcgi_param"];
     }
 }
 
@@ -186,10 +180,13 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
     loc._urlPath = request.header("Path");
     while (!(path = pathModifiedIfRoot(request.header("Path"), data, &loc)).empty())
         request.setHeaderPath(path);
-    setLocation(&loc, data, request);
     loc._directory = directory(request.header("Path"));
     locIndex(request, data, &loc);
     locAutoindex(request, data);
+	locCgi(request, data, &loc);
+	std::cout << loc._fastcgiParam << std::endl;
+	if ((method == "GET" || method == "POST" || method == "DELETE") && methodAllowed(request, data) && !loc._fastcgiParam.empty())
+		return handleCGI(request, data, loc);
     if (method == "GET" && methodAllowed(request, data))
         return handleGET(request, data, loc);
     if (method == "POST" && methodAllowed(request, data))

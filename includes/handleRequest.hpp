@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:47:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/29 14:31:27 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/06 15:36:34 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ typedef struct	s_locInfos
 	std::string	_content;
 	std::string _locb;
 	std::string _urlPath;
-	t_locationData _location;
+	std::string _fastcgiParam;
+	bool cgi;
 }				t_locInfos;
 
 http::Response handleRequest(const http::Request &request, t_serverData &data);
@@ -35,6 +36,8 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 http::Response handlePOST(const http::Request &request, const t_serverData &data, const t_locInfos &loc);
 
 http::Response handleDELETE(const http::Request &request, const t_serverData &data);
+
+http::Response handleCGI(const http::Request &request, const t_serverData &data, const t_locInfos &loc);
 
 bool php_file(std::string file);
 

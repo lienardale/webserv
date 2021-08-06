@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/07/29 14:46:06 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/04 15:35:27 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ cgi::cgi()
 {
 }
 
-cgi::cgi(const http::Request &request, const t_locationData &data,
+cgi::cgi(const http::Request &request, const t_locInfos &loc,
          const t_serverData &dataserv) // throw( cgi::CGIException )
 {
-    setCgi(request, data);
-    Cgi(request, data, dataserv);
+    //setCgi(request, data);
+    Cgi(request, loc, dataserv);
 }
 
 cgi::~cgi()
@@ -167,7 +167,7 @@ void cgi::setCgi(const http::Request &request, const t_locationData &data)
     setCgiEnv();
 }
 
-void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_serverData &data_serv)
+void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv)
 {
     int fd[2];
     char content[100000];
@@ -176,7 +176,7 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
     std::string cgi_script;
 
     pipe(fd);
-    cgi_script = getenv("CGI_BIN") + SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
+    cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
     if ((pid = fork()) == 0)
     {
         dup2(fd[1], STDOUT_FILENO);
