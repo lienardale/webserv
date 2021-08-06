@@ -6,7 +6,7 @@
 #    By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/08/03 14:41:39 by dboyer           ###   ########.fr        #
+#    Updated: 2021/08/06 16:52:02 by pcariou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,7 @@ SRCS    			=	socket\
 					handleGET\
 					handleRequest\
 					handlePOST\
-					handleDELETE
+					handleDELETE\
 
 INCLUDES			=	-I ./includes
 

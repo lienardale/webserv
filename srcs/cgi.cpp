@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/03 15:55:50 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/06 18:15:46 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ cgi::cgi()
 {
 }
 
-cgi::cgi(const http::Request &request, const t_locationData &data,
-         const t_serverData &dataserv) // throw( cgi::CGIException )
+cgi::cgi(const http::Request &request, const t_locInfos &loc,
+         const t_serverData &dataserv, std::string file) // throw( cgi::CGIException )
 {
-    setCgi(request, data);
-    Cgi(request, data, dataserv);
+    setCgi(request, loc, dataserv, file);
+    Cgi(request, loc, dataserv, file);
 }
 
 cgi::~cgi()
@@ -100,37 +100,36 @@ std::string cgi::strtrim(std::string s, const char *t)
     return ltrim(rtrim(s, t), t);
 }
 
-void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data)
+void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, const t_serverData &data, std::string file)
 {
-    (void)data;
     char buffer[33];
-    std::string cgi_script = SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
+    std::string cgi_script = SSTR("/") + loc._fastcgiParam;
     bzero(buffer, sizeof(buffer));
     s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                        // ok
     s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length");        // ok
-    s_env._content_type = "CONTENT_TYPE=" + request.header("Content-Type");              // ok
-    s_env._path_info = "PATH_INFO=/" + strtrim(data.root, "/") + request.header("Path"); // ok
+    s_env._content_type = "CONTENT_TYPE=" + mimeTypes(file, data);              // ok
+    s_env._path_info = "PATH_INFO=" + file; // ok
     s_env._path_translated =
         "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path"); // ok
-    s_env._query_string = "QUERY_STRING=" + parseURI(request.header("Uri"));                               // ok
+    s_env._query_string = "QUERY_STRING=" + parseURI(request.header("Query"));                               // ok
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                                          // ok
     s_env._remote_host = "REMOTE_HOST=" + request.header("Host");                                          // ok
     s_env._remote_ident = "REMOTE_IDENT=user_id";                                                          // ok
     s_env._remote_user = "REMOTE_USER=user_name";                                                          // ok
     s_env._request_method = "REQUEST_METHOD=" + request.header("Method");                                  // ok
-    s_env._request_uri = "REQUEST_URI=" + request.header("Uri");                                           // ok
-    s_env._script_name = "SCRIPT_NAME=" + cgi_script; // FAST_CGI_CONF
-    s_env._script_file_name = "SCRIPT_FILENAME=" + cgi_script;
-    s_env._server_port = "SERVER_PORT=" + request.header("Port");             /*+ SSTR(itoa(data.listen,buffer,10));*/
+    s_env._request_uri = "REQUEST_URI=" + request.header("Path") + ((request.header("Query").empty()) ? "" : "?" ) + request.header("Query");                                           // ok
+    s_env._script_name = "SCRIPT_NAME=" + file; // FAST_CGI_CONF
+    s_env._script_file_name = "SCRIPT_FILENAME=" + file;
+    s_env._server_port = "SERVER_PORT=" + SSTR(data.listen);             /*+ SSTR(itoa(data.listen,buffer,10));*/
     s_env._server_protocol = "SERVER_PROTOCOL=" + request.header("Protocol"); // ok
     s_env._redirect_status = "REDIRECT_STATUS=200";
     s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                    // ok
-    s_env._server_name = "SERVER_NAME=WEBSERV";                                                // ok
+    s_env._server_name = "SERVER_NAME=" + data.server_name.front();                                                // ok
     s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";                                      // ok
     s_env._http_accept = "HTTP_ACCEPT=" + request.header("Accept");                            // ok
     s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + request.header("Accept-Language"); // ok
     s_env._http_user_agent = "HTTP_USER_AGENT=" + request.header("User-Agent");                // ok
-    s_env._http_cookie = "HTTP_COOKIE=" + request.header("                                            ");
+    s_env._http_cookie = "HTTP_COOKIE=" + request.header("cookie");
 }
 
 void cgi::setCgiEnv(void)
@@ -162,13 +161,13 @@ void cgi::setCgiEnv(void)
     env[LEN_CGI_ENV] = NULL;
 }
 
-void cgi::setCgi(const http::Request &request, const t_locationData &data)
+void cgi::setCgi(const http::Request &request, const t_locInfos &loc, const t_serverData &dataserv, std::string file)
 {
-    setCgiMetaVar(request, data);
+    setCgiMetaVar(request, loc, dataserv, file);
     setCgiEnv();
 }
 
-void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_serverData &data_serv)
+void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv, std::string file)
 {
     int fd[2];
     char content[100000];
@@ -176,17 +175,17 @@ void cgi::Cgi(const http::Request &request, const t_locationData &data, const t_
     std::string root;
     std::string cgi_script;
 
+	(void)request;
     pipe(fd);
-
-    cgi_script = getenv("CGI_BIN") + SSTR("/") + (*(data.fastcgi_param.find("fastcgi_param"))).second;
+    cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
     if ((pid = fork()) == 0)
     {
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
-        // execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
-        execle(cgi_script.c_str(), cgi_script.c_str(), (root + request.header("Path")).c_str(), getCgiEnv(), NULL);
+        //execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
+        execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL);
     }
     ::close(fd[1]);
     read(fd[0], content, sizeof(content));
