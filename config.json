@@ -20,18 +20,56 @@
 				"autoindex": "off",
 				"methods": [],
 				"index": [
-					"index.html"
+					"test1.html",
+					"index.html",
+					"index.php",
+					"yes.html"
+        		],
+				"root": "/directory1",
+                "path": "/directory"
+            },
+			{
+				"autoindex": "on",
+				"index": [
+					"index.html",
+					"test2.html",
+            		"index.php"
+        		],
+				"fastcgi_param": {
+					"fastcgi_param": "php-cgi"
+				},
+                "path": "/"
+            }
+        ]
+    },
+	{
+		"listen": "127.0.0.1:8000",
+		"server_name": [
+			"server2"
+		],
+		"error_page": {
+			"500": "error_views/500.html",
+			"404": "error_views/404.html",
+			"400": "error_views/400.html"
+		},
+		"index": [
+			"index.html"
+		],
+		"client_max_body_size": 1000,
+		"root": "www",
+		"autoindex": "on",
+		"location": [
+			{
+				"autoindex": "on",
+				"methods": [
+					"DELETE"
+				],
+				"index": [
+					"index.html",
+					"index.php"
 				],
 				"path": "/"
 			},
-			{
-				"autoindex": "off",
-				"methods": [],
-				"index": [
-					"index.html"
-				],
-				"path": "/"
-			}
 		]
 	}
 ]

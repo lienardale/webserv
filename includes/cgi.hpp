@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/07/26 18:25:27 by alienard         ###   ########.fr       */
+/*   Updated: 2021/08/06 18:14:05 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,17 +92,17 @@ class cgi
     cgi();
 
   public:
-    cgi(const http::Request &request, const t_locationData &data, const t_serverData &dataserv)/* throw( cgi::CGIException )*/;;
+    cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &dataserv, std::string file)/* throw( cgi::CGIException )*/;;
     cgi(const cgi &);
     ~cgi();
     cgi &operator=(const cgi &);
-    void setCgi(const http::Request &request, const t_locationData &data);
-    void setCgiMetaVar(const http::Request &request, const t_locationData &data);
+	void setCgi(const http::Request &request, const t_locInfos &loc, const t_serverData &dataserv, std::string file);
+	void setCgiMetaVar(const http::Request &request, const t_locInfos &loc, const t_serverData &data, std::string file);
     void setCgiEnv(void);
     std::string parseURI(std::string uri);
     std::string strtrim(std::string str, const char *c);
     char **getCgiEnv(void);
-	void Cgi(const http::Request &request, const t_locationData &data, const t_serverData &data_serv);
+	void Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv, std::string file);
 	std::string	getOutput() const;
 
     // class CGIException : public std::exception
