@@ -111,7 +111,7 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     s_env._path_info = "PATH_INFO=" + file; // ok
     s_env._path_translated =
         "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path"); // ok
-    s_env._query_string = "QUERY_STRING=" + parseURI(request.header("Query"));                               // ok
+    s_env._query_string = "QUERY_STRING=" + request.header("query");                                       // ok
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                                          // ok
     s_env._remote_host = "REMOTE_HOST=" + request.header("Host");                                          // ok
     s_env._remote_ident = "REMOTE_IDENT=user_id";                                                          // ok

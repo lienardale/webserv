@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:42:33 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/09 10:52:03 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/06 11:07:05 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "webserv.hpp"
 #include <algorithm>
 #include <list>
+#include <map>
 
 /****************************************************************************************
  *               	Nettoyage et lecture de fichier
@@ -72,7 +73,27 @@ Parser::~Parser(void)
  *              Member functions
  ******************************************************************************/
 
+static bool _checkLocationDup(std::list< t_locationData > &locations)
+{
+    std::map< std::string, bool > paths;
+    for (std::list< t_locationData >::iterator it = locations.begin(); it != locations.end(); it++)
+    {
+        if (paths.count(it->path))
+            return false;
+        paths[it->path] = true;
+    }
+    return true;
+}
+
 std::list< t_serverData > Parser::parse(void) throw(ParsingException)
 {
-    return parseStructList< t_serverData >(castServerMap(), _content);
+    int n_server = 1;
+    std::list< t_serverData > res = parseStructList< t_serverData >(castServerMap(), _content);
+    for (std::list< t_serverData >::iterator it = res.begin(); it != res.end(); it++)
+    {
+        if (!_checkLocationDup(it->locations))
+            throw ParsingException("Duplicate path in locations for server " + SSTR(n_server));
+        n_server++;
+    }
+    return res;
 }
