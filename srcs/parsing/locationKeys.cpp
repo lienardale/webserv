@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 13:30:33 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/06 10:49:06 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void handleIndex(t_locationData &location, const std::string value) throw
 
 static void handlePath(t_locationData &location, const std::string value) throw(ParsingException)
 {
-    if (location.path.size())
+    if (!location.path.empty())
         throw ValueError("Duplicate key: path");
     location.path = value;
 }
