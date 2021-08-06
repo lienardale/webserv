@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/03 15:55:50 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/06 10:14:12 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locationData &data
     s_env._path_info = "PATH_INFO=/" + strtrim(data.root, "/") + request.header("Path"); // ok
     s_env._path_translated =
         "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path"); // ok
-    s_env._query_string = "QUERY_STRING=" + parseURI(request.header("Uri"));                               // ok
+    s_env._query_string = "QUERY_STRING=" + request.header("query");                                       // ok
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                                          // ok
     s_env._remote_host = "REMOTE_HOST=" + request.header("Host");                                          // ok
     s_env._remote_ident = "REMOTE_IDENT=user_id";                                                          // ok
