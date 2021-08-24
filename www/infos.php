@@ -1,1 +1,1 @@
-<?php var_export($_SERVER)?>
+<?php echo "bonjour"; ?>

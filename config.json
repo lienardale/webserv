@@ -68,8 +68,11 @@
 					"index.html",
 					"index.php"
 				],
+				"fastcgi_param": {
+					"fastcgi_param": "php-cgi"
+				},
 				"path": "/"
-			},
+			}
 		]
 	}
 ]

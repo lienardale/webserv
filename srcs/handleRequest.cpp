@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/06 17:13:42 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/24 17:21:38 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,20 +87,6 @@ bool php_file(std::string file)
         return true;
     return false;
 }
-
-/*
-bool cgiActivated(const std::string &file, const t_locInfos &loc)
-{
-    if (!loc._location.fastcgi_param.empty())
-    {
-        if (loc._location.fastcgi_param.find("fastcgi_param") != loc._location.fastcgi_param.end() &&
-            loc._location.fastcgi_param.find("fastcgi_index") != loc._location.fastcgi_param.end() &&
-            file.find(loc._location.fastcgi_param.find("fastcgi_index")->second) != std::string::npos)
-            return true;
-    }
-    return false;
-}
-*/
 
 /*
  * Generic function to find if an element of any type exists in list
@@ -204,7 +190,6 @@ bool methodAllowed(const http::Request &request, t_serverData &data)
 {
     std::string path1;
 
-    std::cout << data << std::endl;
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
         std::cout << request.header("Path") << std::endl;
@@ -246,7 +231,6 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
     locIndex(request, data, &loc);
     locAutoindex(request, data);
 	locCgi(request, data, &loc);
-	//std::cout << loc._fastcgiParam << std::endl;
     if (method == "GET" && methodAllowed(request, data))
         return handleGET(request, data, loc);
     if (method == "POST" && methodAllowed(request, data))
