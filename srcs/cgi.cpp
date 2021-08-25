@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/24 19:00:04 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/25 15:43:47 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     ::close(fd[0]);
     waitpid(pid, NULL, -1);
     _output = std::string(content);
+	memset(content, 0, sizeof(content));
 }
 
 std::string cgi::getOutput() const
