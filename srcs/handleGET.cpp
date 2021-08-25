@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/24 19:43:38 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/25 15:24:31 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,11 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 			ret.setCode(http::FORBIDDEN);
 	}
 	else if (f.good() && !loc._fastcgiParam.empty() && php_file(file))
-		ret.setBodyCGI(cgi(request, loc, data, file).getOutput());
+	{
+		const cgi *obj = new cgi(request, loc, data, file);
+		ret.setBodyCGI(obj->getOutput());
+		delete obj;
+	}
 	else if (f.good())
 		ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()), mimeTypes(file, data));
 	else
