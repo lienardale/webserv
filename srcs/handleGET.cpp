@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/06 18:14:33 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/24 19:43:38 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,14 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 	std::string file;
 	std::string Location;
 	std::string slash;
+	std::string root;
 
 	http::Response ret = http::Response(http::OK);
-
+	
 	if (request.header("Path") == "/" || (loc._directory && !loc._index.empty()))
-		file = data.root + request.header("Path") + loc._index;
+		file = data.root.substr(0, data.root.size() - 1) + request.header("Path") + loc._index;
 	else
-		file = data.root + request.header("Path"); // classic path request
+		file = data.root.substr(0, data.root.size() - 1) + request.header("Path"); // classic path request
 	f.open(file.c_str(), std::ios::in);	
 	if (((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK))) && !emptyFile(&f))
 	{
@@ -46,7 +47,7 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 		else
 			ret.setCode(http::FORBIDDEN);
 	}
-	else if (f.good() && !loc._fastcgiParam.empty())
+	else if (f.good() && !loc._fastcgiParam.empty() && php_file(file))
 		ret.setBodyCGI(cgi(request, loc, data, file).getOutput());
 	else if (f.good())
 		ret.setBody(std::string((std::istreambuf_iterator< char >(f)), std::istreambuf_iterator< char >()), mimeTypes(file, data));

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/06 18:15:46 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/24 19:00:04 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,13 +178,15 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
 	(void)request;
     pipe(fd);
     cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
+	for (int i = 0; env[i]; i++)
+		std::cout << env[i] << std::endl;
     if ((pid = fork()) == 0)
     {
         dup2(fd[1], STDOUT_FILENO);
         ::close(fd[0]);
         ::close(fd[1]);
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
-        //execl("php-cgi", "php-cgi", (root + request.header("Path")).c_str(), NULL);
+        //execl(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), NULL);
         execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL);
     }
     ::close(fd[1]);

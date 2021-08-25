@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/12 17:48:20 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/24 17:09:04 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 http::Response handleDELETE(const http::Request &request, const t_serverData &data)
 {
-    std::string path = data.root + request.header("path");
+    std::string path = data.root.substr(0, data.root.size() - 1) + request.header("path");
     std::ifstream f(path.c_str());
     bool isDir = f.good() && !f.rdbuf()->in_avail();
     f.close();

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/09 11:08:41 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/06 18:14:45 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/24 17:09:24 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ http::Response handlePOST(const http::Request &request, const t_serverData &data
     http::Response ret = http::Response(http::OK);
 
 	if (request.header("Path") == "/" || (loc._directory && !loc._index.empty()))
-		file = data.root + request.header("Path") + loc._index;
+		file = data.root.substr(0, data.root.size() - 1) + request.header("Path") + loc._index;
 	else
-		file = data.root + request.header("Path"); // classic path request
+		file = data.root.substr(0, data.root.size() - 1) + request.header("Path"); // classic path request
 	f.open(file.c_str(), std::ios::in);
 	if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK)))
 	{
