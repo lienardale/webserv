@@ -5,7 +5,12 @@ $uploaddir = './uploads/';
 
 echo "IN UPLOAD SCRIPT";
 
-echo "BEFORE SAVE";
+$env_array = getenv();
+foreach ($env_array as $key=>$value)
+{
+    echo"$key => $value <br />";
+}
+
 // Sauvegarde de tous les fichiers passés en input
 foreach ($_FILES as $file) {
     $uploadfile = $uploaddir . basename($file['name']);
@@ -15,5 +20,4 @@ foreach ($_FILES as $file) {
         echo "Erreur dans l'envoie du fichier " . $file['name'] . "\n";
     }
 }
-echo "AFTER SAVE";
 ?>

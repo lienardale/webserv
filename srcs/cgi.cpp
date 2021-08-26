@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/25 15:43:47 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/26 18:26:23 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,12 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     bzero(buffer, sizeof(buffer));
     s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                        // ok
     s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length");        // ok
-    s_env._content_type = "CONTENT_TYPE=" + mimeTypes(file, data);              // ok
+    if (request.header("Method") == "POST")
+        s_env._content_type = "CONTENT_TYPE=" + request.header("Content-Type");
+    else
+        s_env._content_type = "CONTENT_TYPE=" + mimeTypes(file, data);              // ok
+    // std::cout << "Content Type : "<<request.header("Content-Type") << std::endl;
+    // std::cout << "Mime Type : " <<mimeTypes(file, data) << std::endl;
     s_env._path_info = "PATH_INFO=" + file; // ok
     s_env._path_translated =
         "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path"); // ok
@@ -169,32 +174,107 @@ void cgi::setCgi(const http::Request &request, const t_locInfos &loc, const t_se
 
 void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv, std::string file)
 {
-    int fd[2];
+    // int fd_in[2];
+    int fd_out[2];
     char content[100000];
     int pid;
     std::string root;
     std::string cgi_script;
 
+    int cp_stdin;
+    int cp_stdout;
+    FILE *f_in  =tmpfile();
+    // FILE *f_out = tmpfile();
+
+    int fdin = fileno(f_in);
+    // int fdout = fileno(f_out);
+
+    cp_stdin = dup(STDIN_FILENO);
+    cp_stdout = dup(STDOUT_FILENO);
+
+    
+
 	(void)request;
-    pipe(fd);
-    cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
-	for (int i = 0; env[i]; i++)
-		std::cout << env[i] << std::endl;
-    if ((pid = fork()) == 0)
+    // if (pipe(fd_in) == -1)
+    //     std::cout << "PIPE ERROR" << std::endl;
+        // replace by throw
+    if (pipe(fd_out) == -1)
     {
-        dup2(fd[1], STDOUT_FILENO);
-        ::close(fd[0]);
-        ::close(fd[1]);
-        root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
-        //execl(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), NULL);
-        execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL);
+        // ::close(fd_in[1]);
+        // ::close(fd_in[0]);
+        std::cout << "PIPE ERROR" << std::endl;
+        // replace by throw
     }
-    ::close(fd[1]);
-    read(fd[0], content, sizeof(content));
-    ::close(fd[0]);
+
+    if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
+        std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
+    // if (write(fd_in[1], request.header("body").c_str(), strlen(request.header("body").c_str())) == -1)
+    //     std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
+    // lseek(fdin, 0, SEEK_SET);
+    
+    cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
+	// for (int i = 0; env[i]; i++)
+	// 	std::cout << env[i] << std::endl;
+
+    pid = fork();
+    if ( pid == 0 )
+    {
+        if (dup2(fd_out[1], STDOUT_FILENO) == -1)
+            std::cerr << "\ndup2 fd_out failed\n" << std::endl;
+        if (::close(fd_out[1]) == -1)
+            std::cerr << "\nclose fd_out[1] failed in child\n" << std::endl;
+        if (::close(fd_out[0]) == -1)
+            std::cerr << "\nclose fd_out[0] failed in child\n" << std::endl;
+        // if (dup2(fd_in[0], STDIN_FILENO) == -1)
+        //     std::cerr << "\ndup2 fd_in failed\n" << std::endl;
+        // if (::close(fd_in[0]) == -1)
+        //     std::cerr << "\nclose fd_in[1] failed\n" << std::endl;
+        
+
+        dup2(fdin, STDIN_FILENO);
+        // dup2(fdout, STDOUT_FILENO);
+
+        // ::close(fd_in[1]);
+        // ::close(fd_in[0]);
+        root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
+        // execl(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), NULL);
+        if (execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL) == -1){
+
+            std::cerr << "EXEC ERROR : " << strerror(errno)  << std::endl;
+            // exit(0);
+            // replace by throw
+        }
+    }
+    else if (pid < 0)
+    {
+        std::cout << "FORK ERROR" << std::endl;
+        // replace by throw
+    }
     waitpid(pid, NULL, -1);
-    _output = std::string(content);
-	memset(content, 0, sizeof(content));
+    ::close(fd_out[1]);
+    while (read(fd_out[0], content, sizeof(content)) > 0)
+    {
+        std::cout << "reading..." << std::endl;
+        _output += std::string(content);
+    }
+    ::close(fd_out[0]);
+    // ::close(fd_in[0]);
+    // ::close(fd_in[1]);
+    // if (read(fdout, content, sizeof(content)) == -1)
+    //     std::cout << "READ ERROR" << std::endl; 
+    // lseek(fdout, 0, SEEK_SET);
+    // _output = std::string(content);
+    std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
+    memset(content, 0, sizeof(content));
+
+    dup2(cp_stdin, STDIN_FILENO);
+    dup2(cp_stdout, STDOUT_FILENO);
+    fclose(f_in);
+    // fclose(f_out);
+    // close(fdout);
+    close(fdin);
+    close(cp_stdout);
+    close(cp_stdin);
 }
 
 std::string cgi::getOutput() const
