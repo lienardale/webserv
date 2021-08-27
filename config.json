@@ -69,7 +69,7 @@
 					"index.php"
 				],
 				"fastcgi_param": {
-					"fastcgi_param": "php-cgi-vm"
+					"fastcgi_param": "print-cgi"
 				},
 				"path": "/"
 			}

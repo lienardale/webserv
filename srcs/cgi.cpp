@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/26 18:26:23 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/27 16:41:06 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,6 +219,8 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     pid = fork();
     if ( pid == 0 )
     {
+        // if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
+        //     std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
         if (dup2(fd_out[1], STDOUT_FILENO) == -1)
             std::cerr << "\ndup2 fd_out failed\n" << std::endl;
         if (::close(fd_out[1]) == -1)
@@ -238,11 +240,15 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         // ::close(fd_in[0]);
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
         // execl(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), NULL);
-        if (execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL) == -1){
-
-            std::cerr << "EXEC ERROR : " << strerror(errno)  << std::endl;
-            // exit(0);
-            // replace by throw
+        char *argv[3];
+        argv[0] = strdup(cgi_script.c_str());
+        argv[1] = strdup(file.c_str());
+        argv[2] = NULL;
+        // if (execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL) == -1){
+        if (execve(argv[0], argv, getCgiEnv()) == -1){
+                std::cerr << "EXEC ERROR : " << strerror(errno)  << std::endl;
+                // exit(0);
+                // replace by throw
         }
     }
     else if (pid < 0)
@@ -250,31 +256,34 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         std::cout << "FORK ERROR" << std::endl;
         // replace by throw
     }
-    waitpid(pid, NULL, -1);
-    ::close(fd_out[1]);
-    while (read(fd_out[0], content, sizeof(content)) > 0)
+    else
     {
-        std::cout << "reading..." << std::endl;
-        _output += std::string(content);
-    }
-    ::close(fd_out[0]);
-    // ::close(fd_in[0]);
-    // ::close(fd_in[1]);
-    // if (read(fdout, content, sizeof(content)) == -1)
-    //     std::cout << "READ ERROR" << std::endl; 
-    // lseek(fdout, 0, SEEK_SET);
-    // _output = std::string(content);
-    std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
-    memset(content, 0, sizeof(content));
+        waitpid(pid, NULL, -1);
+        ::close(fd_out[1]);
+        while (read(fd_out[0], content, sizeof(content)) > 0)
+        {
+            std::cout << "reading..." << std::endl;
+            _output += std::string(content);
+        }
+        ::close(fd_out[0]);
+        // ::close(fd_in[0]);
+        // ::close(fd_in[1]);
+        // if (read(fdout, content, sizeof(content)) == -1)
+        //     std::cout << "READ ERROR" << std::endl; 
+        // lseek(fdout, 0, SEEK_SET);
+        // _output = std::string(content);
+        // std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
+        memset(content, 0, sizeof(content));
 
-    dup2(cp_stdin, STDIN_FILENO);
-    dup2(cp_stdout, STDOUT_FILENO);
-    fclose(f_in);
-    // fclose(f_out);
-    // close(fdout);
-    close(fdin);
-    close(cp_stdout);
-    close(cp_stdin);
+        dup2(cp_stdin, STDIN_FILENO);
+        dup2(cp_stdout, STDOUT_FILENO);
+        fclose(f_in);
+        // fclose(f_out);
+        // close(fdout);
+        close(fdin);
+        close(cp_stdout);
+        close(cp_stdin);
+    }
 }
 
 std::string cgi::getOutput() const
