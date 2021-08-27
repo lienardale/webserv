@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/27 17:19:42 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/27 17:50:41 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,6 @@ void cgi::setCgi(const http::Request &request, const t_locInfos &loc, const t_se
 
 void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv, std::string file)
 {
-    // int fd_in[2];
     int fd_out[2];
     char content[100000];
     int pid;
@@ -182,38 +181,19 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     std::string cgi_script;
 
     int cp_stdin;
-    // int cp_stdout;
     FILE *f_in  =tmpfile();
-    // FILE *f_out = tmpfile();
-
     int fdin = fileno(f_in);
-    // int fdout = fileno(f_out);
-
     cp_stdin = dup(STDIN_FILENO);
-    // cp_stdout = dup(STDOUT_FILENO);
-
-    
-
+ 
 	(void)request;
-    // if (pipe(fd_in) == -1)
-    //     std::cout << "PIPE ERROR" << std::endl;
-        // replace by throw
     if (pipe(fd_out) == -1)
-    {
-        // ::close(fd_in[1]);
-        // ::close(fd_in[0]);
         std::cout << "PIPE ERROR" << std::endl;
-        // replace by throw
-    }
 
     if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
         std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
-read(fdin, content, sizeof(content));        
-std::cout << "CONTENT >>>>" << SSTR(content) <<std::endl;
-    // if (write(fd_in[1], request.header("body").c_str(), strlen(request.header("body").c_str())) == -1)
-    //     std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
-    // lseek(fdin, 0, SEEK_SET);
-    
+    lseek(fdin, 0, SEEK_SET);
+
+
     cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
 	// for (int i = 0; env[i]; i++)
 	// 	std::cout << env[i] << std::endl;
@@ -221,27 +201,16 @@ std::cout << "CONTENT >>>>" << SSTR(content) <<std::endl;
     pid = fork();
     if ( pid == 0 )
     {
-        // if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
-        //     std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
         if (dup2(fd_out[1], STDOUT_FILENO) == -1)
             std::cerr << "\ndup2 fd_out failed\n" << std::endl;
         if (::close(fd_out[1]) == -1)
             std::cerr << "\nclose fd_out[1] failed in child\n" << std::endl;
         if (::close(fd_out[0]) == -1)
-            std::cerr << "\nclose fd_out[0] failed in child\n" << std::endl;
-        // if (dup2(fd_in[0], STDIN_FILENO) == -1)
-        //     std::cerr << "\ndup2 fd_in failed\n" << std::endl;
-        // if (::close(fd_in[0]) == -1)
-        //     std::cerr << "\nclose fd_in[1] failed\n" << std::endl;
-        
+            std::cerr << "\nclose fd_out[0] failed in child\n" << std::endl;        
 
-        // dup2(fdin, STDIN_FILENO);
-        // dup2(fdout, STDOUT_FILENO);
+        dup2(fdin, STDIN_FILENO);
 
-        // ::close(fd_in[1]);
-        // ::close(fd_in[0]);
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
-        // execl(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), NULL);
         char *argv[3];
         argv[0] = strdup(cgi_script.c_str());
         argv[1] = strdup(file.c_str());
@@ -249,7 +218,6 @@ std::cout << "CONTENT >>>>" << SSTR(content) <<std::endl;
         // if (execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL) == -1){
         if (execve(argv[0], argv, getCgiEnv()) == -1){
                 std::cerr << "EXEC ERROR : " << strerror(errno)  << std::endl;
-                // exit(0);
                 // replace by throw
         }
     }
@@ -262,28 +230,15 @@ std::cout << "CONTENT >>>>" << SSTR(content) <<std::endl;
     {
         waitpid(pid, NULL, -1);
         ::close(fd_out[1]);
-        while (read(fd_out[0], content, sizeof(content)) > 0)
-        {
-            std::cout << "reading..." << std::endl;
-            _output += std::string(content);
-        }
+        if (read(fd_out[0], content, sizeof(content)) == -1)
+            std::cout << "READ ERROR" << std::endl; 
         ::close(fd_out[0]);
-        // ::close(fd_in[0]);
-        // ::close(fd_in[1]);
-        // if (read(fdout, content, sizeof(content)) == -1)
-        //     std::cout << "READ ERROR" << std::endl; 
-        // lseek(fdout, 0, SEEK_SET);
-        // _output = std::string(content);
+        _output = std::string(content);
         // std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
         memset(content, 0, sizeof(content));
-
-        // dup2(cp_stdin, STDIN_FILENO);
-        // dup2(cp_stdout, STDOUT_FILENO);
+        dup2(STDIN_FILENO, cp_stdin);
         fclose(f_in);
-        // fclose(f_out);
-        // close(fdout);
         close(fdin);
-        // close(cp_stdout);
         close(cp_stdin);
     }
 }
