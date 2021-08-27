@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/27 16:41:06 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/27 17:19:42 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     std::string cgi_script;
 
     int cp_stdin;
-    int cp_stdout;
+    // int cp_stdout;
     FILE *f_in  =tmpfile();
     // FILE *f_out = tmpfile();
 
@@ -190,7 +190,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     // int fdout = fileno(f_out);
 
     cp_stdin = dup(STDIN_FILENO);
-    cp_stdout = dup(STDOUT_FILENO);
+    // cp_stdout = dup(STDOUT_FILENO);
 
     
 
@@ -208,6 +208,8 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
 
     if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
         std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
+read(fdin, content, sizeof(content));        
+std::cout << "CONTENT >>>>" << SSTR(content) <<std::endl;
     // if (write(fd_in[1], request.header("body").c_str(), strlen(request.header("body").c_str())) == -1)
     //     std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
     // lseek(fdin, 0, SEEK_SET);
@@ -233,7 +235,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         //     std::cerr << "\nclose fd_in[1] failed\n" << std::endl;
         
 
-        dup2(fdin, STDIN_FILENO);
+        // dup2(fdin, STDIN_FILENO);
         // dup2(fdout, STDOUT_FILENO);
 
         // ::close(fd_in[1]);
@@ -275,13 +277,13 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         // std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
         memset(content, 0, sizeof(content));
 
-        dup2(cp_stdin, STDIN_FILENO);
-        dup2(cp_stdout, STDOUT_FILENO);
+        // dup2(cp_stdin, STDIN_FILENO);
+        // dup2(cp_stdout, STDOUT_FILENO);
         fclose(f_in);
         // fclose(f_out);
         // close(fdout);
         close(fdin);
-        close(cp_stdout);
+        // close(cp_stdout);
         close(cp_stdin);
     }
 }
