@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/27 18:33:47 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/27 19:18:25 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,8 +207,8 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     {
         if (dup2(fd_out[1], STDOUT_FILENO) == -1)
             std::cerr << "\ndup2 fd_out failed\n" << std::endl;
-        if (::close(fd_out[1]) == -1)
-            std::cerr << "\nclose fd_out[1] failed in child\n" << std::endl;
+        // if (::close(fd_out[1]) == -1)
+        //     std::cerr << "\nclose fd_out[1] failed in child\n" << std::endl;
         if (::close(fd_out[0]) == -1)
             std::cerr << "\nclose fd_out[0] failed in child\n" << std::endl;        
 
@@ -235,7 +235,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
             std::cout << "READ ERROR" << std::endl; 
         ::close(fd_out[0]);
         _output = std::string(content);
-        // std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
+        std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
         memset(content, 0, sizeof(content));
         dup2(STDIN_FILENO, cp_stdin);
         fclose(f_in);
