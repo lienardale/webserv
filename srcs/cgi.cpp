@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/27 17:50:41 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/27 18:33:47 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,6 +197,10 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
 	// for (int i = 0; env[i]; i++)
 	// 	std::cout << env[i] << std::endl;
+    char *argv[3];
+    argv[0] = strdup(cgi_script.c_str());
+    argv[1] = strdup(file.c_str());
+    argv[2] = NULL;
 
     pid = fork();
     if ( pid == 0 )
@@ -211,10 +215,6 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         dup2(fdin, STDIN_FILENO);
 
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
-        char *argv[3];
-        argv[0] = strdup(cgi_script.c_str());
-        argv[1] = strdup(file.c_str());
-        argv[2] = NULL;
         // if (execle(cgi_script.c_str(), cgi_script.c_str(), file.c_str(), getCgiEnv() , NULL) == -1){
         if (execve(argv[0], argv, getCgiEnv()) == -1){
                 std::cerr << "EXEC ERROR : " << strerror(errno)  << std::endl;
@@ -230,6 +230,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     {
         waitpid(pid, NULL, -1);
         ::close(fd_out[1]);
+        memset(content, 0, sizeof(content));
         if (read(fd_out[0], content, sizeof(content)) == -1)
             std::cout << "READ ERROR" << std::endl; 
         ::close(fd_out[0]);
@@ -240,6 +241,8 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         fclose(f_in);
         close(fdin);
         close(cp_stdin);
+        free(argv[0]);
+        free(argv[1]);
     }
 }
 

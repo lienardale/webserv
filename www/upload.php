@@ -3,12 +3,12 @@
 // Dossier d'upload
 $uploaddir = './uploads/';
 
-echo "IN UPLOAD SCRIPT";
+echo "IN UPLOAD SCRIPT\n";
 
 $env_array = getenv();
 foreach ($env_array as $key=>$value)
 {
-    echo"$key => $value <br />";
+    echo"$key => $value <br />\n";
 }
 
 // Sauvegarde de tous les fichiers passés en input
