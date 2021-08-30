@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/30 16:33:29 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/30 20:12:30 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,11 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                        // ok
     s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length");        // ok
     if (request.header("Method") == "POST")
+    {
         s_env._content_type = "CONTENT_TYPE=" + request.header("Content-Type");
+        // 
+        // s_env._content_type = "CONTENT_TYPE=multipart/form-data; boundary=--------------------------181455433616366442896447";
+    }
     else
         s_env._content_type = "CONTENT_TYPE=" + mimeTypes(file, data);              // ok
     // std::cout << "Content Type : "<<request.header("Content-Type") << std::endl;
@@ -135,6 +139,7 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + request.header("Accept-Language"); // ok
     s_env._http_user_agent = "HTTP_USER_AGENT=" + request.header("User-Agent");                // ok
     s_env._http_cookie = "HTTP_COOKIE=" + request.header("cookie");
+    // s_env._ = "_=cgi_test/" /*+ SSTR(getenv("CGI_BIN")) + SSTR("/") */+ loc._fastcgiParam;
 }
 
 void cgi::setCgiEnv(void)
@@ -163,6 +168,7 @@ void cgi::setCgiEnv(void)
     env[HTTP_ACCEPT_LANGUAGE] = const_cast< char * >(s_env._http_accept_language.c_str());
     env[HTTP_USER_AGENT] = const_cast< char * >(s_env._http_user_agent.c_str());
     env[HTTP_COOKIE] = const_cast< char * >(s_env._http_cookie.c_str());
+    // env[_] = const_cast< char * >(s_env._.c_str());
     env[LEN_CGI_ENV] = NULL;
 }
 
@@ -189,6 +195,8 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
 	(void)request;
     if (pipe(fd_out) == -1)
         std::cout << "PIPE ERROR" << std::endl;
+
+    // std::string body = body_trim(request);
 
     if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
         std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;

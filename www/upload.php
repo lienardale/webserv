@@ -3,13 +3,13 @@
 // Dossier d'upload
 $uploaddir = './uploads/';
 
-echo "IN UPLOAD SCRIPT\n\n";
+echo "IN UPLOAD SCRIPT\n";
 
-$env_array = getenv();
-foreach ($env_array as $key=>$value)
-{
-    echo"$key => $value <br />\n";
-}
+// $env_array = getenv();
+// foreach ($env_array as $key=>$value)
+// {
+//     echo "$key => $value <br />\n";
+// }
 
 // Sauvegarde de tous les fichiers passés en input
 foreach ($_FILES as $file) {
@@ -21,4 +21,29 @@ foreach ($_FILES as $file) {
         echo "Erreur dans l'envoi du fichier " . $file['name'] . "\n";
     }
 }
+
+// function readArrayFiles($file_post) {
+
+//     $file_array = array();
+//     $file_count = count($file_post['name']);
+//     $file_keys = array_keys($file_post);
+
+//     for ($i=0; $i<$file_count; $i++) {
+//         foreach ($file_keys as $key) {
+//             $file_array[$i][$key] = $file_post[$key][$i];
+//         }
+//     }
+
+//     return $file_array;
+// }
+
+// if ($_FILES['upload']){
+//     $file_array = readArrayFiles($_FILES['ufile']);
+//     foreach ($file_array as $file) {
+//         print 'File Name: ' . $file['name'];
+//         print 'File Type: ' . $file['type'];
+//         print 'File Size: ' . $file['size'];
+//     }
+// }
+
 ?>
