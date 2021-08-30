@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/27 19:18:25 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/30 16:33:29 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     char content[100000];
     int pid;
     std::string root;
+    std::string buffer;
     std::string cgi_script;
 
     int cp_stdin;
@@ -231,11 +232,16 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
         waitpid(pid, NULL, -1);
         ::close(fd_out[1]);
         memset(content, 0, sizeof(content));
-        if (read(fd_out[0], content, sizeof(content)) == -1)
-            std::cout << "READ ERROR" << std::endl; 
+        _output.clear();
+        while (read(fd_out[0], content, sizeof(content)) > 0)
+        {
+            // std::cout << "Reading :|" << SSTR(content) << "|"<< std::endl;
+            _output += SSTR(content);
+            memset(content, 0, sizeof(content));
+        }
         ::close(fd_out[0]);
-        _output = std::string(content);
-        std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
+        // _output = std::string(content);
+        // std::cout << "\nCGI CONTENT :\n----------------\n" << content << "\n----------------\n"<< std::endl;
         memset(content, 0, sizeof(content));
         dup2(STDIN_FILENO, cp_stdin);
         fclose(f_in);

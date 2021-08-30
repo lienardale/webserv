@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/27 19:05:56 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/30 16:07:50 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void http::Response::setBodyCGI(const std::string &content)
     if (content.size() > 0)
         body = content.substr(content.find("\r") + 4);
     else
-        body = "";
+        body = "Nobody here";
     if (content.size() > 0)
 	    setHeader("Content-Length", std::string(itoa(body.size(), buffer, 10)));
     _bodyCGI = content;
