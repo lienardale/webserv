@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:48:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/02 16:32:21 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/31 15:30:36 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void parseStructFields(dataStore &store, const std::map< std::string, conversion
             key = extract< std::string::iterator & >("\"\"", begin, end);
             found = keyMap.find(key);
             if (found == keyMap.end())
-                throw ValueError("Key " + key + " is not valid");
+                throw ValueError("Key " + key + " is not valid ICI");
             if (*begin == ':' && *(begin + 1) == '{')
                 value = extract< std::string::iterator & >("{}", ++begin, end);
             else if (*begin == ':' && *(begin + 1) == '[')

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dataStructure.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/03 11:35:55 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/31 15:35:29 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ typedef struct s_locationData
 {
     std::string path;
     std::string root;
+    std::string upload_dir;
     std::list< std::string > index;
     std::map< std::string, std::string > fastcgi_param;
     bool autoindex;
