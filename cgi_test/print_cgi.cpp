@@ -4,7 +4,11 @@
 int main(int ac, char **av, char **env)
 {
 	std::cout << "\nWELCOME TO PRINT EVERY ARG_CGI\n" << std::endl;
-
+  
+  for (std::string line ; getline(std::cin, line); ){
+      std::cout << "stdin:|" << line << "|" << std::endl;
+  }
+  std::cout << std::endl;
 	if (ac && av)
 	{
 		std::cout << ac << " arguments were sent :" << std::endl;
