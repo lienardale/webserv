@@ -114,6 +114,3 @@ class cgi
     // 		const char *what( void ) const throw();
     // };
 };
-
-std::string rtrim(std::string s, const char *t);
-std::string ltrim(std::string s, const char *t);
