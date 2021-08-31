@@ -209,12 +209,18 @@ void config::setUploadDir(t_locationData &lD, t_serverData sD)
 	std::fstream uploadTemplateFile("upload.php");
 	std::string line;
 
-  	uploadFile.open((strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php").c_str());
-	while (std::getline(uploadTemplateFile, line))
+// std::cout << "UPLOAD file: " << strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php" << std::endl;
+  	uploadFile.open((strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php").c_str(), std::fstream::out);
+	
+	while (std::getline(uploadTemplateFile, line)){
 		    uploadFile << line << std::endl;
+			// std::cout << line << std::endl;
+	}
 	uploadFile.close();
 	uploadTemplateFile.close();
-	//std::cout << "UPLOAD DIR: " << strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php" << std::endl;
+	// std::cout << "UPLOAD DIR: " << strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + strtrim(lD.upload_dir, "/" ) << std::endl;
+
+	mkdir((strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + strtrim(lD.upload_dir, "/" )).c_str(), 0777);
 }
 
 void config::locationData_check(t_locationData &lD, t_serverData sD)

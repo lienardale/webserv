@@ -2,6 +2,9 @@
 #define CONFIG_HPP
 #include "parsing/parser.hpp"
 #include <iostream>
+#include <bits/stdc++.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 class config
 {
