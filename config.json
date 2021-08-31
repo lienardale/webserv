@@ -19,7 +19,8 @@
 			{
 				"autoindex": "on",
 				"methods": [],
-                "path": "/directory"
+                "path": "/directory",
+				"upload_dir": "uploads1"
             },
 			{
 				"autoindex": "on",
@@ -31,7 +32,8 @@
 				"fastcgi_param": {
 					"fastcgi_param": "php-cgi-vm"
 				},
-                "path": "/"
+                "path": "/",
+				"upload_dir": "uploads" 
             }
         ]
     },
@@ -65,7 +67,7 @@
 					"fastcgi_param": "php-cgi-vm"
 				},
 				"path": "/",
-				"upload_dir": "uploads"
+				"upload_dir": "uploads2"
 			}
 		]
 	}

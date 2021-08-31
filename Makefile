@@ -6,7 +6,7 @@
 #    By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/08/06 16:52:02 by pcariou          ###   ########.fr        #
+#    Updated: 2021/08/31 16:56:44 by pcariou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,7 @@ SRCS    			=	socket\
 					parsing/parsingExceptions\
 					parsing/utils\
 					utils/ft_itoa\
+					utils/strtrim\
 					cgi \
 					request\
 					response\

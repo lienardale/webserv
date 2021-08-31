@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:47:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 15:09:22 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/31 16:24:59 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct	s_locInfos
 	std::string _locb;
 	std::string _urlPath;
 	std::string _fastcgiParam;
+	std::string _uploadDir;
 	bool cgi;
 }				t_locInfos;
 

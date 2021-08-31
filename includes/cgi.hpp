@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/08/30 20:12:40 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/31 17:30:14 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ class cgi
         // var-name           = token
         // extension_var_name,
         // extension-var-name = token
+		UPLOAD_DIR,
         LEN_CGI_ENV
     };
 
@@ -85,6 +86,7 @@ class cgi
         std::string _http_accept_language;
         std::string _http_user_agent;
         std::string _http_cookie;
+		std::string	_upload_dir;
         // std::string _;
     };
 
@@ -102,7 +104,6 @@ class cgi
 	void setCgiMetaVar(const http::Request &request, const t_locInfos &loc, const t_serverData &data, std::string file);
     void setCgiEnv(void);
     std::string parseURI(std::string uri);
-    std::string strtrim(std::string str, const char *c);
     char **getCgiEnv(void);
 	void Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv, std::string file);
 	std::string	getOutput() const;
@@ -113,3 +114,6 @@ class cgi
     // 		const char *what( void ) const throw();
     // };
 };
+
+std::string rtrim(std::string s, const char *t);
+std::string ltrim(std::string s, const char *t);
