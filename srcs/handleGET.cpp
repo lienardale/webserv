@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:50:25 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/30 16:24:38 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/31 15:14:00 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ http::Response handleGET(const http::Request &request, const t_serverData &data,
 			ret.setHeader("Location", Location);
 		}
 		else if ((f.good() && !f.rdbuf()->in_avail()) && data.autoindex)
-			ret.setBody(directoryListing(file, data, ret, request, loc), mimeTypes(file, data));
+			ret.setBody(directoryListing(file, data, ret, request, loc), "text/html");
 		else if (loc._directory)
 			ret.setCode(http::NOT_FOUND);
 		else

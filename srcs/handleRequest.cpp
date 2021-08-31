@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/30 17:21:30 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/08/31 15:14:14 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,9 @@ static void locAutoindex(const http::Request &request, t_serverData &data)
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        path1 = (it->path[it->path.size() - 1] == '/' && it->path != "/") ? it->path.substr(0, it->path.size() - 1)
-                                                                          : it->path;
+		path1 = it->path;
+        if (*path1.rbegin() != '/')
+            path1.push_back('/');
         if (it->autoindex != data.autoindex && request.header("Path").find(path1) != std::string::npos)
             data.autoindex = it->autoindex;
     }
