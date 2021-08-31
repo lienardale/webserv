@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/25 15:18:07 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/30 16:07:50 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,14 @@ void http::Response::setBody(const std::string &content, const std::string mimet
 void http::Response::setBodyCGI(const std::string &content)
 {
 	char	buffer[32];
-	std::string body = content.substr(content.find("\r") + 4);
-
-	setHeader("Content-length", std::string(itoa(body.size(), buffer, 10)));
+	std::string body;
+    
+    if (content.size() > 0)
+        body = content.substr(content.find("\r") + 4);
+    else
+        body = "Nobody here";
+    if (content.size() > 0)
+	    setHeader("Content-Length", std::string(itoa(body.size(), buffer, 10)));
     _bodyCGI = content;
     _body = std::make_pair(std::string(), std::string());
 }
@@ -132,7 +137,7 @@ std::string http::Response::toString()
     }
    	else if (_bodyCGI.size())
 	{
-		std::cout << "CGI: [[" << _bodyCGI << "]]"<< std::endl;
+		// std::cout << "CGI: [[" << _bodyCGI << "]]"<< std::endl;
     	oss << _bodyCGI;
 	}
     else if (_body.first.empty() && _code >= 400)

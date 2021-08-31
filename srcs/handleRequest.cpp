@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/24 17:21:38 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/30 17:21:30 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ bool methodAllowed(const http::Request &request, t_serverData &data)
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        std::cout << request.header("Path") << std::endl;
+        // std::cout << request.header("Path") << std::endl;
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (request.header("Path").find(path1) != std::string::npos && contains(it->methods, request.header("Method")))
             return false;

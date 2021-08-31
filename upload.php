@@ -3,6 +3,9 @@
 // Dossier d'upload
 $uploaddir = './uploads/';
 
+echo "IN UPLOAD SCRIPT";
+
+echo "BEFORE SAVE";
 // Sauvegarde de tous les fichiers passés en input
 foreach ($_FILES as $file) {
     $uploadfile = $uploaddir . basename($file['name']);
@@ -12,4 +15,5 @@ foreach ($_FILES as $file) {
         echo "Erreur dans l'envoie du fichier " . $file['name'] . "\n";
     }
 }
+echo "AFTER SAVE";
 ?>

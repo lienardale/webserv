@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/08/06 18:14:05 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/30 20:12:40 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ class cgi
         HTTP_ACCEPT_LANGUAGE,
         HTTP_USER_AGENT,
         HTTP_COOKIE,
+        // _,
         // scheme,
         // protocol_var_name,
         // protocol-var-name  = ( protocol | scheme ) "_" var-name
@@ -84,6 +85,7 @@ class cgi
         std::string _http_accept_language;
         std::string _http_user_agent;
         std::string _http_cookie;
+        // std::string _;
     };
 
     meta_var s_env;
