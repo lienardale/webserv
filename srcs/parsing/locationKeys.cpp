@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   locationKeys.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/06 10:49:06 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/08/31 15:36:53 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,18 @@ static void handleFastCGI(t_locationData &location, const std::string value) thr
     fillFastCGI(location, value);
 }
 
+static void handleUploadDir(t_locationData &location, const std::string value) throw(ParsingException)
+{
+    if (!location.upload_dir.empty())
+        throw ValueError("Duplicate key: upload_dir");
+    location.upload_dir = value;
+}
+
 static std::pair< std::string, castLocation > KEY_FUNCTIONS[] = {
     std::make_pair("methods", handleMethods),       std::make_pair("path", handlePath),
     std::make_pair("index", handleIndex),           std::make_pair("autoindex", handleAutoindex),
-    std::make_pair("fastcgi_param", handleFastCGI), std::make_pair("root", handleRoot)};
+    std::make_pair("fastcgi_param", handleFastCGI), std::make_pair("root", handleRoot),
+    std::make_pair("upload_dir", handleUploadDir)};
 
 std::map< std::string, castLocation > castLocationMap(void)
 {

@@ -64,7 +64,8 @@
 				"fastcgi_param": {
 					"fastcgi_param": "php-cgi-vm"
 				},
-				"path": "/"
+				"path": "/",
+				"upload_dir": "uploads"
 			}
 		]
 	}
