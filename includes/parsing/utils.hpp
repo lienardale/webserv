@@ -132,7 +132,7 @@ void parseStructFields(dataStore &store, const std::map< std::string, conversion
             key = extract< std::string::iterator & >("\"\"", begin, end);
             found = keyMap.find(key);
             if (found == keyMap.end())
-                throw ValueError("Key " + key + " is not valid ICI");
+                throw ValueError("Key " + key + " is not valid");
             if (*begin == ':' && *(begin + 1) == '{')
                 value = extract< std::string::iterator & >("{}", ++begin, end);
             else if (*begin == ':' && *(begin + 1) == '[')
