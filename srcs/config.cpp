@@ -6,7 +6,7 @@
 /*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 14:31:53 by alienard          #+#    #+#             */
-/*   Updated: 2021/08/03 12:18:50 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/31 17:42:37 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,21 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
 	}
 }
 
+
+void config::setUploadDir(t_locationData &lD, t_serverData sD)
+{
+	std::fstream uploadFile;
+	std::fstream uploadTemplateFile("upload.php");
+	std::string line;
+
+  	uploadFile.open((strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php").c_str());
+	while (std::getline(uploadTemplateFile, line))
+		    uploadFile << line << std::endl;
+	uploadFile.close();
+	uploadTemplateFile.close();
+	//std::cout << "UPLOAD DIR: " << strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php" << std::endl;
+}
+
 void config::locationData_check(t_locationData &lD, t_serverData sD)
 {
 
@@ -211,6 +226,10 @@ void config::locationData_check(t_locationData &lD, t_serverData sD)
 	// checking autoindex
 	if (lD.autoindex != true && lD.autoindex != false)
 		throw ValueError::ParsingException("incorrect autoindex");
+	
+	// set upload directories
+	if (!lD.upload_dir.empty())
+		config::setUploadDir(lD, sD);
 
 	// checking methods
 	for (std::list< std::string >::iterator it = lD.methods.begin(); it != lD.methods.end(); it++)

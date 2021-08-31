@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 15:14:14 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/31 17:29:13 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,8 @@ void locCgi(const http::Request &request, t_serverData &data, t_locInfos *loc)
                                                                           : it->path;
 		if (!it->fastcgi_param["fastcgi_param"].empty() && request.header("Path").find(path1) != std::string::npos)
 			loc->_fastcgiParam = it->fastcgi_param["fastcgi_param"];
+		if (!it->upload_dir.empty() && request.header("Path").find(path1) != std::string::npos)
+			loc->_uploadDir = it->upload_dir;
     }
 }
 

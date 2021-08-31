@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/31 14:16:26 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/08/31 17:32:32 by pcariou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,25 +81,6 @@ std::string cgi::parseURI(std::string uri)
     return "";
 }
 
-// trim from end of string (right)
-std::string rtrim(std::string s, const char *t)
-{
-    s.erase(s.find_last_not_of(t) + 1);
-    return s;
-}
-
-// trim from beginning of string (left)
-std::string ltrim(std::string s, const char *t)
-{
-    s.erase(0, s.find_first_not_of(t));
-    return s;
-}
-
-std::string cgi::strtrim(std::string s, const char *t)
-{
-    return ltrim(rtrim(s, t), t);
-}
-
 void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, const t_serverData &data, std::string file)
 {
     char buffer[33];
@@ -133,6 +114,7 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + request.header("Accept-Language"); // ok
     s_env._http_user_agent = "HTTP_USER_AGENT=" + request.header("User-Agent");                // ok
     s_env._http_cookie = "HTTP_COOKIE=" + request.header("cookie");
+	s_env._upload_dir = "uploaddir=" + loc._uploadDir;
 }
 
 void cgi::setCgiEnv(void)
@@ -161,6 +143,7 @@ void cgi::setCgiEnv(void)
     env[HTTP_ACCEPT_LANGUAGE] = const_cast< char * >(s_env._http_accept_language.c_str());
     env[HTTP_USER_AGENT] = const_cast< char * >(s_env._http_user_agent.c_str());
     env[HTTP_COOKIE] = const_cast< char * >(s_env._http_cookie.c_str());
+	env[UPLOAD_DIR] = const_cast< char * >(s_env._upload_dir.c_str());
     env[LEN_CGI_ENV] = NULL;
 }
 

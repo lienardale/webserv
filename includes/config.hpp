@@ -62,6 +62,7 @@ class config
     void methods_check(std::string &method);
     std::list< t_serverData > getContent() const;
 	void setMimeTypes();
+	void setUploadDir(t_locationData &lD, t_serverData sD);
     // int ft_print_config(void);
 
   private:
