@@ -6,7 +6,7 @@
 #    By: alienard@student.42.fr <alienard>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/09/01 16:17:16 by alienard@st      ###   ########.fr        #
+#    Updated: 2021/09/01 16:36:07 by alienard@st      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -89,9 +89,9 @@ re      :	fclean all
 #									Extra Rules
 ################################################################################
 run 	:	all
-	CGI_BIN=$(PWD)/cgi_test ./${NAME}
+	CGI_BIN=$(PWD)/cgi_bin ./${NAME}
 
 valgrind : all
-	CGI_BIN=$(PWD)/cgi_test valgrind ./${NAME}
+	CGI_BIN=$(PWD)/cgi_bin valgrind ./${NAME}
 
 .PHONY  :	all clean fclean re bonus%
