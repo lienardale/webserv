@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/30 17:30:23 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/02 17:48:24 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,7 +195,7 @@ void http::Server::_handleEpollin(Socket &sock, std::pair< http::Request, t_serv
     data.first.parse(content, data.second.client_max_body_size);
     if (data.first.isFinished())
     {
-        std::cout << data.first << std::endl;
+        // std::cout << data.first << std::endl;
         event->events = EPOLLOUT;
         epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
     }

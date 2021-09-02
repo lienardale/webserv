@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/08/30 17:27:36 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/02 16:51:27 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ std::string Socket::readContent(void)
  */
 void Socket::send(const std::string content) throw(SocketException)
 {
-    std::cout << "--RESPONSE--\n" << content.c_str() << std::endl;
+    // std::cout << "--RESPONSE--\n" << content.c_str() << std::endl;
     if (::send(_fd, content.c_str(), content.size(), 0) <= 0)
         throw Socket::SocketException();
 }

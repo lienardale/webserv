@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 17:29:13 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/09/02 16:51:14 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,7 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
     std::string path;
 
     http::Request request(requestHeader);
+    std::cout << "-- REQUEST --\n" << request << std::endl;
     if (method != "GET" && method != "POST" && method != "DELETE")
         return http::Response(http::METHOD_NOT_ALLOWED);
     if (*request.header("Path").begin() != '/')

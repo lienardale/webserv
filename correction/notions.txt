@@ -21,8 +21,8 @@
 -> no check of errno
 
 
-Config file 1 : multiple servers with different port
-Config file 2 : multiple servers with different hostname (curl -resolve to test)
+Config file 1 : multiple servers with different port -> ok
+Config file 2 : multiple servers with different hostname (curl -resolve to test) -> TODO
 Config file 3 : setup default error page
 Config file 4 : client max body size (test with body > / = / <)
 Config file 5 : routes in a server to different directories
@@ -55,4 +55,3 @@ Memory leaks
 -> valgring
 
 Hanging connection
-
