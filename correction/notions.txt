@@ -18,6 +18,8 @@
 -> If error when error during a read/recv/write/send on a socket, client is removed
 -> checking only if ret == 0 && ret == -1
 
+-----> socket.cpp - line 208 & line 224
+
 -> no check of errno
 
 
