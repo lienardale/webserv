@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/09/06 16:02:35 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/06 18:06:10 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "socket.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
+#include "cgi.hpp"
 #include <algorithm>
 #include <cstdio>
 #include <exception>
@@ -173,8 +174,14 @@ void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_ser
 
     if (data.first.isBodyTooLarge())
         response = http::Response(http::PAYLOAD_TOO_LARGE);
-    else
-        response = handleRequest(data.first, serverData);
+    else{
+        try {
+            response = handleRequest(data.first, serverData);
+        }
+        catch (cgi::CGIException &e) {
+            throw Socket::SocketException();
+        }
+    }
 
     // _log(data.first, response);
     sock.send(response.toString(data.second.error_page));
