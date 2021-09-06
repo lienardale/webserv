@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/30 17:30:23 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/06 16:02:35 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,8 @@ void http::Server::listen(void)
     _run = true;
     while (_run)
     {
-        event_count = epoll_wait(_epoll_fd, events, MAX_EVENTS, -1);
+        event_count = epoll_wait(_epoll_fd, events, _serverSetByPort.size(), -1);
+        // MAX_EVENT = _serverSetByPort.size() * 2;
         for (int i = 0; i < event_count && _run; i++)
             _handleReady(_epoll_fd, events[i].data.fd, &events[i]);
     }
@@ -175,7 +176,7 @@ void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_ser
     else
         response = handleRequest(data.first, serverData);
 
-    _log(data.first, response);
+    // _log(data.first, response);
     sock.send(response.toString(data.second.error_page));
     if (!data.first.keepAlive() || data.first.isBodyTooLarge())
         _removeAcceptedFD(sock);
@@ -195,7 +196,7 @@ void http::Server::_handleEpollin(Socket &sock, std::pair< http::Request, t_serv
     data.first.parse(content, data.second.client_max_body_size);
     if (data.first.isFinished())
     {
-        std::cout << data.first << std::endl;
+        // std::cout << data.first << std::endl;
         event->events = EPOLLOUT;
         epoll_ctl(epoll_fd, EPOLL_CTL_MOD, sock.Fd(), event);
     }
@@ -225,13 +226,15 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
     {
         http::Response response = http::Response(http::BAD_REQUEST);
         response.setHeader("Connection", "close");
-        _log(_requests[fd].first, response);
+        // _log(_requests[fd].first, response);
         sock.send(response.toString(_requests[fd].second.error_page));
         _removeAcceptedFD(sock);
     }
     catch (Socket::SocketException &e)
     {
+        // remove the client here
         std::cerr << e.what() << std::endl;
+        _removeAcceptedFD(sock);
     }
     catch (std::exception &e)
     {
@@ -291,8 +294,8 @@ void http::Server::_removeAcceptedFD(Socket &sock)
 {
     try
     {
-        sock.close();
         _requests.erase(sock.Fd());
+        sock.close();
     }
     catch (Socket::SocketException &e)
     {

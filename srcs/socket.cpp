@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/08/30 17:27:36 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/06 14:47:58 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,7 +195,7 @@ Socket Socket::accept(void) throw(Socket::SocketException)
  *	Lit une partie du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-std::string Socket::readContent(void)
+std::string Socket::readContent(void) throw(Socket::SocketException)
 {
     int ret = 0;
     char buffer[300];
@@ -203,8 +203,16 @@ std::string Socket::readContent(void)
     bzero(buffer, sizeof(buffer));
     ret = recv(_fd, buffer, sizeof(buffer), MSG_DONTWAIT);
 
-    if (ret <= 0)
+    if (ret == 0)
+    {
         return "";
+    }
+    else if (ret == -1)
+    {
+        // CLIENT REMOVED IN THIS CASE
+        throw Socket::SocketException();
+    }
+
     return std::string(static_cast< char * >(buffer), ret);
 }
 
@@ -214,8 +222,10 @@ std::string Socket::readContent(void)
  */
 void Socket::send(const std::string content) throw(SocketException)
 {
-    std::cout << "--RESPONSE--\n" << content.c_str() << std::endl;
-    if (::send(_fd, content.c_str(), content.size(), 0) <= 0)
+    int ret;
+    // std::cout << "--RESPONSE--\n" << content.c_str() << std::endl;
+    ret = ::send(_fd, content.c_str(), content.size(), 0);
+    if (ret == 0 || ret == -1)
         throw Socket::SocketException();
 }
 

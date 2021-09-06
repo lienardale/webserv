@@ -1,0 +1,63 @@
+- Basics of an HTTP Server
+    -> Client / Server (software)
+        -> Request / Response
+            -> I/O Multiplexing / FD handling (sockets-> FD which are connected)
+            -> Header / Body
+            -> accepted or not regarding the Configuration File
+            -> CGI (if necessary)
+
+- EPOLL
+    -> how it works : multiplexing fct, monitors activities on several fd (non-blocking)
+            only in Linux, data_struct, direct access (constant) to fds. So it is much more efficient.
+            e-poll -> event-based poll, we listen to events, and then iterate on then (events are read/write/error).
+    -> why we use it (rather than select or poll) : select and poll controll fd with a linear complexity algorithm
+            (do a while on every fd). They are very compatible through systems.
+
+- How to accept client requests
+- How we send responses to client
+
+"only one read or one write per client per epoll" 
+-----> server.cpp - line 140
+
+-> If error when error during a read/recv/write/send on a socket, client is removed
+-> checking only if ret == 0 && ret == -1
+
+-----> socket.cpp - line 208 & line 224
+-----> remove client in catch in server.cpp - line 236
+
+-> no check of errno
+
+Config file 1 : multiple servers with different port -> ok
+Config file 2 : multiple servers with different hostname (curl -resolve to test) -> ok
+Config file 3 : setup default error page -> ok
+Config file 4 : client max body size (test with body > / = / <) -> ok
+Config file 5 : routes in a server to different directories -> ok
+Config file 6 : default file to search if asked for a directory -> ok
+Config file 7 : accepted methods for a route (delete file with and without permission) -> ok
+Config file 8 : multiple ports and different websites -> ok
+Config file 9 : same port multiple times (SHOULD NOT WORK)
+
+-> Multiple servers at the same time with different config but common ports
+
+telnet / curl scripts
+-> GET
+-> POST
+-> DELETE
+-> OTHER REQUESTS (should not produce any crash)
+
+upload / download script
+
+Browser tests (Firefox)
+-> Fully static website
+-> wrong url
+-> list a directory
+-> redirected url
+
+Siege
+-> availability > 99.5% for a get on an empty page (siege -b)
+-> use it indefinetely without restarting the server
+
+Memory leaks
+-> valgring
+
+Hanging connection -> re-up ok (which means that sockets are closed) 

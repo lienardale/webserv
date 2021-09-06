@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/08/31 17:32:32 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/09/06 15:57:16 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,13 +169,13 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
  
 	(void)request;
     if (pipe(fd_out) == -1)
-        std::cout << "PIPE ERROR" << std::endl;
+        std::cerr << "PIPE ERROR" << std::endl;
 
     if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
         std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
     lseek(fdin, 0, SEEK_SET);
 
-    cgi_script = getenv("CGI_BIN") + SSTR("/") + loc._fastcgiParam;
+    cgi_script = getenv("PWD") + SSTR("/cgi_bin/") + loc._fastcgiParam;
 
     char *argv[3];
     argv[0] = strdup(cgi_script.c_str());
@@ -197,7 +197,7 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
                 std::cerr << "EXEC ERROR : " << strerror(errno)  << std::endl;
     }
     else if (pid < 0)
-        std::cout << "FORK ERROR" << std::endl;
+        std::cerr << "FORK ERROR" << std::endl;
     else
     {
         waitpid(pid, NULL, -1);

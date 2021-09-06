@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/02 18:31:51 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/09/03 12:23:19 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class Socket
     void listen(const int port, const std::string) throw(Socket::SocketException);
     void close(void);
     Socket accept(void) throw(Socket::SocketException);
-    std::string readContent(void);
+    std::string readContent(void) throw(Socket::SocketException);
     void send(const std::string content) throw(SocketException);
 
     // Operator overloading

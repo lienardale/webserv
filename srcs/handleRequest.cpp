@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 18:59:02 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 17:29:13 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/09/06 15:59:39 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,6 @@ bool methodAllowed(const http::Request &request, t_serverData &data)
 
     for (std::list< t_locationData >::iterator it = data.locations.begin(); it != data.locations.end(); ++it)
     {
-        // std::cout << request.header("Path") << std::endl;
         path1 = (it->path[it->path.size() - 1] == '/') ? it->path.substr(0, it->path.size() - 1) : it->path;
         if (request.header("Path").find(path1) != std::string::npos && contains(it->methods, request.header("Method")))
             return false;
@@ -223,6 +222,7 @@ http::Response handleRequest(const http::Request &requestHeader, t_serverData &d
     std::string path;
 
     http::Request request(requestHeader);
+    // std::cout << "-- REQUEST --\n" << request << std::endl;
     if (method != "GET" && method != "POST" && method != "DELETE")
         return http::Response(http::METHOD_NOT_ALLOWED);
     if (*request.header("Path").begin() != '/')

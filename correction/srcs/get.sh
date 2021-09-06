@@ -1,0 +1,9 @@
+curl localhost:8000
+curl localhost:8000/test.html
+curl localhost:8000/test.php
+curl localhost:8000/directory
+curl localhost:8000/directory/
+curl localhost:8000/directory/dir
+curl localhost:8000/directory/dir/
+curl localhost:8000/directory/dir/index1.html
+curl localhost:8000/not.here

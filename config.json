@@ -12,7 +12,7 @@
 		"index": [
 			"index.html"
 		],
-		"client_max_body_size": 1000,
+		"client_max_body_size": 3000,
 		"root": "www",
 		"autoindex": "on",
 		"location": [
@@ -38,7 +38,7 @@
         ]
     },
 	{
-		"listen": "127.0.0.1:4000",
+		"listen": "127.0.0.1:7000",
 		"server_name": [
 			"server2"
 		],
@@ -68,6 +68,39 @@
 				},
 				"path": "/",
 				"upload_dir": "uploads2"
+			}
+		]
+	},
+	{
+		"listen": "127.0.0.1:6000",
+		"server_name": [
+			"server3"
+		],
+		"error_page": {
+			"500": "error_views/500.html",
+			"404": "error_views/404.html",
+			"400": "error_views/400.html"
+		},
+		"index": [
+			"index.html"
+		],
+		"client_max_body_size": 3000,
+		"root": "public",
+		"autoindex": "on",
+		"location": [
+			{
+				"autoindex": "on",
+				"methods": [
+					"DELETE"
+				],
+				"index": [
+					"index.html",
+					"index.php"
+				],
+				"fastcgi_param": {
+					"fastcgi_param": "php-cgi-vm"
+				},
+				"path": "/"
 			}
 		]
 	}
