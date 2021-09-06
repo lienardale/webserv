@@ -121,21 +121,15 @@ void config::methods_check(std::string &method)
 
 void config::fastcgi_param_check(std::pair< const std::string, std::string > &fcgi, const char *root)
 {
-	// std::cout << "fcgi.first : " << fcgi.first << std::endl;
-	// std::cout << "fcgi.second : " << fcgi.second << std::endl;
-
-	// first				| second										| check
-
-	// fastcgi_index		| index.php										| file exists
 	bool found = false;
 	DIR *dirp;
 	struct dirent *tmp;
-	if (fcgi.first.compare(SSTR("fastcgi_index")) == 0 /*|| (found = true)*/)
+	if (fcgi.first.compare(SSTR("fastcgi_index")) == 0)
 	{
 		dirp = opendir(root);
 		while (dirp && (tmp = readdir(dirp)) != NULL)
 		{
-			if (strlen(tmp->d_name) /*d_namlen*/ == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0)
+			if (strlen(tmp->d_name) == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0)
 			{
 				(void)closedir(dirp);
 				dirp = NULL;
@@ -149,9 +143,8 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
 					", no corresponding file found");
 	}
 
-	// fastcgi_param		| SCRIPT_FILENAME								| /scripts$fastcgi_script_name
 	found = false;
-	if (fcgi.first.compare(SSTR("fastcgi_param")) == 0 /*|| (found = true)*/)
+	if (fcgi.first.compare(SSTR("fastcgi_param")) == 0)
 	{
 		std::string cgi_bin;
 
@@ -159,7 +152,7 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
 		dirp = opendir(cgi_bin.c_str());
 		while (dirp && (tmp = readdir(dirp)) != NULL)
 		{
-			if (strlen(tmp->d_name) /*d_namlen*/ == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0)
+			if (strlen(tmp->d_name) == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0)
 			{
 				(void)closedir(dirp);
 				dirp = NULL;
@@ -172,7 +165,6 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
 			throw ValueError::ParsingException("incorrect CGI script value : " + fcgi.second +
 					", no corresponding file found");
 	}
-	// fastcgi_pass			| 127.0.0.1:9000								| listen
 
 	Socket sock;
 	std::string addr_ip;
@@ -194,8 +186,6 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
 			}
 			sock.listen(listen, addr_ip);
 			sock.close();
-			// std::cout << "fcgi.first : " << fcgi.first << std::endl;
-			// std::cout << "fcgi.second : " << fcgi.second << std::endl;
 		}
 		catch (Socket::SocketException const &e)
 		{
@@ -212,17 +202,12 @@ void config::setUploadDir(t_locationData &lD, t_serverData sD)
 	std::fstream uploadTemplateFile("upload.php");
 	std::string line;
 
-// std::cout << "UPLOAD file: " << strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php" << std::endl;
   	uploadFile.open((strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + "upload.php").c_str(), std::fstream::out);
-	
 	while (std::getline(uploadTemplateFile, line)){
 		    uploadFile << line << std::endl;
-			// std::cout << line << std::endl;
 	}
 	uploadFile.close();
 	uploadTemplateFile.close();
-	// std::cout << "UPLOAD DIR: " << strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + strtrim(lD.upload_dir, "/" ) << std::endl;
-
 	mkdir((strtrim(sD.root, "/") + "/" + strtrim(lD.path, "/") + ((lD.path != "/") ? "/" : "") + strtrim(lD.upload_dir, "/" )).c_str(), 0777);
 }
 

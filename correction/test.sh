@@ -59,6 +59,12 @@ bash srcs/delete.sh
 echo
 echo
 echo -en $GREEN
+read -p 'About to launch other_requests tests, press enter to continue, ctrl+C to stop' test
+echo -en $WHITE
+bash srcs/other_requests.sh
+echo
+echo
+echo -en $GREEN
 read -p 'About to launch siege tests, press enter to continue, ctrl+C to stop' test
 echo -en $WHITE
 bash srcs/siege.sh
