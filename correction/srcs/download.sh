@@ -7,4 +7,5 @@ echo
 echo "Files in $PWD after dld :"
 echo -n "--> "
 ls
+cat upload_test_1.c
 rm upload_test_1.c
