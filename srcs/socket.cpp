@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/09/03 12:23:48 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/06 14:47:58 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,9 +209,8 @@ std::string Socket::readContent(void) throw(Socket::SocketException)
     }
     else if (ret == -1)
     {
-        // WE NEED TO REMOVE CLIENT IN THIS CASE
-        throw Socket::SocketException(); // ?
-        // std::cout <<"RET:" << ret << std::endl;
+        // CLIENT REMOVED IN THIS CASE
+        throw Socket::SocketException();
     }
 
     return std::string(static_cast< char * >(buffer), ret);

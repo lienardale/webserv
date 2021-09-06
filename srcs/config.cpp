@@ -295,14 +295,22 @@ void config::serverData_check(t_serverData &sD)
 void config::config_check(std::list< t_serverData > *_content) throw(ParsingException)
 {
 	std::list< std::string >::iterator it_name;
+	// std::list< t_serverData >::iterator it_listen;
 	std::map< std::string, bool > map_name;
+
 	for (std::list< t_serverData >::iterator it = _content->begin(); it != _content->end(); it++)
 	{
 		/*
 		   Several servers can listen on the same port
-http://nginx.org/en/docs/http/request_processing.html
+			http://nginx.org/en/docs/http/request_processing.html
 		 */
-
+		// it_listen = _content->begin();
+		// while (it_listen != _content->end())
+		// {
+		// 	if (it != it_listen && it_listen->listen == it->listen && it_listen->addr_ip == it->addr_ip)
+		// 		throw ValueError::ParsingException("incorrect listen value : two servers are on the same port");
+		// 	it_listen++;
+		// }
 		// server_name check
 		it_name = it->server_name.begin();
 		while (it_name != it->server_name.end())

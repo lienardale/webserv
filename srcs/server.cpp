@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/09/02 17:48:24 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/06 15:07:42 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,8 @@ void http::Server::listen(void)
     _run = true;
     while (_run)
     {
-        event_count = epoll_wait(_epoll_fd, events, MAX_EVENTS, -1);
+        event_count = epoll_wait(_epoll_fd, events, _serverSetByPort.size(), -1);
+        // MAX_EVENT = _serverSetByPort.size() * 2;
         for (int i = 0; i < event_count && _run; i++)
             _handleReady(_epoll_fd, events[i].data.fd, &events[i]);
     }
@@ -231,7 +232,9 @@ void http::Server::_handleReady(int epoll_fd, const int fd, struct epoll_event *
     }
     catch (Socket::SocketException &e)
     {
+        // remove the client here
         std::cerr << e.what() << std::endl;
+        _removeAcceptedFD(sock);
     }
     catch (std::exception &e)
     {
@@ -291,8 +294,8 @@ void http::Server::_removeAcceptedFD(Socket &sock)
 {
     try
     {
-        sock.close();
         _requests.erase(sock.Fd());
+        sock.close();
     }
     catch (Socket::SocketException &e)
     {
