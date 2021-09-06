@@ -14,4 +14,4 @@ echo -en $CYAN
 echo " -> launching siege
         ---> use ctrl+C to stop when you think it's been long enough"
 echo -e $WHITE
-siege -b 127.0.0.1:8000
+siege -b 127.0.0.1:3000

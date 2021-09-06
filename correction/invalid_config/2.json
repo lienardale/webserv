@@ -1,6 +1,6 @@
 [
 	{
-		"listen": "127.0.0.1:3000",
+		"listen": "127.0.0.1:9000",
 		"server_name": [
 			"default"
 		],
@@ -12,7 +12,7 @@
 		"index": [
 			"index.html"
 		],
-		"client_max_body_size": 3000,
+		"client_max_body_size": 0,
 		"root": "www",
 		"autoindex": "on",
 		"location": [

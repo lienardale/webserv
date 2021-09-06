@@ -1,6 +1,6 @@
 [
 	{
-		"listen": "127.0.0.1:3000",
+		"listen": "127.0.0.1:9000",
 		"server_name": [
 			"default"
 		],
@@ -40,7 +40,7 @@
 	{
 		"listen": "127.0.0.1:7000",
 		"server_name": [
-			"server2"
+			"default"
 		],
 		"error_page": {
 			"500": "error_views/500.html",
