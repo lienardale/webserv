@@ -1,0 +1,14 @@
+[31mtwo servers have the save name value : default
+Parsing [KO]
+[31mincorrect listen value : 80 must be available port
+Parsing [KO]
+[31mincorrect client_max_body_size : 0 must be > 0
+Parsing [KO]
+[31mincorrect CGI script value : php-cgi-non-existant, no corresponding file found
+Parsing [KO]
+[31mincorrect location's path, must be set
+Parsing [KO]
+[31mValueError: Value error: autoindex value should be 'on' or 'off' not test
+Parsing [KO]
+[31mincorrect method value : HEAD, must be GET, POST, and/or DELETE
+Parsing [KO]

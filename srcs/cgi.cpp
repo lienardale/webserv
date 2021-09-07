@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/09/06 15:57:16 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/06 18:24:15 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,10 @@ cgi &cgi::operator=(const cgi &obj)
 /*
  *	Le message correspond au message de errno
  */
-// const char *cgi::CGIException::what() const throw()
-// {
-// 	return strerror( errno );
-// }
+const char *cgi::CGIException::what() const throw()
+{
+	return strerror( errno );
+}
 
 /******************************************************************************
  *					Geters
@@ -86,33 +86,32 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     char buffer[33];
     std::string cgi_script = SSTR("/") + loc._fastcgiParam;
     bzero(buffer, sizeof(buffer));
-    s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");                        // ok
-    s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length");        // ok
+    s_env._auth_type = "AUTH_TYPE=" + request.header("AuthType");
+    s_env._content_length = "CONTENT_LENGTH=" + request.header("Content-Length");
     if (request.header("Method") == "POST")
         s_env._content_type = "CONTENT_TYPE=" + request.header("Content-Type");
     else
-        s_env._content_type = "CONTENT_TYPE=" + mimeTypes(file, data);              // ok
-    s_env._path_info = "PATH_INFO=" + file; // ok
-    s_env._path_translated =
-        "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path"); // ok
-    s_env._query_string = "QUERY_STRING=" + request.header("query");                                       // ok
-    s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";                                                          // ok
-    s_env._remote_host = "REMOTE_HOST=" + request.header("Host");                                          // ok
-    s_env._remote_ident = "REMOTE_IDENT=user_id";                                                          // ok
-    s_env._remote_user = "REMOTE_USER=user_name";                                                          // ok
-    s_env._request_method = "REQUEST_METHOD=" + request.header("Method");                                  // ok
-    s_env._request_uri = "REQUEST_URI=" + request.header("Path") + ((request.header("Query").empty()) ? "" : "?" ) + request.header("Query");                                           // ok
-    s_env._script_name = "SCRIPT_NAME=" + file; // FAST_CGI_CONF
+        s_env._content_type = "CONTENT_TYPE=" + mimeTypes(file, data);
+    s_env._path_info = "PATH_INFO=" + file;
+    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path");
+    s_env._query_string = "QUERY_STRING=" + request.header("query");
+    s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";
+    s_env._remote_host = "REMOTE_HOST=" + request.header("Host");
+    s_env._remote_ident = "REMOTE_IDENT=user_id";
+    s_env._remote_user = "REMOTE_USER=user_name";
+    s_env._request_method = "REQUEST_METHOD=" + request.header("Method");
+    s_env._request_uri = "REQUEST_URI=" + request.header("Path") + ((request.header("Query").empty()) ? "" : "?" ) + request.header("Query");
+    s_env._script_name = "SCRIPT_NAME=" + file;
     s_env._script_file_name = "SCRIPT_FILENAME=" + file;
-    s_env._server_port = "SERVER_PORT=" + SSTR(data.listen);             /*+ SSTR(itoa(data.listen,buffer,10));*/
-    s_env._server_protocol = "SERVER_PROTOCOL=" + request.header("Protocol"); // ok
+    s_env._server_port = "SERVER_PORT=" + SSTR(data.listen);
+    s_env._server_protocol = "SERVER_PROTOCOL=" + request.header("Protocol");
     s_env._redirect_status = "REDIRECT_STATUS=200";
-    s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";                                    // ok
-    s_env._server_name = "SERVER_NAME=" + data.server_name.front();                                                // ok
-    s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";                                      // ok
-    s_env._http_accept = "HTTP_ACCEPT=" + request.header("Accept");                            // ok
-    s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + request.header("Accept-Language"); // ok
-    s_env._http_user_agent = "HTTP_USER_AGENT=" + request.header("User-Agent");                // ok
+    s_env._gateway_interface = "GATEWAY_INTERFACE=CGI/1.1";
+    s_env._server_name = "SERVER_NAME=" + data.server_name.front();
+    s_env._server_software = "SERVER_SOFTWARE=Nginx/2.0";
+    s_env._http_accept = "HTTP_ACCEPT=" + request.header("Accept");
+    s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + request.header("Accept-Language");
+    s_env._http_user_agent = "HTTP_USER_AGENT=" + request.header("User-Agent");
     s_env._http_cookie = "HTTP_COOKIE=" + request.header("cookie");
 	s_env._upload_dir = "uploaddir=" + loc._uploadDir;
 }
@@ -169,12 +168,11 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
  
 	(void)request;
     if (pipe(fd_out) == -1)
-        std::cerr << "PIPE ERROR" << std::endl;
-
+        throw CGIException();
     if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
-        std::cerr << "WRITE ERROR :|" << request.header("body") << "| -> could not be written"<< std::endl;
-    lseek(fdin, 0, SEEK_SET);
-
+        throw CGIException();
+    if (lseek(fdin, 0, SEEK_SET) == -1)
+        throw CGIException();
     cgi_script = getenv("PWD") + SSTR("/cgi_bin/") + loc._fastcgiParam;
 
     char *argv[3];
@@ -186,22 +184,22 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     if ( pid == 0 )
     {
         if (dup2(fd_out[1], STDOUT_FILENO) == -1)
-            std::cerr << "\ndup2 fd_out failed\n" << std::endl;
+            throw CGIException();
         if (::close(fd_out[0]) == -1)
-            std::cerr << "\nclose fd_out[0] failed in child\n" << std::endl;        
-
-        dup2(fdin, STDIN_FILENO);
-
+            throw CGIException();        
+        if (dup2(fdin, STDIN_FILENO) == -1)
+            throw CGIException();
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
         if (execve(argv[0], argv, getCgiEnv()) == -1)
-                std::cerr << "EXEC ERROR : " << strerror(errno)  << std::endl;
+            throw CGIException();
     }
     else if (pid < 0)
-        std::cerr << "FORK ERROR" << std::endl;
+        throw CGIException();
     else
     {
         waitpid(pid, NULL, -1);
-        ::close(fd_out[1]);
+        if (::close(fd_out[1]) == -1)
+            throw CGIException();
         memset(content, 0, sizeof(content));
         _output.clear();
         while (read(fd_out[0], content, sizeof(content)) > 0)
@@ -209,7 +207,8 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
             _output += SSTR(content);
             memset(content, 0, sizeof(content));
         }
-        ::close(fd_out[0]);
+        if (::close(fd_out[0]) == -1)
+            throw CGIException();
         memset(content, 0, sizeof(content));
         dup2(STDIN_FILENO, cp_stdin);
         fclose(f_in);

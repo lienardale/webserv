@@ -4,7 +4,7 @@ echo "--> "
 ls ../www/uploads
 echo
 
-curl localhost:8000/upload.php -X POST -H "content-type: multipart/form-data; boundary=--------------------------045354470775848538579657" --data "----------------------------045354470775848538579657
+curl localhost:3000/upload.php -X POST -H "content-type: multipart/form-data; boundary=--------------------------045354470775848538579657" --data "----------------------------045354470775848538579657
 Content-Disposition: form-data; name=\"file\"; filename=\"upload_test_1.c\"
 Content-Type: text/x-c
 

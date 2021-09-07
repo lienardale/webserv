@@ -1,6 +1,6 @@
 [
 	{
-		"listen": "127.0.0.1:3000",
+		"listen": "127.0.0.1:9000",
 		"server_name": [
 			"default"
 		],
@@ -23,7 +23,7 @@
 				"upload_dir": "uploads1"
             },
 			{
-				"autoindex": "on",
+				"autoindex": "test",
 				"index": [
 					"index.html",
 					"test2.html",

@@ -61,7 +61,7 @@ class config
     void error_page_check(std::pair< const int, std::string > &error_page);
     void locationData_check(t_locationData &lD, t_serverData sD);
     int lD_index_check(const char *dir, std::string &index);
-    void fastcgi_param_check(std::pair< const std::string, std::string > &fcgi, const char *root);
+    void fastcgi_param_check(std::pair< const std::string, std::string > &fcgi);
     void methods_check(std::string &method);
     std::list< t_serverData > getContent() const;
 	void setMimeTypes();

@@ -119,31 +119,11 @@ void config::methods_check(std::string &method)
 		throw ValueError::ParsingException("incorrect method value : " + method + ", must be GET, POST, and/or DELETE");
 }
 
-void config::fastcgi_param_check(std::pair< const std::string, std::string > &fcgi, const char *root)
+void config::fastcgi_param_check(std::pair< const std::string, std::string > &fcgi)
 {
 	bool found = false;
 	DIR *dirp;
 	struct dirent *tmp;
-	if (fcgi.first.compare(SSTR("fastcgi_index")) == 0)
-	{
-		dirp = opendir(root);
-		while (dirp && (tmp = readdir(dirp)) != NULL)
-		{
-			if (strlen(tmp->d_name) == fcgi.second.size() && strcmp(tmp->d_name, fcgi.second.c_str()) == 0)
-			{
-				(void)closedir(dirp);
-				dirp = NULL;
-				found = true;
-			}
-		}
-		if (dirp)
-			closedir(dirp);
-		if (!found)
-			throw ValueError::ParsingException("incorrect CGI index value : " + fcgi.second +
-					", no corresponding file found");
-	}
-
-	found = false;
 	if (fcgi.first.compare(SSTR("fastcgi_param")) == 0)
 	{
 		std::string cgi_bin;
@@ -164,34 +144,6 @@ void config::fastcgi_param_check(std::pair< const std::string, std::string > &fc
 		if (!found)
 			throw ValueError::ParsingException("incorrect CGI script value : " + fcgi.second +
 					", no corresponding file found");
-	}
-
-	Socket sock;
-	std::string addr_ip;
-	int listen;
-	if (fcgi.first.compare(SSTR("fastcgi_pass")) == 0)
-	{
-		try
-		{
-			std::size_t found = fcgi.second.find(":");
-			if (found != std::string::npos)
-			{
-				addr_ip = fcgi.second.substr(0, found);
-				listen = strToInt(fcgi.second.substr(found + 1, fcgi.second.size() - found));
-			}
-			else
-			{
-				listen = strToInt(fcgi.second);
-				addr_ip = "0.0.0.0";
-			}
-			sock.listen(listen, addr_ip);
-			sock.close();
-		}
-		catch (Socket::SocketException const &e)
-		{
-			throw ValueError::ParsingException("incorrect fastcgi_pass value : " + SSTR(fcgi.second) +
-					" must be available port on valid address");
-		}
 	}
 }
 
@@ -234,7 +186,7 @@ void config::locationData_check(t_locationData &lD, t_serverData sD)
 	for (std::map< std::string, std::string >::iterator it = lD.fastcgi_param.begin(); it != lD.fastcgi_param.end();
 			it++)
 	{
-		config::fastcgi_param_check(*it, sD.root.c_str());
+		config::fastcgi_param_check(*it);
 	}
 }
 
@@ -248,8 +200,10 @@ void config::error_page_check(std::pair< const int, std::string > &error_page)
 		error_page.second = page;
 		fs.close();
 	}
-	else
+	else{
+		// throw ValueError::ParsingException("error_page_not_valid");
 		error_page.second = "error_page_not_valid";
+	}
 }
 
 void config::serverData_check(t_serverData &sD)

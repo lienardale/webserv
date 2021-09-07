@@ -1,6 +1,6 @@
 [
 	{
-		"listen": "127.0.0.1:3000",
+		"listen": "127.0.0.1:9000",
 		"server_name": [
 			"default"
 		],
@@ -30,7 +30,7 @@
             		"index.php"
         		],
 				"fastcgi_param": {
-					"fastcgi_param": "php-cgi-vm"
+					"fastcgi_param": "php-cgi-non-existant"
 				},
                 "path": "/",
 				"upload_dir": "uploads" 

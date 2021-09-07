@@ -6,7 +6,7 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:46 by akira             #+#    #+#             */
-/*   Updated: 2021/08/31 17:30:14 by pcariou          ###   ########.fr       */
+/*   Updated: 2021/09/06 17:54:43 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,41 +21,30 @@ class cgi
   private:
     enum cgi_variables
     {
-        // variables specifiques a la requete
-        AUTH_TYPE,      // : AuthType Basic
-        CONTENT_LENGTH, // size of body (empty if none) : Content-Length: <length>
+        AUTH_TYPE,
+        CONTENT_LENGTH,
         CONTENT_TYPE,
         PATH_INFO,
         PATH_TRANSLATED,
-        QUERY_STRING, // everything after "?" in the url
+        QUERY_STRING,
         REMOTE_ADDR,
         REMOTE_HOST,
         REMOTE_IDENT,
         REMOTE_USER,
-        REQUEST_METHOD, // GET
+        REQUEST_METHOD,
         REQUEST_URI,
-        SCRIPT_NAME,    // SCRIPT_FILENAME in config
+        SCRIPT_NAME,
         SCRIPT_FILENAME, 
-        SERVER_PORT,    // Host: localhost:8000 -> in request
+        SERVER_PORT,
         SERVER_PROTOCOL,
         REDIRECT_STATUS,
-        // variables en rapport avec le client
-        GATEWAY_INTERFACE, //
-        SERVER_NAME,       // "webserv" or "localhost" -> in config
-        SERVER_SOFTWARE,   //
-                           // variables provenant du client
+        GATEWAY_INTERFACE,
+        SERVER_NAME,
+        SERVER_SOFTWARE,
         HTTP_ACCEPT,
         HTTP_ACCEPT_LANGUAGE,
         HTTP_USER_AGENT,
         HTTP_COOKIE,
-        // _,
-        // scheme,
-        // protocol_var_name,
-        // protocol-var-name  = ( protocol | scheme ) "_" var-name
-        // scheme             = alpha *( alpha | digit | "+" | "-" | "." )
-        // var-name           = token
-        // extension_var_name,
-        // extension-var-name = token
 		UPLOAD_DIR,
         LEN_CGI_ENV
     };
@@ -108,9 +97,9 @@ class cgi
 	void Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv, std::string file);
 	std::string	getOutput() const;
 
-    // class CGIException : public std::exception
-    // {
-    // 	public:
-    // 		const char *what( void ) const throw();
-    // };
+    class CGIException : public std::exception
+    {
+    	public:
+    		const char *what( void ) const throw();
+    };
 };
