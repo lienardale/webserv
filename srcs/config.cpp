@@ -201,7 +201,7 @@ void config::error_page_check(std::pair< const int, std::string > &error_page)
 		fs.close();
 	}
 	else{
-		throw ValueError::ParsingException("error_page_not_valid");
+		// throw ValueError::ParsingException("error_page_not_valid");
 		error_page.second = "error_page_not_valid";
 	}
 }
