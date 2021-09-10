@@ -6,7 +6,7 @@
 #    By: alienard@student.42.fr <alienard>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/09 12:07:05 by dboyer            #+#    #+#              #
-#    Updated: 2021/09/06 14:26:26 by alienard@st      ###   ########.fr        #
+#    Updated: 2021/09/08 13:26:33 by alienard@st      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -92,6 +92,6 @@ run 	:	all
 	./${NAME}
 
 valgrind : all
-	valgrind ./${NAME}
+	valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all ./${NAME}
 
 .PHONY  :	all clean fclean re bonus%

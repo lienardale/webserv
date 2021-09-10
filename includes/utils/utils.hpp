@@ -11,6 +11,6 @@
 /* ************************************************************************** */
 
 #pragma once
-
-char		*itoa(int value, char *str, int base);
-std::string	strtrim(std::string s, const char *t);
+#include <iostream>
+char *itoa(int value, char *str, int base);
+std::string strtrim(std::string s, const char *t);

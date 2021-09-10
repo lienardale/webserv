@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 17:34:47 by dboyer            #+#    #+#             */
-/*   Updated: 2021/09/06 16:00:02 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:47 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,15 +84,15 @@ void http::Response::setBody(const std::string &content, const std::string mimet
 
 void http::Response::setBodyCGI(const std::string &content)
 {
-	char	buffer[32];
-	std::string body;
-    
+    char buffer[32];
+    std::string body;
+
     if (content.size() > 0)
         body = content.substr(content.find("\r") + 4);
     else
         body = "Nobody here";
     if (content.size() > 0)
-	    setHeader("Content-Length", std::string(itoa(body.size(), buffer, 10)));
+        setHeader("Content-Length", std::string(itoa(body.size(), buffer, 10)));
     _bodyCGI = content;
     _body = std::make_pair(std::string(), std::string());
 }
@@ -135,10 +135,10 @@ std::string http::Response::toString()
         oss << "Content-Type: " << _body.second << "\r\n" << std::endl;
         oss << _body.first;
     }
-   	else if (_bodyCGI.size())
-	{
-    	oss << _bodyCGI;
-	}
+    else if (_bodyCGI.size())
+    {
+        oss << _bodyCGI;
+    }
     else if (_body.first.empty() && _code >= 400)
     {
         std::string r = "<h1>" + http::statusToReason(_code) + "</h1>";

@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 17:05:36 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/28 13:29:33 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/09/08 12:06:58 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ class Request
      *				Fonctions membres
      *************************************************************************/
 
-    void parse(const std::string &content, int maxBodySize) throw(ParsingException);
+    void parse(const std::string &content, int maxBodySize);
     void clear(void);
 
   private:
@@ -56,9 +56,9 @@ class Request
     std::string _buffer;
     std::map< std::string, std::string > _headers;
 
-    void _extract(std::string &content) throw(ParsingException);
-    void _extractHeader(std::string &content) throw(ParsingException);
-    void _extractBody(int maxBodySize) throw(ParsingException);
+    void _extract(std::string &content);
+    void _extractHeader(std::string &content);
+    void _extractBody(int maxBodySize);
 };
 
 } // namespace http

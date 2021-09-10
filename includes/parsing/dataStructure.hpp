@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dataStructure.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 14:37:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 15:35:29 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:06:27 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ typedef struct s_locationData
     std::list< std::string > index;
     std::map< std::string, std::string > fastcgi_param;
     bool autoindex;
-    std::list< std::string > methods; 
+    std::list< std::string > methods;
     s_locationData(void);
 
 } t_locationData;
@@ -41,7 +41,7 @@ typedef struct s_serverData
     std::list< std::string > server_name;
     std::map< int, std::string > error_page;
     std::list< t_locationData > locations;
-	std::map<std::string, std::string> *mimeTypes;
+    std::map< std::string, std::string > *mimeTypes;
     s_serverData(void);
 } t_serverData;
 
@@ -53,7 +53,6 @@ typedef struct s_serverData
 //     // s_dirinfo(void);
 
 // } t_dirinfo;
-
 
 /****************************************************************************************
  *				Operator overloading

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handlePOST.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/09 11:08:41 by dboyer            #+#    #+#             */
-/*   Updated: 2021/09/06 17:57:22 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:39 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,31 +23,32 @@ http::Response handlePOST(const http::Request &request, const t_serverData &data
 
     http::Response ret = http::Response(http::OK);
 
-	if (request.header("Path") == "/" || (loc._directory && !loc._index.empty()))
-		file = data.root.substr(0, data.root.size() - 1) + request.header("Path") + loc._index;
-	else
-		file = data.root.substr(0, data.root.size() - 1) + request.header("Path"); // classic path request
-	f.open(file.c_str(), std::ios::in);
-	if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK)))
-	{
-		if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
-		{
-			ret.setCode(http::MOVED_PERMANENTLY);
-			slash = (loc._directory) ? "" : "/";
-			Location = (!loc._isDir) ? "http://" + request.header("Host") + loc._urlPath + "/" :  "http://" + request.header("Host") + loc._urlPath + slash + loc._index;
-			ret.setHeader("Location", Location);
-		}
-		else if (loc._directory)
-			ret.setCode(http::METHOD_NOT_ALLOWED);
-		else
-			ret.setCode(http::FORBIDDEN);
-	}
-	else if (f.good() && !loc._fastcgiParam.empty())
-		ret.setBodyCGI(cgi(request, loc, data, file).getOutput()); // Cgi fct to modify and/or move
-	else if (f.good())
-		ret.setCode(http::METHOD_NOT_ALLOWED);
-	else
-		ret.setCode(http::NOT_FOUND);
-	f.close();
-	return ret;
+    if (request.header("Path") == "/" || (loc._directory && !loc._index.empty()))
+        file = data.root.substr(0, data.root.size() - 1) + request.header("Path") + loc._index;
+    else
+        file = data.root.substr(0, data.root.size() - 1) + request.header("Path"); // classic path request
+    f.open(file.c_str(), std::ios::in);
+    if ((f.good() && !f.rdbuf()->in_avail()) || (!f.good() && !access(file.c_str(), F_OK)))
+    {
+        if (f.good() && !f.rdbuf()->in_avail() && (!loc._directory || (loc._isDir && !loc._index.empty())))
+        {
+            ret.setCode(http::MOVED_PERMANENTLY);
+            slash = (loc._directory) ? "" : "/";
+            Location = (!loc._isDir) ? "http://" + request.header("Host") + loc._urlPath + "/"
+                                     : "http://" + request.header("Host") + loc._urlPath + slash + loc._index;
+            ret.setHeader("Location", Location);
+        }
+        else if (loc._directory)
+            ret.setCode(http::METHOD_NOT_ALLOWED);
+        else
+            ret.setCode(http::FORBIDDEN);
+    }
+    else if (f.good() && !loc._fastcgiParam.empty())
+        ret.setBodyCGI(cgi(request, loc, data, file).getOutput()); // Cgi fct to modify and/or move
+    else if (f.good())
+        ret.setCode(http::METHOD_NOT_ALLOWED);
+    else
+        ret.setCode(http::NOT_FOUND);
+    f.close();
+    return ret;
 }

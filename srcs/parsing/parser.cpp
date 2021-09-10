@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:42:33 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/06 11:07:05 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:24 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static bool _checkLocationDup(std::list< t_locationData > &locations)
     return true;
 }
 
-std::list< t_serverData > Parser::parse(void) throw(ParsingException)
+std::list< t_serverData > Parser::parse(void)
 {
     int n_server = 1;
     std::list< t_serverData > res = parseStructList< t_serverData >(castServerMap(), _content);

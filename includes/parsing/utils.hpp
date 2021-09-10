@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:48:58 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 15:30:36 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:06:31 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@
  *			Extraction des éléments
  ****************************************************************************************/
 
-template < typename iterator >
-std::string extract(const std::string envel, iterator begin, iterator end) throw(ParsingException)
+template < typename iterator > std::string extract(const std::string envel, iterator begin, iterator end)
 {
     if (envel.size() != 2)
         throw ParsingException("Wrong usage of extract function. Envel parameter must have a size of 2");
@@ -66,8 +65,7 @@ std::string extract(const std::string envel, iterator begin, iterator end) throw
     return ret;
 }
 
-template < typename iterator >
-void extractStructList(std::list< std::string > &store, iterator begin, iterator end) throw(ParsingException)
+template < typename iterator > void extractStructList(std::list< std::string > &store, iterator begin, iterator end)
 {
     if (begin != end)
     {
@@ -91,7 +89,7 @@ void extractStructList(std::list< std::string > &store, iterator begin, iterator
  *			Dynamique principale du parser
  ****************************************************************************************/
 
-template < typename dataStore > void parseStringList(dataStore &store, const std::string value) throw(ParsingException)
+template < typename dataStore > void parseStringList(dataStore &store, const std::string value)
 {
     std::string::const_iterator begin = value.begin();
     std::string::const_iterator end = value.end();
@@ -112,7 +110,7 @@ template < typename dataStore > void parseStringList(dataStore &store, const std
 
 template < typename dataStore, typename conversion >
 void parseStructFields(dataStore &store, const std::map< std::string, conversion > keyMap, std::string::iterator begin,
-                       std::string::iterator end) throw(ParsingException)
+                       std::string::iterator end)
 {
     std::string key, value;
     typename std::map< std::string, conversion >::const_iterator found;
@@ -150,8 +148,7 @@ void parseStructFields(dataStore &store, const std::map< std::string, conversion
 }
 
 template < typename dataStore, typename conversion >
-dataStore parseStruct(std::map< std::string, conversion > conv, std::string::iterator begin,
-                      std::string::iterator end) throw(ParsingException)
+dataStore parseStruct(std::map< std::string, conversion > conv, std::string::iterator begin, std::string::iterator end)
 {
     dataStore data;
 
@@ -162,8 +159,7 @@ dataStore parseStruct(std::map< std::string, conversion > conv, std::string::ite
 }
 
 template < typename dataStore, typename conversion >
-std::list< dataStore > parseStructList(std::map< std::string, conversion > conv,
-                                       const std::string value) throw(ParsingException)
+std::list< dataStore > parseStructList(std::map< std::string, conversion > conv, const std::string value)
 {
     std::list< dataStore > ret;
     std::list< std::string > tmp;

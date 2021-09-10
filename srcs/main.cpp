@@ -1,14 +1,16 @@
-/* ************************************************************************** */
+/* **************************************************************************
+ */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: alienard <alienard@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/06 10:35:19 by dboyer           ###   ########.fr       */
+/*                                                        :::      :::::::: */
+/*   main.cpp                                           :+:      :+:    :+: */
+/*                                                    +:+ +:+         +:+ */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+ */
+/*                                                +#+#+#+#+#+   +#+ */
+/*   Created: 2021/03/09 12:15:04 by dboyer            #+#    #+# */
+/*   Updated: 2021/09/07 21:44:08 by dboyer           ###   ########.fr */
 /*                                                                            */
-/* ************************************************************************** */
+/* **************************************************************************
+ */
 
 #include "webserv.hpp"
 
@@ -19,6 +21,12 @@ void handleSignal(int sig)
     (void)sig;
 
     SERVER.stop();
+}
+
+void handleSIGTERM(int sig)
+{
+    (void)sig;
+    SERVER.pause();
 }
 
 int main(int ac, char **av, char **env)
@@ -38,7 +46,7 @@ int main(int ac, char **av, char **env)
 
         // Signal handling
         std::signal(SIGINT, handleSignal);
-        std::signal(SIGTERM, handleSignal);
+        std::signal(SIGTERM, handleSIGTERM);
         std::signal(SIGQUIT, handleSignal);
 
         // list dataserv
