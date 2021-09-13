@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 11:08:27 by dess              #+#    #+#             */
-/*   Updated: 2021/09/06 14:47:58 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:51 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void _initAddress(uint32_t port, struct sockaddr_in *infosPtr, const char
  *	@Lien:
  *https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
  */
-static void _initOptions(int fd, int *opt) throw(Socket::SocketException)
+static void _initOptions(int fd, int *opt)
 {
     // to work on macOS -> suppr SO_REUSEADDR
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof(*opt)) < 0)
@@ -56,7 +56,7 @@ static void _initOptions(int fd, int *opt) throw(Socket::SocketException)
  *	@Infos: La fonction lève une SocketException si fcntl échoue
  *	@Lien: http://manpagesfr.free.fr/man/man2/fcntl.2.html
  */
-static void _initBlocking(int fd) throw(Socket::SocketException)
+static void _initBlocking(int fd)
 {
     if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
         throw(Socket::SocketException());
@@ -70,7 +70,7 @@ static void _initBlocking(int fd) throw(Socket::SocketException)
  *	@Infos: La fonction lève une SocketException si bind échoue
  *	@Lien: http://manpagesfr.free.fr/man/man2/bind.2.html
  */
-static void _initBind(int fd, struct sockaddr_in *address, socklen_t socklen) throw(Socket::SocketException)
+static void _initBind(int fd, struct sockaddr_in *address, socklen_t socklen)
 {
     if (bind(fd, (struct sockaddr *)address, socklen) < 0)
         throw(Socket::SocketException());
@@ -89,7 +89,7 @@ static void _initBind(int fd, struct sockaddr_in *address, socklen_t socklen) th
  *	@Lien: http://manpagesfr.free.fr/man/man2/getsockname.2.html
  */
 
-Socket::Socket(int fd, bool blocking) throw(Socket::SocketException) : _fd(fd), _opt(1), _socklen(sizeof(_address))
+Socket::Socket(int fd, bool blocking) : _fd(fd), _opt(1), _socklen(sizeof(_address))
 {
     if (getsockname(_fd, (struct sockaddr *)&_address, &_socklen) < 0)
         throw(Socket::SocketException());
@@ -102,8 +102,7 @@ Socket::Socket(int fd, bool blocking) throw(Socket::SocketException) : _fd(fd), 
  *crée.
  *	@Lien: http://manpagesfr.free.fr/man/man2/socket.2.html
  */
-Socket::Socket(void) throw(Socket::SocketException)
-    : _fd(socket(AF_INET, SOCK_STREAM, 0)), _opt(1), _socklen(sizeof(_address))
+Socket::Socket(void) : _fd(socket(AF_INET, SOCK_STREAM, 0)), _opt(1), _socklen(sizeof(_address))
 {
     if (_fd < 0)
         throw(Socket::SocketException());
@@ -113,7 +112,7 @@ Socket::Socket(void) throw(Socket::SocketException)
  *	Constructeur par copie (deepcopy) de Socket
  *	@Lien: http://manpagesfr.free.fr/man/man2/dup.2.html
  */
-Socket::Socket(const Socket &other) throw(Socket::SocketException)
+Socket::Socket(const Socket &other)
     : _fd(other._fd), _opt(other._opt), _address(other._address), _socklen(other._socklen)
 {
 }
@@ -167,7 +166,7 @@ int Socket::port(void) const
  *	@Parametres: Le port
  *	@Infos: Lève une SocketException si erreur
  */
-void Socket::listen(const int port, const std::string addr) throw(Socket::SocketException)
+void Socket::listen(const int port, const std::string addr)
 {
     _initAddress(port, &_address, addr.c_str());
     _initOptions(_fd, &_opt);
@@ -183,7 +182,7 @@ void Socket::listen(const int port, const std::string addr) throw(Socket::Socket
  *	@Infos: Le fd de la socket client retournée est non-bloquant.
  *	La fonction lève une SocketException si erreur
  */
-Socket Socket::accept(void) throw(Socket::SocketException)
+Socket Socket::accept(void)
 {
     int clientSocket = ::accept(_fd, (struct sockaddr *)&_address, &_socklen);
     if (clientSocket < 0)
@@ -195,7 +194,7 @@ Socket Socket::accept(void) throw(Socket::SocketException)
  *	Lit une partie du contenu reçu par la socket
  *	@Infos: La fonction lève une SocketException si erreur
  */
-std::string Socket::readContent(void) throw(Socket::SocketException)
+std::string Socket::readContent(void)
 {
     int ret = 0;
     char buffer[300];

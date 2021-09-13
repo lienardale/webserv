@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   locationKeys.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/14 11:26:29 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 15:36:53 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:15 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <map>
 #include <utility>
 
-static void handleMethods(t_locationData &location, const std::string value) throw(ParsingException)
+static void handleMethods(t_locationData &location, const std::string value)
 {
     if (location.methods.size())
         throw ValueError("Duplicate key: methods");
@@ -26,21 +26,21 @@ static void handleMethods(t_locationData &location, const std::string value) thr
     location.methods.sort();
 }
 
-static void handleIndex(t_locationData &location, const std::string value) throw(ParsingException)
+static void handleIndex(t_locationData &location, const std::string value)
 {
     if (location.index.size())
         throw ValueError("Duplicate key: Index");
     parseStringList< std::list< std::string > & >(location.index, value);
 }
 
-static void handlePath(t_locationData &location, const std::string value) throw(ParsingException)
+static void handlePath(t_locationData &location, const std::string value)
 {
     if (!location.path.empty())
         throw ValueError("Duplicate key: path");
     location.path = value;
 }
 
-static void handleRoot(t_locationData &location, const std::string value) throw(ParsingException)
+static void handleRoot(t_locationData &location, const std::string value)
 {
     if (location.root.size())
         throw ValueError("Duplicate key: root");
@@ -50,7 +50,7 @@ static void handleRoot(t_locationData &location, const std::string value) throw(
         location.root = value;
 }
 
-static void handleAutoindex(t_locationData &location, const std::string value) throw(ParsingException)
+static void handleAutoindex(t_locationData &location, const std::string value)
 {
     std::string error_msg = "Value error: autoindex value should be 'on' or 'off' not " + value;
 
@@ -59,7 +59,7 @@ static void handleAutoindex(t_locationData &location, const std::string value) t
     location.autoindex = value == "on";
 }
 
-static void fillFastCGI(t_locationData &location, const std::string value) throw(ParsingException)
+static void fillFastCGI(t_locationData &location, const std::string value)
 {
     std::string::const_iterator begin = value.begin();
     std::string::const_iterator end = value.end();
@@ -86,14 +86,14 @@ static void fillFastCGI(t_locationData &location, const std::string value) throw
     }
 }
 
-static void handleFastCGI(t_locationData &location, const std::string value) throw(ParsingException)
+static void handleFastCGI(t_locationData &location, const std::string value)
 {
     if (location.fastcgi_param.size())
         throw ValueError("Duplicate key: fastcgi_param");
     fillFastCGI(location, value);
 }
 
-static void handleUploadDir(t_locationData &location, const std::string value) throw(ParsingException)
+static void handleUploadDir(t_locationData &location, const std::string value)
 {
     if (!location.upload_dir.empty())
         throw ValueError("Duplicate key: upload_dir");

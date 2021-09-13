@@ -6,11 +6,12 @@
 /*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:07:47 by akira             #+#    #+#             */
-/*   Updated: 2021/09/06 18:24:15 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 13:56:52 by alienard@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cgi.hpp"
+#include <cstdlib>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -22,8 +23,8 @@ cgi::cgi()
 {
 }
 
-cgi::cgi(const http::Request &request, const t_locInfos &loc,
-         const t_serverData &dataserv, std::string file) // throw( cgi::CGIException )
+cgi::cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &dataserv,
+         std::string file) // throw( cgi::CGIException )
 {
     setCgi(request, loc, dataserv, file);
     Cgi(request, loc, dataserv, file);
@@ -56,7 +57,7 @@ cgi &cgi::operator=(const cgi &obj)
  */
 const char *cgi::CGIException::what() const throw()
 {
-	return strerror( errno );
+    return strerror(errno);
 }
 
 /******************************************************************************
@@ -93,14 +94,16 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     else
         s_env._content_type = "CONTENT_TYPE=" + mimeTypes(file, data);
     s_env._path_info = "PATH_INFO=" + file;
-    s_env._path_translated = "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path");
+    s_env._path_translated =
+        "PATH_TRANSLATED=" + SSTR(getenv("PWD")) + "/" + strtrim(data.root, "/") + request.header("Path");
     s_env._query_string = "QUERY_STRING=" + request.header("query");
     s_env._remote_addr = "REMOTE_ADDR=127.0.0.1";
     s_env._remote_host = "REMOTE_HOST=" + request.header("Host");
     s_env._remote_ident = "REMOTE_IDENT=user_id";
     s_env._remote_user = "REMOTE_USER=user_name";
     s_env._request_method = "REQUEST_METHOD=" + request.header("Method");
-    s_env._request_uri = "REQUEST_URI=" + request.header("Path") + ((request.header("Query").empty()) ? "" : "?" ) + request.header("Query");
+    s_env._request_uri = "REQUEST_URI=" + request.header("Path") + ((request.header("Query").empty()) ? "" : "?") +
+                         request.header("Query");
     s_env._script_name = "SCRIPT_NAME=" + file;
     s_env._script_file_name = "SCRIPT_FILENAME=" + file;
     s_env._server_port = "SERVER_PORT=" + SSTR(data.listen);
@@ -113,7 +116,7 @@ void cgi::setCgiMetaVar(const http::Request &request, const t_locInfos &loc, con
     s_env._http_accept_language = "HTTP_ACCEPT_LANGUAGE=" + request.header("Accept-Language");
     s_env._http_user_agent = "HTTP_USER_AGENT=" + request.header("User-Agent");
     s_env._http_cookie = "HTTP_COOKIE=" + request.header("cookie");
-	s_env._upload_dir = "uploaddir=" + loc._uploadDir;
+    s_env._upload_dir = "uploaddir=" + loc._uploadDir;
 }
 
 void cgi::setCgiEnv(void)
@@ -142,7 +145,7 @@ void cgi::setCgiEnv(void)
     env[HTTP_ACCEPT_LANGUAGE] = const_cast< char * >(s_env._http_accept_language.c_str());
     env[HTTP_USER_AGENT] = const_cast< char * >(s_env._http_user_agent.c_str());
     env[HTTP_COOKIE] = const_cast< char * >(s_env._http_cookie.c_str());
-	env[UPLOAD_DIR] = const_cast< char * >(s_env._upload_dir.c_str());
+    env[UPLOAD_DIR] = const_cast< char * >(s_env._upload_dir.c_str());
     env[LEN_CGI_ENV] = NULL;
 }
 
@@ -150,6 +153,13 @@ void cgi::setCgi(const http::Request &request, const t_locInfos &loc, const t_se
 {
     setCgiMetaVar(request, loc, dataserv, file);
     setCgiEnv();
+}
+
+int exit_fork(char **av)
+{
+    free(av[0]);
+    free(av[1]);
+    return -1;
 }
 
 void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serverData &data_serv, std::string file)
@@ -162,11 +172,11 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     std::string cgi_script;
 
     int cp_stdin;
-    FILE *f_in  =tmpfile();
+    FILE *f_in = tmpfile();
     int fdin = fileno(f_in);
     cp_stdin = dup(STDIN_FILENO);
- 
-	(void)request;
+
+    (void)request;
     if (pipe(fd_out) == -1)
         throw CGIException();
     if (write(fdin, request.header("body").c_str(), request.header("body").size()) == -1)
@@ -181,17 +191,24 @@ void cgi::Cgi(const http::Request &request, const t_locInfos &loc, const t_serve
     argv[2] = NULL;
 
     pid = fork();
-    if ( pid == 0 )
+    if (pid == 0)
     {
         if (dup2(fd_out[1], STDOUT_FILENO) == -1)
-            throw CGIException();
+            std::exit(exit_fork(argv));
         if (::close(fd_out[0]) == -1)
-            throw CGIException();        
+            std::exit(exit_fork(argv));
         if (dup2(fdin, STDIN_FILENO) == -1)
-            throw CGIException();
+            std::exit(exit_fork(argv));
         root = (*data_serv.root.rbegin() == '/') ? data_serv.root.substr(0, data_serv.root.size() - 1) : data_serv.root;
         if (execve(argv[0], argv, getCgiEnv()) == -1)
-            throw CGIException();
+        {
+            fclose(f_in);
+            close(fdin);
+            close(cp_stdin);
+            free(argv[0]);
+            free(argv[1]);
+            kill(getpid(), SIGTERM);
+        }
     }
     else if (pid < 0)
         throw CGIException();

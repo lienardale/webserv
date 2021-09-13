@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/10 19:04:52 by dboyer            #+#    #+#             */
-/*   Updated: 2021/09/03 12:23:19 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:02 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ class Socket
 {
   public:
     // Constructors
-    Socket(void) throw(Socket::SocketException);
-    Socket(int fd, bool blocking) throw(Socket::SocketException);
-    Socket(const Socket &other) throw(Socket::SocketException);
+    Socket(void);
+    Socket(int fd, bool blocking);
+    Socket(const Socket &other);
     Socket &operator=(const Socket &other);
     ~Socket(void);
 
@@ -56,10 +56,10 @@ class Socket
     int port(void) const;
 
     // Member functions
-    void listen(const int port, const std::string) throw(Socket::SocketException);
+    void listen(const int port, const std::string);
     void close(void);
-    Socket accept(void) throw(Socket::SocketException);
-    std::string readContent(void) throw(Socket::SocketException);
+    Socket accept(void);
+    std::string readContent(void);
     void send(const std::string content) throw(SocketException);
 
     // Operator overloading

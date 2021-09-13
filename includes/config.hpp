@@ -1,8 +1,8 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 #include "parsing/parser.hpp"
-#include <iostream>
 #include <bits/stdc++.h>
+#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -12,34 +12,34 @@ class config
     class ConfigFileException : public std::exception
     {
       public:
-        ConfigFileException(void) throw()
+        ConfigFileException(void)
         {
             return;
         }
-        ConfigFileException(const ConfigFileException &src) throw();
+        ConfigFileException(const ConfigFileException &src);
         virtual ~ConfigFileException(void) throw()
         {
             return;
         }
-        ConfigFileException &operator=(const ConfigFileException &rhs) throw();
+        ConfigFileException &operator=(const ConfigFileException &rhs);
         virtual const char *what() const throw()
         {
             return ("Error: Invalid config file (webserv.conf)");
         }
     };
-	class MimeException : public std::exception
+    class MimeException : public std::exception
     {
       public:
-        MimeException(void) throw()
+        MimeException(void)
         {
             return;
         }
-        MimeException(const MimeException &src) throw();
+        MimeException(const MimeException &src);
         virtual ~MimeException(void) throw()
         {
             return;
         }
-        MimeException &operator=(const MimeException &rhs) throw();
+        MimeException &operator=(const MimeException &rhs);
         virtual const char *what() const throw()
         {
             return ("Error: Invalid mime types file (mime/mime.types)");
@@ -53,7 +53,7 @@ class config
     config &operator=(const config &rhs);
     std::string getServer(void) const;
     int getPort(void) const;
-    void config_check(std::list< t_serverData > *_content) throw(ParsingException);
+    void config_check(std::list< t_serverData > *_content);
     void serverData_check(t_serverData &sD);
     void set(t_serverData *data);
     int sD_index_check(const char *dir, std::string &index);
@@ -64,15 +64,15 @@ class config
     void fastcgi_param_check(std::pair< const std::string, std::string > &fcgi);
     void methods_check(std::string &method);
     std::list< t_serverData > getContent() const;
-	void setMimeTypes();
-	void setUploadDir(t_locationData &lD, t_serverData sD);
+    void setMimeTypes();
+    void setUploadDir(t_locationData &lD, t_serverData sD);
     // int ft_print_config(void);
 
   private:
     std::string server;
     int port;
     std::list< t_serverData > _content;
-	std::map<std::string, std::string> _mimeTypes;
+    std::map< std::string, std::string > _mimeTypes;
 };
 
 #endif

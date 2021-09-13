@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:26:10 by dboyer            #+#    #+#             */
-/*   Updated: 2021/07/01 17:00:33 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/09/08 12:06:28 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Parser
     Parser &operator=(const Parser &other);
     ~Parser(void);
 
-    std::list<t_serverData> parse(void) throw(ParsingException);
+    std::list< t_serverData > parse(void);
 
   private:
     std::string _content;

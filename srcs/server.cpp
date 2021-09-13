@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/22 09:31:19 by dboyer            #+#    #+#             */
-/*   Updated: 2021/09/06 18:06:10 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:16:55 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
+#include "cgi.hpp"
 #include "handleRequest.hpp"
 #include "parsing/dataStructure.hpp"
 #include "parsing/parsingExceptions.hpp"
@@ -19,7 +20,6 @@
 #include "socket.hpp"
 #include "statusCode.hpp"
 #include "webserv.hpp"
-#include "cgi.hpp"
 #include <algorithm>
 #include <cstdio>
 #include <exception>
@@ -38,7 +38,7 @@
 /****************************************************************************************
  *				Outils
  ***************************************************************************************/
-static void _add_fd_to_poll(int epoll_fd, int socket_fd, uint32_t mask) throw(Socket::SocketException)
+static void _add_fd_to_poll(int epoll_fd, int socket_fd, uint32_t mask)
 {
     struct epoll_event event;
 
@@ -57,7 +57,8 @@ static void _add_fd_to_poll(int epoll_fd, int socket_fd, uint32_t mask) throw(So
 
 /*
  *	Initialise un serveur qui écoutera sur un port donnée
- *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre chaque écoute
+ *	@Parametres: Le port qui sera écouté et l'interval (en seconde) entre
+ *chaque écoute
  *	@Lien: http://manpagesfr.free.fr/man/man2/select.2.html
  */
 http::Server::Server() : _run(false)
@@ -115,7 +116,8 @@ void http::Server::init(const std::list< t_serverData > &configs, uint32_t timeo
 }
 
 /*
- *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le constructeur
+ *	Fonction qui va mettre le serveur en écoute sur le port spécifié dans le
+ *constructeur
  *	@Infos: la fonction arrête le programme si une SocketException est levé
  */
 void http::Server::listen(void)
@@ -167,18 +169,21 @@ t_serverData http::Server::_getServerData(Socket &sock, std::string host)
  *	@Infos La fonction lève une SocketException si erreur
  */
 void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_serverData > &data,
-                                   struct epoll_event *event, int epoll_fd) throw(Socket::SocketException)
+                                   struct epoll_event *event, int epoll_fd)
 {
     http::Response response;
     t_serverData serverData = _getServerData(sock, data.first.header("host"));
 
     if (data.first.isBodyTooLarge())
         response = http::Response(http::PAYLOAD_TOO_LARGE);
-    else{
-        try {
+    else
+    {
+        try
+        {
             response = handleRequest(data.first, serverData);
         }
-        catch (cgi::CGIException &e) {
+        catch (cgi::CGIException &e)
+        {
             throw Socket::SocketException();
         }
     }
@@ -196,7 +201,7 @@ void http::Server::_handleEpollout(Socket &sock, std::pair< http::Request, t_ser
 }
 
 void http::Server::_handleEpollin(Socket &sock, std::pair< http::Request, t_serverData > &data, const int epoll_fd,
-                                  struct epoll_event *event) throw(ParsingException)
+                                  struct epoll_event *event)
 {
     const std::string content = sock.readContent();
 
@@ -272,6 +277,11 @@ void http::Server::stop(void)
         }
         close(_epoll_fd);
     }
+}
+
+void http::Server::pause(void)
+{
+    _run = false;
 }
 
 /*

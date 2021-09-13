@@ -68,7 +68,25 @@
 				},
 				"path": "/",
 				"upload_dir": "uploads2"
+			},
+			{
+				"path": "/directory",
+				"root": "/directory/dir"
+			},
+			{
+				"path": "/directory/dir",
+				"index": {
+					"index1.html"
+				}
+			},
+			{
+				"path": "/directory/dir/dir",
+				"index": {
+					"test.html"
+				}
 			}
+
+
 		]
 	},
 	{

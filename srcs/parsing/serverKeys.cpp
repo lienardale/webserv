@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   serverKeys.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alienard@student.42.fr <alienard>          +#+  +:+       +#+        */
+/*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 16:47:24 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/31 15:22:45 by alienard@st      ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:26 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <cstddef>
 #include <list>
 
-static void handleListen(t_serverData &server, const std::string value) throw(ParsingException)
+static void handleListen(t_serverData &server, const std::string value)
 {
     if (server.listen != -1)
         throw ValueError("Duplicate key: listen");
@@ -35,7 +35,7 @@ static void handleListen(t_serverData &server, const std::string value) throw(Pa
     }
 }
 
-static void handleServerName(t_serverData &server, const std::string value) throw(ParsingException)
+static void handleServerName(t_serverData &server, const std::string value)
 {
     if (server.server_name.size())
         throw ValueError("Duplicate key: server_name");
@@ -43,7 +43,7 @@ static void handleServerName(t_serverData &server, const std::string value) thro
     server.server_name.sort();
 }
 
-static void handleAutoindex(t_serverData &server, const std::string value) throw(ParsingException)
+static void handleAutoindex(t_serverData &server, const std::string value)
 {
     std::string error_msg = "Autoindex value should be 'on' or 'off' not " + value;
 
@@ -52,7 +52,7 @@ static void handleAutoindex(t_serverData &server, const std::string value) throw
     server.autoindex = value == "on";
 }
 
-static void handleRoot(t_serverData &server, const std::string value) throw(ParsingException)
+static void handleRoot(t_serverData &server, const std::string value)
 {
     if (server.root.size())
         throw ValueError("Duplicate key: root");
@@ -62,19 +62,19 @@ static void handleRoot(t_serverData &server, const std::string value) throw(Pars
         server.root = value;
 }
 
-static void handleClientMaxBody(t_serverData &server, const std::string value) throw(ParsingException)
+static void handleClientMaxBody(t_serverData &server, const std::string value)
 {
     server.client_max_body_size = strToInt(value);
 }
 
-static void handleIndex(t_serverData &server, const std::string value) throw(ParsingException)
+static void handleIndex(t_serverData &server, const std::string value)
 {
     if (server.index.size())
         throw ValueError("Duplicate key: index");
     parseStringList< std::list< std::string > & >(server.index, value);
 }
 
-static void fillErrorPage(t_serverData &server, const std::string value) throw(ParsingException)
+static void fillErrorPage(t_serverData &server, const std::string value)
 {
     std::string::const_iterator begin = value.begin();
     std::string::const_iterator end = value.end();
@@ -101,7 +101,7 @@ static void fillErrorPage(t_serverData &server, const std::string value) throw(P
     }
 }
 
-static void handleErrorPage(t_serverData &server, const std::string value) throw(ParsingException)
+static void handleErrorPage(t_serverData &server, const std::string value)
 {
     if (server.error_page.size())
         throw ValueError("Duplicate key: error_page");

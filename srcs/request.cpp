@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/29 18:29:23 by dboyer            #+#    #+#             */
-/*   Updated: 2021/08/06 09:57:26 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:44 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ static std::string _cleanQuery(std::string path)
     return "";
 }
 
-void http::Request::_extract(std::string &content) throw(ParsingException)
+void http::Request::_extract(std::string &content)
 {
     std::string method = header("method");
     if (method.size())
@@ -162,7 +162,7 @@ void http::Request::_extract(std::string &content) throw(ParsingException)
     }
 }
 
-void http::Request::_extractBody(int maxBodySize) throw(ParsingException)
+void http::Request::_extractBody(int maxBodySize)
 {
     std::string body = header("body");
     std::string host = header("host");
@@ -179,7 +179,7 @@ void http::Request::_extractBody(int maxBodySize) throw(ParsingException)
     _finish = static_cast< int >(_headers["body"].size()) == contentLength;
 }
 
-void http::Request::_extractHeader(std::string &content) throw(ParsingException)
+void http::Request::_extractHeader(std::string &content)
 {
     std::string key, value;
     std::string::size_type pos;
@@ -196,7 +196,7 @@ void http::Request::_extractHeader(std::string &content) throw(ParsingException)
         throw BadRequest("Wrong key value syntax");
 }
 
-void http::Request::parse(const std::string &content, int maxBodySize) throw(ParsingException)
+void http::Request::parse(const std::string &content, int maxBodySize)
 {
     std::string::size_type pos;
     std::string val;

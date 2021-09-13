@@ -6,7 +6,7 @@
 /*   By: dboyer <dboyer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 10:27:31 by dess              #+#    #+#             */
-/*   Updated: 2021/08/02 19:24:57 by dboyer           ###   ########.fr       */
+/*   Updated: 2021/09/08 12:07:01 by dboyer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class Server
     //    Member functions
     void listen(void);
     void stop(void);
+    void pause(void);
     void init(const std::list< t_serverData > &configs, uint32_t timeout);
 
   private:
@@ -52,11 +53,11 @@ class Server
     int _epoll_fd;
 
     void _handleEpollout(Socket &sock, std::pair< http::Request, t_serverData > &data, struct epoll_event *event,
-                         int epoll_fd) throw(Socket::SocketException);
+                         int epoll_fd);
     void _handleEpollin(Socket &sock, std::pair< http::Request, t_serverData > &data, const int epoll_fd,
-                        struct epoll_event *event) throw(ParsingException);
+                        struct epoll_event *event);
     void _handleReady(int epoll_fd, const int fd, struct epoll_event *event) throw(std::exception);
-    void _watchFds(void) throw(Socket::SocketException);
+    void _watchFds(void);
     void _log(const http::Request &request, const http::Response &response) const;
     void _removeAcceptedFD(Socket &sock);
     t_serverData _getServerData(Socket &sock, std::string host);
